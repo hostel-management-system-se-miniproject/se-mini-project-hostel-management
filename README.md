@@ -1,153 +1,238 @@
 # Hostel Management System (HMS)
 
-A Software Engineering mini-project developed by **Team 3 --- Class
-5-J**.
+A Software Engineering mini-project by **Team 3, Class 5-J, PES University, Bangalore**.
 
-The goal of this project is to design and implement a Hostel Management
-System that supports student registration and login, room allocation,
-fee tracking, complaint handling, leave requests, visitor logging, and
-administrative reporting, as defined in the approved Software
-Requirements Specification (SRS).
+HMS replaces register- and spreadsheet-based hostel record keeping with a centralized web application. Students can register, log in, view their room and fee status, raise complaints and request leave. Wardens/admins manage room allocation, fees, complaints, leave approvals, visitor entries, the dashboard and reports.
 
-> **Important:** The submitted SRS, Software Architecture Document
-> (SAD), and Test Plan are the baseline for implementation. Any
-> deviation must be recorded in `DEVIATIONS.md` and explained during the
-> final demonstration.
+> **Important:** The submitted SRS, Software Architecture & Design Specification (SAD) and Test Plan are the baseline for implementation. Any deviation from them must be recorded in `docs/DEVIATIONS.md` and explained during the final demo.
 
-------------------------------------------------------------------------
+*Last updated: 14 October 2026*
 
-## Team Members and Responsibilities
+---
 
-  -----------------------------------------------------------------------
-  Team member             Project role            Primary
-                                                  responsibilities
-  ----------------------- ----------------------- -----------------------
-  **Chiranthan            Project Manager /       Project board, backlog
-  Sathrasala**            Repository Coordinator  coordination,
-                                                  story-point
-                                                  coordination, merge
-                                                  coordination,
-                                                  `DEVIATIONS.md`,
-                                                  submission coordination
+## Table of Contents
 
-  **Harsh**               Technical Lead          Technology-stack
-                                                  decision, SAD, CI
-                                                  workflow, database
-                                                  schema, technical
-                                                  coordination
+1. [Team and Responsibilities](#1-team-and-responsibilities)
+2. [Schedule](#2-schedule)
+3. [Scope at a Glance](#3-scope-at-a-glance)
+4. [Technology Stack](#4-technology-stack)
+5. [Repository Structure](#5-repository-structure)
+6. [Getting Started](#6-getting-started)
+7. [Environment Variables](#7-environment-variables)
+8. [Backlog and Project Board](#8-backlog-and-project-board)
+9. [Git and GitHub Workflow](#9-git-and-github-workflow)
+10. [Essential Git Commands](#10-essential-git-commands)
+11. [Definition of Done](#11-definition-of-done)
+12. [Testing](#12-testing)
+13. [Deviations from the Submitted Documents](#13-deviations-from-the-submitted-documents)
+14. [Sprint Demo Videos](#14-sprint-demo-videos)
+15. [Security and Repository Hygiene](#15-security-and-repository-hygiene)
+16. [Project Documentation](#16-project-documentation)
 
-  **Raiesh**              QA Lead                 Test Plan, test
-                                                  execution, bug
-                                                  tracking, recording
-                                                  actual results and
-                                                  pass/fail status
+---
 
-  **Neha**                Documentation and Demo  SRS, Requirements
-                          Lead                    Traceability Matrix
-                                                  (RTM), sprint demo
-                                                  videos, final
-                                                  documentation
-  -----------------------------------------------------------------------
+## 1. Team and Responsibilities
 
-All members are expected to contribute to implementation, testing,
-integration, code reviews, and defect resolution. These are project
-responsibilities; GitHub permissions are managed separately by the
-organization/repository administrators.
+| Team member | Project role | Primary responsibilities |
+| --- | --- | --- |
+| **Chiranthan Sathrasala** | Project Manager / Repository Owner | Project board, backlog and story points, merge coordination, `DEVIATIONS.md`, submission |
+| **Harsh M** | Technical Lead | Technology decisions (ADR-001), CI workflow (GitHub Actions), SAD, technical coordination |
+| **Raiesh Giriyapanavar** | QA Lead | Test Plan, test execution, bug issues, recording actual results and Pass/Fail |
+| **Neha K S** | Documentation and Demo Lead | SRS, UML/ER diagrams, Requirements Traceability Matrix (RTM), final documentation |
 
-------------------------------------------------------------------------
+**Shared responsibilities:** everyone writes code, reviews pull requests, tests, integrates and fixes defects. Story points are split roughly equally across the four members. These are project roles; GitHub permissions are managed separately by the repository administrators.
 
-## Project Deliverables and Workflow
+---
 
-The project is organized around the professor's deliverable schedule:
+## 2. Schedule
 
--   **12--16 October 2026 --- Dry run/practice:** Prepare the
-    repository, backlog, story points, workflow, CI, scaffolding, and
-    documentation corrections.
--   **19--23 October 2026 --- Sprint 1:** Deliver the agreed
-    first-sprint stories, a working product, and a one-minute demo video
-    uploaded to the repository.
--   **26--30 October 2026 --- Sprint 2:** Deliver the remaining agreed
-    stories, a working product, a two-minute demo video, completed
-    documentation, and a development freeze.
+The schedule follows the professor's *Mini-Project Deliverables Part-2*.
 
-The team should use the GitHub Project board as the source of truth for
-backlog items, assignees, story points, status, and sprint.
+| Dates (2026) | Phase | What happens |
+| --- | --- | --- |
+| 12 – 16 Oct | Dry run (practice) | Create the backlog, story points and assignees; set up the repo, scaffold, CI, seed data and the API contract; practise the PR workflow |
+| 19 Oct | Backlog checkpoint | Last day to change entries in the backlog |
+| 19 – 23 Oct | **Sprint 1** | Complete the Sprint 1 stories, enable GitHub Actions, deliver a working product, upload a **1-minute** demo video |
+| 26 – 30 Oct | **Sprint 2** | Complete the Sprint 2 stories, a **2-minute** working-product demo video, complete the documentation, **freeze development** |
 
-------------------------------------------------------------------------
+Use the GitHub Project board as the source of truth for backlog items, assignees, story points, status and sprint.
 
-## Repository Structure
+---
 
-The structure may evolve as the technology stack and implementation are
-finalized.
+## 3. Scope at a Glance
 
-``` text
+| ID | Feature |
+| --- | --- |
+| FR-001 | Student registration and login (USN/email uniqueness, 5-failure / 15-minute lockout) |
+| FR-002 | Room allocation: availability filters, allocate, reallocate, vacate, capacity and one-active-allocation rules |
+| FR-003 | Fee tracking: due, paid, balance, status (Paid / Partially Paid / Due), optional due-date notification |
+| FR-004 | Complaints: one open complaint per category, admin status and remarks, history with timestamps |
+| FR-005 | Leave requests, visitor entry/exit log, admin dashboard, reports exported as **CSV and PDF** |
+| NFR-001 | Standard pages load within 3 seconds; at least 200 concurrent users under normal load |
+| NFR-002 | Password hashing, role-based access control, 30-minute inactivity session expiry |
+
+**User roles:** Student and Warden/Admin. A separate System Administrator role and a separate security-guard role are out of scope for the demo (see Section 13).
+
+---
+
+## 4. Technology Stack
+
+The professor requires the **MERN stack**.
+
+| Layer | Technology |
+| --- | --- |
+| Frontend | React |
+| Backend | Node.js with Express (REST APIs, JSON) |
+| Database | MongoDB, accessed through Mongoose |
+| CI | GitHub Actions (added in story HMS-25): lint, tests and frontend build on every PR |
+
+The technology decision and its reasons are recorded in `docs/ADR-001.md`. The SRS and SAD describe a "relational database"; using MongoDB instead is a deviation and is logged in `docs/DEVIATIONS.md` (see Section 13).
+
+### 4.1 Data integrity rules (MongoDB)
+
+MongoDB does not enforce foreign keys or CHECK constraints, so the rules the SRS requires are enforced as follows:
+
+- **Unique USN and email:** unique indexes on both fields (FR-001.2).
+- **One active allocation per student:** a partial unique index on the allocation's student where its status is active (FR-002.4).
+- **Room occupancy never exceeds capacity:** occupancy changes only through one atomic conditional update (increment only when occupancy is below capacity), so two simultaneous requests for the last bed cannot both succeed (FR-002.3).
+- **Allocation, reallocation and vacate** are implemented in one service function each, so occupancy and allocation records always change together.
+- **Fee status** is derived from the due and paid amounts, never entered by hand; overpayments are rejected.
+- **Consistency check:** a small script compares each room's occupancy with its count of active allocations and is used in tests.
+- Multi-document transactions are optional. They need a replica set (MongoDB Atlas provides one; a plain local install does not), so the code must not depend on them.
+
+---
+
+## 5. Repository Structure
+
+The structure may evolve as the scaffold (HMS-01) is merged.
+
+```text
 .
 ├── .github/
-│   ├── workflows/          # GitHub Actions CI workflows
-│   ├── ISSUE_TEMPLATE/     # Issue templates, if configured
+│   ├── workflows/            # GitHub Actions CI workflows
+│   ├── ISSUE_TEMPLATE/       # Issue templates
 │   ├── pull_request_template.md
-│   └── CODEOWNERS           # If configured
+│   └── CODEOWNERS            # If configured
+├── backend/                  # Node.js + Express API, business modules, tests
+├── frontend/                 # React application
 ├── docs/
 │   ├── SRS.md
 │   ├── SAD.md
 │   ├── TEST_PLAN.md
 │   ├── RTM.md
 │   ├── DEVIATIONS.md
-│   └── ADR-001.md
-├── src/                     # Application source code
-├── tests/                   # Automated tests, if applicable
-├── videos/                  # Sprint demo videos
+│   ├── ADR-001.md
+│   ├── API_CONTRACT.md       # Agreed endpoints, request/response shapes
+│   └── diagrams/             # UML and ER diagrams
+├── videos/                   # Sprint demo videos
 └── README.md
 ```
 
-Use the filenames already agreed by the team if they differ from those
-above. Keep submitted v1.0 documents and revised v1.1 documents clearly
-distinguishable; do not silently overwrite the submitted baseline.
+Keep the originally submitted v1.0 documents available as the baseline. Any revised version must be clearly distinguishable; do not silently overwrite the submitted baseline.
 
-------------------------------------------------------------------------
+---
 
-## Git and GitHub Collaboration Rules
+## 6. Getting Started
 
-### 1. The main branch is protected
+> The exact script names are finalized when the scaffold story (HMS-01) is merged. Update this section at that point.
 
--   `main` is the shared, stable branch.
--   **Do not work directly on `main`.**
--   Every change must be made on a separate branch.
--   Push your branch to GitHub and open a Pull Request (PR) targeting
-    `main`.
--   A PR must receive approval from **at least one eligible teammate
-    other than its author**.
--   **The PR author must not review or approve their own PR.**
--   Required CI checks must pass before merging.
--   Only the designated merge coordinators, **Chiranthan and Harsh**,
-    merge approved PRs, subject to repository permissions and
-    branch-protection rules.
--   Never merge your own PR, even if you have repository permissions
-    that technically allow it.
+**Prerequisites**
 
-### 2. Review rotation
+- Git
+- Node.js 20 LTS and npm
+- MongoDB: a local MongoDB Community Server or a free MongoDB Atlas cluster
+- (Optional) MongoDB Compass, to inspect collections
 
-Use this rotation so that each member's work is reviewed by someone
-else:
+**Setup**
 
-  PR author    Assigned reviewer
-  ------------ -------------------
-  Chiranthan   Harsh
-  Harsh        Raiesh
-  Raiesh       Neha
-  Neha         Chiranthan
+```bash
+# 1. Clone and enter the repository
+git clone <repository-url>
+cd <repository-folder>
 
-If the assigned reviewer is unavailable or has contributed substantially
-to the same change, coordinate with another teammate who did not author
-the PR. The author must never approve their own PR.
+# 2. Configure environment variables (see Section 7)
+cp backend/.env.example backend/.env
+# edit backend/.env with your local values; never commit it
 
-### 3. Branch naming convention
+# 3. Install and start the backend
+cd backend
+npm install
+npm run seed        # sample admin, students and rooms (story HMS-26)
+npm run dev
 
-Create one branch per issue or logically separate task.
+# 4. In a second terminal, install and start the frontend
+cd frontend
+npm install
+npm run dev
+```
 
-Use:
+**Seed data:** the seed script creates one admin account, about 20 sample students and rooms across blocks, for development and demos only. Credentials are documented in `backend/.env.example` / the seed script comments and are test data, never real student information.
 
-``` text
+---
+
+## 7. Environment Variables
+
+Copy `backend/.env.example` to `backend/.env`. Only placeholders belong in `.env.example`.
+
+| Variable | Purpose | Default / example |
+| --- | --- | --- |
+| `NODE_ENV` | Runtime mode | `development` |
+| `PORT` | API port | `5000` |
+| `MONGODB_URI` | MongoDB connection string (local or Atlas) | `mongodb://localhost:27017/hms` (placeholder; never commit a real Atlas URI) |
+| `SESSION_SECRET` | Secret used to sign sessions | long random placeholder |
+| `SESSION_TIMEOUT_MINUTES` | Inactivity timeout (NFR-002) | `30` |
+| `MAX_FAILED_LOGINS` | Failed attempts before lockout (FR-001.3) | `5` |
+| `LOCKOUT_MINUTES` | Lockout duration (FR-001.3) | `15` |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | Optional fee-notification email (FR-003.3) | empty / test SMTP account |
+
+For testing, `SESSION_TIMEOUT_MINUTES` and `LOCKOUT_MINUTES` can be set to `1` so that lockout and session-expiry tests do not require waiting 15 or 30 minutes. The defaults must stay 30 and 15.
+
+---
+
+## 8. Backlog and Project Board
+
+- The backlog lives in the GitHub Project **HMS Mini-Project**, linked to this repository. Every story is a GitHub Issue titled `[HMS-nn] Title`.
+- Board fields: **Status** (Backlog, Ready, In progress, In review, Done), **Priority**, **Story Points** (1, 2, 3, 5, 8), **Sprint** (Dry Run, Sprint 1, Sprint 2) and **Epic**.
+- Each story is a **vertical slice**: API, UI and tests, delivered by one owner.
+- Every issue references its SRS requirement IDs and test case IDs.
+- Every implementation task has an issue. Branches, commits and PRs refer to the **GitHub issue number** (`#n`), which appears next to the `[HMS-nn]` title.
+
+---
+
+## 9. Git and GitHub Workflow
+
+### 9.1 The `main` branch is protected
+
+- `main` is the shared, stable branch. **Never work or push directly on `main`.**
+- Every change is made on a separate branch and reaches `main` only through a Pull Request (PR).
+- A PR needs approval from **at least one teammate other than its author**.
+- **The author must not review, approve or merge their own PR.**
+- **Any teammate other than the author may review and merge** an approved PR whose checks pass.
+- Fresh commits after an approval require a new approval.
+- Resolve all review conversations before merging.
+- Required CI checks must pass before merging once the GitHub Actions workflow (HMS-25) is in place.
+- Do not bypass branch protection to save time.
+
+> GitHub stops an author from approving their own PR, but it cannot stop them from pressing *Merge* after someone else approves. The "merger is not the author" rule is therefore a **team rule**: tick the PR-template checkbox and follow it.
+
+### 9.2 Reviewer assignment
+
+To spread the review load, the default reviewer is:
+
+| PR author | Default reviewer |
+| --- | --- |
+| Chiranthan | Harsh |
+| Harsh | Raiesh |
+| Raiesh | Neha |
+| Neha | Chiranthan |
+
+If the default reviewer is unavailable, any other teammate who did not author the PR may review it. Review within 12 hours where possible.
+
+### 9.3 Branch naming
+
+One branch per issue or logically separate task, in lowercase with hyphens:
+
+```text
 feature/<issue-number>-short-description
 fix/<issue-number>-short-description
 docs/<issue-number>-short-description
@@ -155,9 +240,9 @@ test/<issue-number>-short-description
 chore/<issue-number>-short-description
 ```
 
-Examples:
+Examples (replace the numbers with real issue numbers):
 
-``` text
+```text
 feature/12-user-registration
 feature/18-room-allocation
 fix/24-fee-balance-validation
@@ -166,20 +251,15 @@ test/35-room-capacity-tests
 chore/7-configure-ci
 ```
 
-Replace the example issue numbers with real GitHub Issue numbers. Use
-lowercase words separated by hyphens.
+### 9.4 Commit messages
 
-### 4. Commit message convention
+Small, meaningful commits, at least one per working day, in this format:
 
-Make small, meaningful commits. Use this format:
-
-``` text
+```text
 type(#issue-number): short description
 ```
 
-Examples:
-
-``` text
+```text
 feat(#12): add student registration endpoint
 fix(#24): reject negative fee payments
 test(#35): add room capacity validation tests
@@ -187,121 +267,92 @@ docs(#31): update test plan traceability
 chore(#7): configure GitHub Actions
 ```
 
-Useful types: `feat`, `fix`, `test`, `docs`, `refactor`, and `chore`.
+Types: `feat`, `fix`, `test`, `docs`, `refactor`, `chore`.
 
-------------------------------------------------------------------------
+### 9.5 Pull request checklist
 
-## Essential Git Commands
+- Title is clear; description includes `Closes #<issue-number>`.
+- Lists the SRS requirement IDs and test case IDs covered.
+- Relevant tests were actually run; do not claim tests passed unless they did.
+- No secrets, `.env` files or unrelated files are included.
+- Any deviation from the submitted documents is added to `docs/DEVIATIONS.md`.
+- The author is not the merger.
 
-Run these commands in a terminal opened in your local project folder.
-Replace example branch names and issue numbers with the task you are
-actually working on.
+Example PR description:
 
-### 1. Clone the repository (first-time setup)
+```markdown
+## Summary
+- Implemented student registration validation.
 
-Copy the repository's HTTPS or SSH URL from GitHub, then run:
+## Traceability
+- SRS requirement: FR-001.1, FR-001.2
+- Test cases: UT-01 to UT-05
 
-``` bash
+## Verification
+- [ ] Relevant tests run
+- [ ] CI checks pass
+- [ ] No secrets or unrelated files included
+- [ ] I am not merging my own PR
+
+Closes #12
+```
+
+---
+
+## 10. Essential Git Commands
+
+Run these in a terminal opened in your local project folder. Replace example names with your own.
+
+### 10.1 Clone (first-time setup)
+
+```bash
 git clone <repository-url>
 cd <repository-folder>
-```
-
-Check the remote and current branch:
-
-``` bash
 git remote -v
 git status
-git branch
 ```
 
-### 2. Start a new task from the latest `main`
+### 10.2 Start a task from the latest `main`
 
-First switch to `main`, then download the latest changes:
-
-``` bash
+```bash
 git switch main
 git pull origin main
-```
-
-Create and switch to your own branch:
-
-``` bash
 git switch -c feature/12-user-registration
 ```
 
-The `-c` option creates the branch and switches to it. Do not create
-your feature branch from an old or unrelated feature branch.
+`-c` creates the branch and switches to it. Do not branch from an old or unrelated feature branch.
 
-### 3. Check your branch before making changes
+### 10.3 Check your branch before changing anything
 
-``` bash
+```bash
 git branch --show-current
 git status
 ```
 
-The branch name should be your task branch, **not `main`**.
+The branch name must be your task branch, **not `main`**.
 
-### 4. Stage and commit your changes
+### 10.4 Stage and commit
 
-Review the changed files:
-
-``` bash
+```bash
 git status
 git diff
-```
-
-Stage specific files (recommended when practical):
-
-``` bash
-git add path/to/file
-```
-
-Or stage all intended changes:
-
-``` bash
-git add .
-```
-
-Commit:
-
-``` bash
+git add path/to/file          # preferred: stage specific files
+git add .                     # or stage all intended changes
 git commit -m "feat(#12): add student registration endpoint"
 ```
 
-Do not commit secrets, `.env` files, passwords, API keys, database
-credentials, or real student data. Use `.env.example` with placeholder
-values where appropriate.
+### 10.5 Push to the correct remote branch
 
-### 5. Push to the correct remote branch
-
-For the first push of a new branch:
-
-``` bash
-git push -u origin feature/12-user-registration
+```bash
+git push -u origin feature/12-user-registration   # first push of a new branch
+git push                                          # later pushes
 ```
 
-For later pushes to the same branch:
+Check the branch name first with `git branch --show-current`.
 
-``` bash
-git push
-```
+### 10.6 Keep your branch up to date with `main`
 
-**Check the branch name before pushing.** The command above pushes to
-`origin/feature/12-user-registration`, not to `main`.
-
-If you are unsure:
-
-``` bash
-git branch --show-current
-git status
-```
-
-### 6. Keep your branch updated with `main`
-
-Before opening a PR, or when `main` has moved ahead, fetch the latest
-remote state:
-
-``` bash
+```bash
 git fetch origin
 git switch main
 git pull origin main
@@ -309,166 +360,149 @@ git switch feature/12-user-registration
 git merge main
 ```
 
-Resolve any conflicts carefully. After resolving a conflict, stage and
-commit the resolution, run the relevant tests, then push your branch:
+Resolve conflicts carefully, then:
 
-``` bash
+```bash
 git add <resolved-file>
 git commit
 git push
 ```
 
-If the team has agreed to use rebase instead of merge for updating
-feature branches, follow that shared convention consistently. Do not
-force-push shared branches without coordinating with the team.
+Do not force-push shared branches without coordinating with the team.
 
-### 7. Open a Pull Request
+### 10.7 Open a pull request
 
-On GitHub:
+1. On GitHub, go to **Pull requests → New pull request**.
+2. Set **base** to `main` and **compare** to your branch.
+3. Review the changed files, then fill in the PR description (Section 9.5).
+4. Request a reviewer (Section 9.2).
+5. Make requested changes on the same branch, commit and push; the PR updates automatically.
+6. After approval and passing checks, a teammate who is not the author merges.
 
-1.  Open the repository and select **Pull requests → New pull request**.
-2.  Set the **base** to `main` and the **compare/head** to your feature
-    branch.
-3.  Review the changed files and confirm that no unrelated files or
-    secrets are included.
-4.  Use a clear title and description.
-5.  Include `Closes #<issue-number>` when the PR completes that issue.
-6.  Mention the SRS requirement IDs and test case IDs covered by the
-    change.
-7.  Request the reviewer specified in the review rotation.
-8.  Wait for review comments and required CI checks.
-9.  Make requested changes on the same branch, commit, and push. The PR
-    updates automatically.
-10. Merge only after approval and required checks pass. Chiranthan or
-    Harsh performs the merge according to the team's rule.
+### 10.8 Delete a branch after its PR is merged
 
-Example PR description:
-
-``` markdown
-## Summary
-- Implemented student registration validation.
-
-## Traceability
-- SRS requirement: FR-001
-- Test cases: UT-01 to UT-05
-
-## Verification
-- [ ] Relevant tests run
-- [ ] CI checks pass
-- [ ] No secrets or unrelated files included
-
-Closes #12
-```
-
-Do not claim tests passed unless they were actually executed
-successfully.
-
-### 8. Delete a branch after its PR is merged
-
-After confirming the PR has been merged, switch away from the branch
-first:
-
-``` bash
+```bash
 git switch main
 git pull origin main
-```
-
-Delete the local branch:
-
-``` bash
 git branch -d feature/12-user-registration
-```
-
-Delete the remote branch on GitHub:
-
-``` bash
 git push origin --delete feature/12-user-registration
 ```
 
-GitHub may also offer a **Delete branch** button after merging a PR. If
-you use it, you still need to delete the local branch if you no longer
-need it.
+GitHub's *Delete branch* button removes only the remote branch. Use `git branch -D` only for an unmerged local branch you are sure you no longer need.
 
-Use `git branch -D <branch-name>` only when you intentionally want to
-force-delete an unmerged local branch and have confirmed that its work
-is no longer needed. Do not use it as the normal cleanup command.
+### 10.9 Everyday commands
 
-### 9. Useful everyday commands
-
-``` bash
-git status                   # Show working-tree state
-git branch                   # List local branches
-git branch -a                # List local and remote-tracking branches
-git switch main              # Switch to main
-git fetch origin             # Fetch remote updates
-git pull origin main         # Update local main from origin
-git diff                     # Review unstaged changes
-git diff --staged            # Review staged changes
-git log --oneline -10        # Show the last 10 commits
-git stash                    # Temporarily save uncommitted changes
-git stash pop                # Restore stashed changes
+```bash
+git status                   # working-tree state
+git branch                   # local branches
+git branch -a                # local and remote branches
+git fetch origin             # fetch remote updates
+git pull origin main         # update local main
+git diff                     # unstaged changes
+git diff --staged            # staged changes
+git log --oneline -10        # last 10 commits
+git stash                    # save uncommitted changes temporarily
+git stash pop                # restore them
 ```
 
-Avoid `git reset --hard`, force-push commands, or deleting branches
-unless you understand the consequences and have coordinated with the
-team.
+Avoid `git reset --hard` and force-push unless you understand the consequences.
 
-------------------------------------------------------------------------
+---
 
-## Definition of Done
+## 11. Definition of Done
 
-A task is complete only when all applicable checks below are satisfied:
+A story is done only when all applicable items are true:
 
--   [ ] The work maps to a GitHub Issue and an agreed requirement or
-    documentation task.
--   [ ] The change is committed on a task-specific branch.
--   [ ] Relevant tests have been run and their results recorded.
--   [ ] The PR targets `main`, references the issue, and lists the
-    relevant SRS/test case IDs.
--   [ ] A teammate other than the PR author has reviewed and approved
-    the PR.
--   [ ] Required CI checks pass.
--   [ ] The designated merge coordinator merges the PR.
--   [ ] Related documentation and the RTM are updated where needed.
--   [ ] Any deviation from the submitted SRS, SAD, or Test Plan is
-    recorded in `DEVIATIONS.md`.
+- [ ] It maps to a GitHub Issue and an agreed requirement or documentation task.
+- [ ] The work is on a task-specific branch.
+- [ ] Acceptance criteria are met and relevant tests are run, with results recorded.
+- [ ] The PR targets `main`, references the issue and lists SRS and test case IDs.
+- [ ] A teammate other than the author approved it, and required CI checks pass.
+- [ ] A teammate other than the author merged it.
+- [ ] Documentation and the RTM are updated where needed.
+- [ ] Any deviation from the submitted SRS, SAD or Test Plan is in `docs/DEVIATIONS.md`.
 
-For test cases, record the **actual result** and **Pass/Fail** status
-only after execution. Do not mark unexecuted tests as passed.
+---
 
-------------------------------------------------------------------------
+## 12. Testing
 
-## Security and Repository Hygiene
+- The Test Plan (`docs/TEST_PLAN.md`) defines Unit (UT), Integration (IT) and System (ST) test cases for FR-001 to FR-005 and the NFR checks.
+- Record the **Actual Result** and **Test Result (Pass/Fail)** only **after** executing a test. Never mark an unexecuted test as passed.
+- Log every failure as a GitHub Issue (label `bug`) and link it to the test case ID.
+- Use test data only: the sample USNs in the seed data and dates relative to the day of execution.
+- Automated tests run against a separate test database (or an in-memory MongoDB), never against development or demo data.
+- Concurrency (room allocation) is tested with a script that sends two requests at the same time rather than by two people.
+- Requirements that cannot be fully verified in a student environment (for example, 200 concurrent users) are reported honestly as *verified*, *failed*, *not tested* or *limited by environment*; never as passed without evidence.
 
--   Never commit `.env` files, passwords, API keys, database
-    credentials, tokens, or real student information.
--   Commit `.env.example` with placeholder values, not working
-    credentials.
--   Keep local environment files out of Git using `.gitignore`.
--   Do not bypass branch protection or required reviews to save time.
--   Use test data for development and demonstrations.
--   Report accidentally committed secrets immediately; deleting them in
-    a later commit may not remove them from Git history.
+---
 
-------------------------------------------------------------------------
+## 13. Deviations from the Submitted Documents
 
-## Project Documentation
+Deviations are tracked in `docs/DEVIATIONS.md`, one entry per deviation: what changed, why, which document it affects, the impact and who approved it. They are explained during the final demo.
 
-Keep the following project artifacts in the agreed `docs/` location:
+Deviations identified so far (to be confirmed as the implementation progresses):
 
--   Software Requirements Specification (SRS)
--   Software Architecture Document (SAD)
--   Test Plan
--   Requirements Traceability Matrix (RTM)
--   `DEVIATIONS.md`
--   `ADR-001.md` documenting the technology-stack decision
+- **USN format:** real USNs are 13 characters, while SRS Appendix B lists length 10.
+- **Reallocate / vacate:** implemented as proposed FR-002.5 / FR-002.6 (present in the SRS overview, business rules and SAD, but without numbered FRs).
+- **Fee model and endpoints:** a fee record with due amount and due date, plus an endpoint to create it; overpayments are rejected. No fee-record deletion feature.
+- **Additional endpoints:** listing endpoints needed by the admin screens (students, complaints, leaves, visitors, current user) are defined in `docs/API_CONTRACT.md`.
+- **Roles:** only Student and Warden/Admin; the System Administrator class and a separate security role are out of scope.
+- **NFR test IDs:** NFR-001 / NFR-002 are verified through sub-checks (page load, 200 users, hashing, RBAC, session expiry).
+- **Database:** MongoDB (from the professor's MERN stack) is used instead of the relational database in SRS 2.4, 3.2 and 7 and SAD 3.a.3, 3.a.6 and 3.b.5. Entities become collections; the integrity rules in Section 4.1 replace foreign keys and constraints. Story HMS-02 is read as "MongoDB data model, indexes and setup".
+- **Process:** any teammate may review and merge, as long as they are not the PR author.
 
-The exact filenames and versions should be agreed by the team. Keep the
-originally submitted documents available as the baseline and make
-revisions traceable.
+---
 
-------------------------------------------------------------------------
+## 14. Sprint Demo Videos
 
-**Team:** Team 3 --- Class 5-J\
-**Project:** Hostel Management System\
+| Video | Length | Content | Due |
+| --- | --- | --- | --- |
+| Sprint 1 | about 1 minute | Working product from Sprint 1 | end of Sprint 1 (23 Oct) |
+| Sprint 2 | about 2 minutes | Completed working product | end of Sprint 2 (30 Oct) |
+
+Rules:
+
+- Show the **real running application**, not screenshots or mock screens.
+- Save to `videos/`, for example `videos/sprint1-demo.mp4` and `videos/sprint2-demo.mp4`.
+- **File-size limits:** GitHub's web upload accepts files up to **25 MB**, and a `git push` is **blocked above 100 MB** (a warning appears at 50 MB). Keep each video well under 25 MB so either method works.
+- Record at 720p and compress before committing:
+
+```bash
+ffmpeg -i raw-recording.mp4 -vf scale=-2:720 -c:v libx264 -crf 28 -preset medium -c:a aac -b:a 96k sprint1-demo.mp4
+```
+
+- Do not commit the raw recording. Play the compressed file once to make sure it works before opening the PR.
+- Mention the video file name and location in the sprint's PR or in `docs/`.
+
+---
+
+## 15. Security and Repository Hygiene
+
+- Never commit `.env` files, passwords, API keys, database credentials, tokens or real student information.
+- Commit `.env.example` with placeholders only, and keep local files out of Git with `.gitignore`.
+- Never store plaintext passwords; the API must never return password hashes or internal errors to the browser.
+- Use test data for development and demos.
+- A student may only access their **own** data: server-side checks must compare the requested USN with the logged-in user, not just hide UI controls.
+- Report an accidentally committed secret immediately. Deleting it in a later commit does not remove it from Git history, so rotate it.
+- A daily MongoDB backup procedure (for example `mongodump`) is documented under story HMS-22. HTTPS applies wherever the app is deployed.
+
+---
+
+## 16. Project Documentation
+
+Keep these in `docs/`:
+
+- Software Requirements Specification (SRS)
+- Software Architecture & Design Specification (SAD)
+- Test Plan
+- Requirements Traceability Matrix (RTM)
+- `DEVIATIONS.md`
+- `ADR-001.md` (technology decision)
+- `API_CONTRACT.md` (agreed endpoints)
+- `diagrams/` (UML use-case and ER diagrams)
+
+---
+
+**Team:** Team 3, Class 5-J
+**Project:** Hostel Management System
 **Project Manager:** Chiranthan Sathrasala
