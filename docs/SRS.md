@@ -295,13 +295,23 @@ Description: Manages leave requests, visitor records, and administrative summari
 
 ## 6.1 Performance Requirements
 
-NFR-001: The system shall load each standard page within 3 seconds and shall support at least 200 concurrent users under normal load without significant degradation.
+NFR-001: Performance.
+
+- NFR-001.a: The system shall load each standard page within 3 seconds under normal load.
+
+- NFR-001.b: The system shall support at least 200 concurrent users under normal load without significant degradation.
 
 ## 6.2 Security Requirements
 
-NFR-002: The system shall store passwords using a secure one-way hashing mechanism, enforce role-based access control for protected functions, and automatically expire user sessions after 30 minutes of inactivity.
+NFR-002: Security.
 
-Additional operational controls: critical actions such as room de-allocation and deletion of fee records shall require administrator confirmation; database backups shall be performed daily. These controls support safety and security but are not counted as additional NFR IDs so that the requirements set remains limited to two NFRs.
+- NFR-002.a: The system shall store passwords using a secure one-way hashing mechanism.
+
+- NFR-002.b: The system shall enforce role-based access control for protected functions, and a student shall be able to access only that student's own records.
+
+- NFR-002.c: The system shall automatically expire user sessions after 30 minutes of inactivity.
+
+Additional operational controls: critical actions such as vacating a room (FR-002.6) shall require administrator confirmation; database backups shall be performed daily. These controls support safety and security and are not counted as additional NFR IDs.
 
 ## 6.3 Software Quality and Reliability
 
