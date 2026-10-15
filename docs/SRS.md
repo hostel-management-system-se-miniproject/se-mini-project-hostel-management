@@ -367,14 +367,33 @@ Representative field layout for Student Registration and related hostel records:
 
 # Appendix C: Requirement Traceability Matrix
 
-The matrix below maps each functional/nonfunctional requirement to its feature, design area, implementation area, and test-case group. Test case IDs correspond to the separate Test Plan.
+The matrix maps each SRS v1.1 requirement to the architecture area and design section in SAD v1.1 and to the test cases in Test Plan v1.1. It is the v1.1 snapshot; the live statuses are kept in `docs/RTM.md`.
 
-| **Sl. No.** | **Requirement ID** | **Brief Description**                 | **Architecture Reference**      | **Design Reference**            | **Test Case ID**      |
-|-------------|--------------------|---------------------------------------|---------------------------------|---------------------------------|-----------------------|
-| 1           | FR-001             | Student registration and login        | Authentication & Student Module | Auth/Student components         | FR001 test cases      |
-| 2           | FR-002             | Room allocation management            | Room & Allocation Module        | Room/Allocation components      | FR002 test cases      |
-| 3           | FR-003             | Fee payment and tracking              | Fee Module                      | Fee/Ledger components           | FR003 test cases      |
-| 4           | FR-004             | Complaint management                  | Complaint Module                | Complaint workflow              | FR004 test cases      |
-| 5           | FR-005             | Leave, visitor, dashboard and reports | Admin Services Module           | Leave/Visitor/Report components | FR005 test cases      |
-| 6           | NFR-001            | Performance                           | Application Infrastructure      | Performance configuration       | NFR performance tests |
-| 7           | NFR-002            | Security                              | Authentication & Authorization  | Security controls               | NFR security tests    |
+| **Req. ID** | **Requirement**                                                | **Architecture Area**           | **Design Section**         | **Test Case IDs**                                                     |
+|-------------|----------------------------------------------------------------|---------------------------------|----------------------------|-----------------------------------------------------------------------|
+| FR-001.1    | Student registration with required details (USN 13 characters) | Authentication & Student Module | 3.b.1, 3.b.3, 3.b.4        | UT-01, UT-04, UT-05, UT-28, ST-06                                     |
+| FR-001.2    | USN and email uniqueness                                       | Authentication & Student Module | 3.b.4, 3.b.5.1             | UT-02, UT-03                                                          |
+| FR-001.3    | Login by USN or email; 15-minute lockout after 5 failures      | Authentication & Authorization  | 3.a.5, 3.b.1, 3.b.3, 3.b.4 | UT-06, UT-07, UT-29, UT-30, IT-01, IT-02, IT-12, IT-13, ST-06, NFR-05 |
+| FR-002.1    | Room availability by block, floor, sharing type                | Room & Allocation Module        | 3.b.3, 3.b.5               | UT-08, UT-31                                                          |
+| FR-002.2    | Allocate a room and update occupancy                           | Room & Allocation Module        | 3.b.2, 3.b.5.1             | UT-09, IT-16, ST-01                                                   |
+| FR-002.3    | Prevent allocation beyond capacity                             | Room & Allocation Module        | 3.b.2, 3.b.4, 3.b.5.1      | UT-10, IT-14, ST-02                                                   |
+| FR-002.4    | One active allocation per student                              | Room & Allocation Module        | 3.a.6, 3.b.5.1             | UT-11, IT-16                                                          |
+| FR-002.5    | Reallocate a student to another room                           | Room & Allocation Module        | 3.b.3, 3.b.5.1             | IT-03, IT-14, IT-16                                                   |
+| FR-002.6    | Vacate a room after confirmation                               | Room & Allocation Module        | 3.b.3, 3.b.5.1, 3.b.6      | IT-04, IT-15, IT-16                                                   |
+| FR-003.1    | Set fee due and due date; record payments and balance          | Fee Module                      | 3.b.3, 3.b.5               | UT-32, UT-12, UT-13, ST-03                                            |
+| FR-003.2    | Paid / Partially Paid / Due status                             | Fee Module                      | 3.b.3, 3.b.5               | UT-14, UT-15, IT-06                                                   |
+| FR-003.3    | Notify when due date is within 7 days, if enabled              | Fee Module + Notification Job   | 3.a.7, 3.b.6               | IT-07, IT-17                                                          |
+| FR-003.4    | Reject zero, negative or excessive payments                    | Fee Module                      | 3.b.4, 3.b.5.1             | UT-16, UT-33, UT-34                                                   |
+| FR-004.1    | At most one open complaint per category                        | Complaint Module                | 3.b.4, 3.b.5.1             | UT-17, UT-18, UT-19, UT-35, IT-20                                     |
+| FR-004.2    | Admin status and remarks updates                               | Complaint Module                | 3.b.3, 3.b.4               | UT-20, UT-21, UT-36, UT-37, ST-04                                     |
+| FR-004.3    | Complaint history with timestamps                              | Complaint Module                | 3.b.3, 3.b.5               | IT-08, ST-04                                                          |
+| FR-005.1    | Leave request submission                                       | Admin Services                  | 3.b.3, 3.b.4               | UT-22, UT-23, UT-38, ST-05                                            |
+| FR-005.2    | Leave approval/rejection; student views status                 | Admin Services                  | 3.b.3, 3.b.5.1             | UT-24, UT-25, IT-22, ST-05                                            |
+| FR-005.3    | Visitor entry and exit log (admin)                             | Admin Services                  | 3.b.3, 3.b.4               | UT-26, UT-27, UT-39, UT-40                                            |
+| FR-005.4    | Dashboard: occupancy, vacancies, dues, open complaints         | Admin Services                  | 3.a.7, 3.b.3               | IT-09                                                                 |
+| FR-005.5    | Export reports as CSV and PDF                                  | Report Export                   | 3.b.3, 3.b.6               | IT-10, IT-11, IT-21                                                   |
+| NFR-001.a   | Standard page load within 3 seconds                            | Application Infrastructure      | 3.a.7                      | NFR-01                                                                |
+| NFR-001.b   | At least 200 concurrent users                                  | Application Infrastructure      | 3.a.7                      | NFR-04                                                                |
+| NFR-002.a   | Password hashing                                               | Authentication & Authorization  | 3.a.5                      | NFR-02                                                                |
+| NFR-002.b   | Role-based access; students access only their own records      | Authentication & Authorization  | 3.a.5, 3.b.3               | IT-05, UT-21, IT-18, IT-19, IT-21                                     |
+| NFR-002.c   | Session expiry after 30 minutes of inactivity                  | Authentication & Authorization  | 3.a.5                      | NFR-03, NFR-05                                                        |
