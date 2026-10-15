@@ -188,7 +188,7 @@ The principal actors are Student and Warden/Admin. Student use cases include Reg
 
 ## 4.2 Entity-Relationship Model
 
-The core data entities are User, Student, Room, Allocation, FeePayment, Complaint, LeaveRequest, and Visitor. A Student can have room allocation records over time but only one active allocation; a Room belongs to a hostel block and has a capacity; FeePayment and Complaint records reference the relevant Student; LeaveRequest records approval status; Visitor records reference the Student being visited.
+The core data entities are User, Student, Room, Allocation, Fee, Complaint, LeaveRequest, and Visitor (eight MongoDB collections; login sessions are kept in a separate session store). A Student can have room allocation records over time but only one active allocation; a Room belongs to a hostel block and has a capacity; a Fee record holds the amount due, the due date, and a list of payments; Fee and Complaint records reference the relevant Student; LeaveRequest records approval status; Visitor records reference the Student being visited.
 
 Note: The detailed UML use-case diagram and ER diagram should be included in the final submission if the course requires graphical analysis models. The textual model above defines the actors, use cases, entities, and relationships that the diagrams must represent.
 
@@ -230,6 +230,10 @@ Description: Allows authorized hostel staff to allocate, reallocate, and vacate 
 
 - FR-002.4: The system shall prevent a student from having more than one active room allocation at a time.
 
+- FR-002.5: The system shall allow the admin to reallocate a student with an active allocation to another available room and update the occupancy of both rooms automatically.
+
+- FR-002.6: The system shall allow the admin to vacate a student's room only after the admin confirms the action, and shall update the room occupancy automatically.
+
 ## 5.3 Fee Payment and Tracking
 
 Requirement ID: FR-003 \| Priority: High  
@@ -241,11 +245,13 @@ Description: Tracks hostel fee dues and payments for each student.
 
 ### Functional Requirements
 
-- FR-003.1: The system shall record fee amount due, amount paid, payment date, and outstanding balance for each student.
+- FR-003.1: The system shall allow the admin to set the fee amount due and the due date for each student, shall record the amount and date of each payment, and shall calculate the outstanding balance as the amount due minus the total paid.
 
 - FR-003.2: The system shall display fee status as Paid, Partially Paid, or Due on the student dashboard.
 
 - FR-003.3: The system shall notify students whose fee due date is within 7 days, if the notification service is enabled.
+
+- FR-003.4: The system shall reject a payment whose amount is zero, negative, or greater than the outstanding balance, and shall display an error message.
 
 ## 5.4 Complaint Management
 
