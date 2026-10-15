@@ -149,3 +149,47 @@ Actual Result and Test Result stay blank until a case is executed.
 | NFR-05 | Security (Configurable limits) | Verify lockout and session timeouts follow their configuration values | Server in test mode (LOCKOUT_MINUTES=1, SESSION_TIMEOUT_MINUTES=1); defaults documented as 15 and 30 | 1\. Lock an account with 5 failed logins and wait 1 minute 2. Log in and stay inactive for 1 minute 3. Call GET /api/auth/me | N/A | Account unlocks after 1 minute; after 1 minute of inactivity the session ends (401 SESSION_EXPIRED) |                   |                 |
 
 **Note:** NFR-001.a (page load) is verified by NFR-01 and NFR-001.b (200 concurrent users) by NFR-04, which uses a load script run against the test deployment (HMS-20).
+
+## 8. Test Execution Schedule
+
+A case runs only after its feature is merged. A case that cannot run is marked Not run with the reason, never Pass.
+
+| Run | When | Test cases |
+|-----|------|------------|
+| Sprint 1 | Fri 23 Oct 2026 | UT-01 to UT-07, UT-28 to UT-30, IT-01, IT-02, IT-12, IT-13, ST-06, UT-08, UT-31, UT-09 to UT-11, IT-05, IT-16 (steps 1 and 4), IT-18 (room and complaint), ST-01, ST-02, UT-17 to UT-19, UT-35, IT-19 (complaint part), UT-26, UT-27, UT-39, UT-40, NFR-02, NFR-03, NFR-05 |
+| Sprint 2 | Thu 29 and Fri 30 Oct 2026 | IT-03, IT-04, IT-14, IT-15, IT-16 (full), UT-32, UT-12 to UT-16, UT-33, UT-34, IT-06, IT-07, IT-17, ST-03, UT-20, UT-21, UT-36, UT-37, IT-08, IT-20, ST-04, UT-22 to UT-25, UT-38, IT-22, ST-05, IT-09 to IT-11, IT-21, IT-18 (fee and leave), IT-19 (leave part), NFR-01, NFR-04 |
+| Regression | After the Sprint 2 freeze (Fri 30 Oct 2026) | UT-06, UT-09, IT-01, IT-05, ST-01, IT-16 |
+
+
+## 9. Requirement-to-Test Traceability
+
+Source: SAD v1.1, section 3.a.4.
+
+| Requirement | Description | Test cases |
+|-------------|-------------|------------|
+| FR-001.1 | Student registration with required details (USN 13 characters) | UT-01, UT-04, UT-05, UT-28, ST-06 |
+| FR-001.2 | USN and email uniqueness | UT-02, UT-03 |
+| FR-001.3 | Login by USN or email; 15-minute lockout after 5 failures | UT-06, UT-07, UT-29, UT-30, IT-01, IT-02, IT-12, IT-13, ST-06, NFR-05 |
+| FR-002.1 | Room availability by block, floor, sharing type | UT-08, UT-31 |
+| FR-002.2 | Allocate a room and update occupancy | UT-09, IT-16, ST-01 |
+| FR-002.3 | Prevent allocation beyond capacity | UT-10, IT-14, ST-02 |
+| FR-002.4 | One active allocation per student | UT-11, IT-16 |
+| FR-002.5 | Reallocate a student to another room | IT-03, IT-14, IT-16 |
+| FR-002.6 | Vacate a room after confirmation | IT-04, IT-15, IT-16 |
+| FR-003.1 | Set fee due and due date; record payments and balance | UT-32, UT-12, UT-13, ST-03 |
+| FR-003.2 | Paid / Partially Paid / Due status | UT-14, UT-15, IT-06 |
+| FR-003.3 | Notify when due date is within 7 days, if enabled | IT-07, IT-17 |
+| FR-003.4 | Reject zero, negative or excessive payments | UT-16, UT-33, UT-34 |
+| FR-004.1 | At most one open complaint per category | UT-17, UT-18, UT-19, UT-35, IT-20 |
+| FR-004.2 | Admin status and remarks updates | UT-20, UT-21, UT-36, UT-37, ST-04 |
+| FR-004.3 | Complaint history with timestamps | IT-08, ST-04 |
+| FR-005.1 | Leave request submission | UT-22, UT-23, UT-38, ST-05 |
+| FR-005.2 | Leave approval/rejection; student views status | UT-24, UT-25, IT-22, ST-05 |
+| FR-005.3 | Visitor entry and exit log (admin) | UT-26, UT-27, UT-39, UT-40 |
+| FR-005.4 | Dashboard: occupancy, vacancies, dues, open complaints | IT-09 |
+| FR-005.5 | Export reports as CSV and PDF | IT-10, IT-11, IT-21 |
+| NFR-001.a | Standard page load within 3 seconds | NFR-01 |
+| NFR-001.b | At least 200 concurrent users | NFR-04 |
+| NFR-002.a | Password hashing | NFR-02 |
+| NFR-002.b | Role-based access; students access only their own records | IT-05, UT-21, IT-18, IT-19, IT-21 |
+| NFR-002.c | Session expiry after 30 minutes of inactivity | NFR-03, NFR-05 |
