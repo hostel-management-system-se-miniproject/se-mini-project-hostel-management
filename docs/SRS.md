@@ -205,7 +205,7 @@ Description: Allows a student to register with required details and securely aut
 
 ### Functional Requirements
 
-- FR-001.1: The system shall allow a student to register using USN, name, email, phone number, and password.
+- FR-001.1: The system shall allow a student to register using a 13-character alphanumeric USN (for example PES1UG24CS924), name, email, phone number, and password.
 
 - FR-001.2: The system shall validate that USN and email are unique before creating an account.
 
@@ -338,7 +338,7 @@ Representative field layout for Student Registration and related hostel records:
 
 | **Field**          | **Length** | **Data Type** | **Description**                        | **Mandatory** |
 |--------------------|------------|---------------|----------------------------------------|---------------|
-| USN                | 10         | Alphanumeric  | Unique student identifier              | Y             |
+| USN                | 13         | Alphanumeric  | Unique student identifier              | Y             |
 | Student Name       | 60         | String        | Full name of student                   | Y             |
 | Email              | 80         | String        | Student email address                  | Y             |
 | Phone Number       | 15         | String        | Student contact number                 | Y             |
