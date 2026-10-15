@@ -14,67 +14,29 @@ Baseline: SRS v1.0 (06 September 2026) is kept unchanged in `docs/baseline/SRS_v
 
 # Table of Contents
 
-Revision History 3
+Revision History
 
-1\. Introduction 4
+Summary of Changes in v1.1
 
-1.1 Purpose 4
+1. Introduction
 
-1.2 Intended Audience and Reading Suggestions 4
+2. Overall Description
 
-1.3 Product Scope 4
+3. External Interface Requirements
 
-1.4 References 4
+4. Analysis Models
 
-2\. Overall Description 4
+5. System Features
 
-2.1 Product Perspective 4
+6. Other Nonfunctional Requirements
 
-2.2 Product Functions 4
+7. Other Requirements
 
-2.3 User Classes and Characteristics 5
+Appendix A: Glossary
 
-2.4 Operating Environment 5
+Appendix B: Field Layouts
 
-2.5 Design and Implementation Constraints 5
-
-2.6 Assumptions and Dependencies 5
-
-3\. External Interface Requirements 5
-
-3.1 User Interfaces 5
-
-3.2 Software Interfaces 5
-
-3.3 Communications Interfaces 6
-
-4\. Analysis Models 6
-
-5\. System Features 6
-
-5.1 Student Registration and Login 6
-
-5.2 Room Allocation Management 6
-
-5.3 Fee Payment and Tracking 7
-
-5.4 Complaint Management 7
-
-5.5 Leave, Visitor, Dashboard and Reports 7
-
-6\. Other Nonfunctional Requirements 8
-
-6.1 Performance Requirements 8
-
-6.2 Security Requirements 8
-
-7\. Other Requirements 8
-
-Appendix A: Glossary 8
-
-Appendix B: Field Layouts 9
-
-Appendix C: Requirement Traceability Matrix 9
+Appendix C: Requirement Traceability Matrix
 
 # Revision History
 
@@ -82,6 +44,21 @@ Appendix C: Requirement Traceability Matrix 9
 |----------|-------------|------------------------|-------------|
 | Neha K S | 06-Sep-2026 | Initial draft of SRS   | 1.0         |
 | Neha K S | 14-Oct-2026 | Revision for the MERN stack (MongoDB), SAD v1.1 and the approved backlog; see Summary of Changes | 1.1 |
+
+# Summary of Changes in v1.1
+
+| # | Area | Change in v1.1 | Sections |
+|---|------|----------------|----------|
+| 1 | Technology stack | The relational database is replaced by MongoDB (MERN stack required by the course). The decision is recorded in `docs/ADR-001.md`. | 2.1, 2.4, 2.5, 3.2, 7 |
+| 2 | User classes | The System Administrator is removed. Admin accounts are created by the seed script. | 2.3, 4.1 |
+| 3 | USN | USN length changes from 10 to 13 alphanumeric characters. | FR-001.1, Appendix B |
+| 4 | Room allocation | FR-002.5 (reallocate) and FR-002.6 (vacate with confirmation) are added as numbered requirements. | 5.2, 6.2 |
+| 5 | Fees | FR-003.1 now has the admin set the amount due and due date; FR-003.4 (payment validation) is added. | 5.3 |
+| 6 | Fee records | Deletion of fee records is removed from the operational controls. | 6.2 |
+| 7 | NFRs | NFR-001 is split into NFR-001.a/b and NFR-002 into NFR-002.a/b/c. Students may access only their own records. The "two NFRs" limitation is removed. | 6.1, 6.2 |
+| 8 | Data model | The Fee entity holds the due date and a payment list. Eight collections plus a session store. | 4.2 |
+| 9 | Traceability | Appendix C is replaced by the matrix from SAD v1.1 with Test Plan v1.1 case IDs. | Appendix C |
+| 10 | References and glossary | SAD v1.1, Test Plan v1.1 and the v1.0 baseline are referenced. MERN, MongoDB and ADR are added to the glossary. | 1.4, Appendix A |
 
 # 1. Introduction
 
@@ -104,6 +81,12 @@ HMS shall provide students with registration/login, room-status viewing, fee-sta
 - Team 3 project sheet (SE_Mini-Project_Teams).
 
 - Test Plan Details document provided with the SRS template.
+
+- HMS Software Architecture & Design Specification v1.1 (`docs/SAD.md`).
+
+- HMS Test Plan v1.1 (`docs/TEST_PLAN.md`).
+
+- HMS SRS v1.0, the submitted baseline (`docs/baseline/SRS_v1.0.md`).
 
 # 2. Overall Description
 
@@ -347,6 +330,9 @@ The system should be usable by first-time student users without external assista
 | FR           | Functional Requirement                                    |
 | NFR          | Nonfunctional Requirement                                 |
 | UT / IT / ST | Unit Testing / Integration Testing / System Testing       |
+| MERN         | MongoDB, Express, React, Node.js technology stack         |
+| MongoDB      | Document database used to store HMS data                  |
+| ADR          | Architecture Decision Record (`docs/ADR-001.md`)          |
 
 # Appendix B: Field Layouts
 
