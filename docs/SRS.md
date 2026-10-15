@@ -109,7 +109,7 @@ HMS shall provide students with registration/login, room-status viewing, fee-sta
 
 ## 2.1 Product Perspective
 
-HMS is a new system being developed from scratch to replace manual hostel record keeping. It consists of a web front end, a back-end application server, and a relational database. The browser communicates with the server using HTTPS, and the application server reads and writes persistent hostel data through the database.
+HMS is a new system being developed from scratch to replace manual hostel record keeping. It consists of a web front end, a back-end application server, and a MongoDB document database. The browser communicates with the server using HTTPS, and the application server reads and writes persistent hostel data through the database.
 
 ## 2.2 Product Functions
 
@@ -139,19 +139,19 @@ HMS is a new system being developed from scratch to replace manual hostel record
 
 ## 2.4 Operating Environment
 
-HMS shall operate as a web application on current supported versions of Chrome, Firefox, and Edge on desktop and mobile devices. The application server shall run on the operating system and runtime selected in the Team 3 project setup. The persistent database shall be a relational database; the final implementation shall use the database selected by the team.
+HMS shall operate as a web application on current supported versions of Chrome, Firefox, and Edge on desktop and mobile devices. The application server shall run on the operating system and runtime selected in the Team 3 project setup. The persistent database shall be MongoDB, accessed through Mongoose from a Node.js and Express application server (MERN stack; see `docs/ADR-001.md`).
 
 ## 2.5 Design and Implementation Constraints
 
 - The project shall be completed within the mini-project schedule.
 
-- The implementation shall use the programming language/technology stack specified for Team 3.
+- The implementation shall use the MERN stack (MongoDB, Express, React, Node.js) specified for Team 3.
 
 - Source code and project documentation shall be maintained in the team's GitHub repository.
 
 - The system shall run on the available lab/hosting environment.
 
-- The implementation shall use a relational database and enforce appropriate access control.
+- The implementation shall use MongoDB and enforce appropriate access control.
 
 ## 2.6 Assumptions and Dependencies
 
@@ -173,7 +173,7 @@ The system shall provide role-appropriate login and dashboard screens. The stude
 
 ## 3.2 Software Interfaces
 
-HMS shall use a relational database to store student, room, allocation, fee, complaint, leave, visitor, and user records. The web front end shall communicate with the back end through REST APIs, with structured JSON used for API request and response data.
+HMS shall use a MongoDB database to store student, room, allocation, fee, complaint, leave, visitor, and user records. The web front end shall communicate with the back end through REST APIs, with structured JSON used for API request and response data.
 
 ## 3.3 Communications Interfaces
 
@@ -314,7 +314,7 @@ The system should be usable by first-time student users without external assista
 
 # 7. Other Requirements
 
-- Database Requirement: All persistent data shall be stored in a relational database with daily backups.
+- Database Requirement: All persistent data shall be stored in MongoDB with daily backups.
 
 - Data Protection: Student personal data collected by HMS shall be used for hostel administration and shall not be shared with third parties without appropriate authorization.
 
