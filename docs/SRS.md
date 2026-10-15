@@ -135,7 +135,8 @@ HMS is a new system being developed from scratch to replace manual hostel record
 |----------------------|------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
 | Student              | Register/login, view room and fee status, raise complaints, submit leave requests, view complaint history. | Frequent user; basic computer literacy assumed. |
 | Warden/Admin         | Allocate/reallocate/vacate rooms, manage fees and complaints, approve leave, log visitors, view reports.   | Privileged operational user.                    |
-| System Administrator | Manage user accounts and system-level settings.                                                            | Highest privilege; infrequent use.              |
+
+Warden/Admin accounts are created by a seed script. HMS has no separate System Administrator user class.
 
 ## 2.4 Operating Environment
 
@@ -183,7 +184,7 @@ Browser-to-server communication shall use HTTPS. API communication shall use HTT
 
 ## 4.1 Use Case Model
 
-The principal actors are Student, Warden/Admin, and System Administrator. Student use cases include Register, Login, View Room Status, View Fee Status, Raise Complaint, View Complaint History, and Request Leave. Warden/Admin use cases include Login, Allocate/Reallocate/Vacate Room, Record Fee Payment, Resolve Complaint, Approve/Reject Leave, Log Visitor Entry/Exit, and View/Export Reports. The System Administrator manages user accounts and system settings.
+The principal actors are Student and Warden/Admin. Student use cases include Register, Login, View Room Status, View Fee Status, Raise Complaint, View Complaint History, and Request Leave. Warden/Admin use cases include Login, Allocate/Reallocate/Vacate Room, Record Fee Payment, Resolve Complaint, Approve/Reject Leave, Log Visitor Entry/Exit, and View/Export Reports.
 
 ## 4.2 Entity-Relationship Model
 
