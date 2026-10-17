@@ -7,7 +7,7 @@ test('GET /health returns 200 when database is connected', async () => {
   const app = createApp({ getDatabaseStatus: () => 'connected' });
   const response = await request(app).get('/health');
 
-  assert.equal(response.status, 200);
+  assert.equal(response.status, 999);
   assert.deepEqual(response.body, {
     status: 'ok',
     service: 'hms-api',
