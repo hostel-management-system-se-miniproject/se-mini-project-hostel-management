@@ -11,7 +11,7 @@ This scaffold uses React + Vite for the frontend, Node.js + Express for the REST
 2. Run `copy .env.example .env`.
 3. Open `backend/.env` and confirm `MONGODB_URI` points to your local database or your own Atlas URI. Do not commit `.env`.
 4. Run `npm install`.
-5. Run `npm test` and `npm run check`.
+5. Run `npm test`, `npm run lint`, and `npm run check`.
 6. Run `npm run dev`.
 7. Open `http://localhost:5000/health`. A healthy response has HTTP 200 and JSON with `status: "ok"` and `database: "connected"`.
 
@@ -19,8 +19,10 @@ This scaffold uses React + Vite for the frontend, Node.js + Express for the REST
 1. Open a second Command Prompt in `frontend`.
 2. Run `npm install`.
 3. Optional: copy `.env.example` to `.env` if the API URL differs from `http://localhost:5000`.
-4. Run `npm run build`.
-5. Run `npm run dev` and open the URL printed by Vite (normally `http://localhost:5173`).
+4. Run `npm run lint`.
+5. Run `npm test`.
+6. Run `npm run build`.
+7. Run `npm run dev` and open the URL printed by Vite (normally `http://localhost:5173`).
 
 The frontend displays the frontend, API, and database status. Keep both dev servers running while checking the page.
 
