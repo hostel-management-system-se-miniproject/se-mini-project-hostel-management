@@ -9,6 +9,11 @@ function assertTestDatabaseName(name) {
   }
 }
 
+function getDatabaseNameFromUri(uri) {
+  const match = /^mongodb(?:\+srv)?:\/\/(?:[^/?@]+@)?[^/]+\/([^/?]*)/.exec(uri);
+  return match ? match[1] : '';
+}
+
 async function connectTestDb() {
   if (!dotenvLoaded) {
     dotenv.config();
@@ -19,6 +24,8 @@ async function connectTestDb() {
   if (!uri) {
     throw new Error('Set MONGODB_URI_TEST to a database whose name ends in _test.');
   }
+
+  assertTestDatabaseName(getDatabaseNameFromUri(uri));
 
   try {
     await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
@@ -33,10 +40,12 @@ async function connectTestDb() {
 async function clearTestDb() {
   assertTestDatabaseName(mongoose.connection.name);
 
-  const collections = await mongoose.connection.db.listCollections().toArray();
-  await Promise.all(collections.map(({ name }) => (
+  const collections = await mongoose.connection.db.listCollections({ type: 'collection' }).toArray();
+  await Promise.all(collections
+    .filter(({ name }) => !name.startsWith('system.'))
+    .map(({ name }) => (
     mongoose.connection.db.collection(name).deleteMany({})
-  )));
+    )));
 }
 
 async function disconnectTestDb() {
@@ -45,6 +54,7 @@ async function disconnectTestDb() {
 
 module.exports = {
   assertTestDatabaseName,
+  getDatabaseNameFromUri,
   connectTestDb,
   clearTestDb,
   disconnectTestDb
