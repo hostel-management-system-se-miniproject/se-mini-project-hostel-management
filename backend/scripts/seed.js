@@ -4,9 +4,8 @@ const bcrypt = require('bcryptjs');
 const { connectDatabase } = require('../src/config/database');
 const { User, Student, Room } = require('../src/models');
 
-// Test-only credentials used only in this script and the README. These are never stored as plain text in MongoDB.
-// admin@pes.edu / Admin@123
-// student001@pes.edu to student020@pes.edu / Pass@123
+// Test-only credentials are listed in README.md only. They are not stored as plaintext in MongoDB.
+// See the project README for the seeded admin/student credentials used in development and demo data.
 const ADMIN_EMAIL = 'admin@pes.edu';
 const ADMIN_PASSWORD = 'Admin@123';
 const STUDENT_PASSWORD = 'Pass@123';
@@ -146,4 +145,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { seedDatabase, ADMIN_EMAIL, STUDENT_PASSWORD, roomRecords, studentRecords };
+module.exports = { seedDatabase };
