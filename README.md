@@ -73,6 +73,27 @@ Use the GitHub Project board as the source of truth for backlog items, assignees
 
 **User roles:** Student and Warden/Admin. A separate System Administrator role and a separate security-guard role are out of scope for the demo (see Section 13).
 
+
+### Diagrams
+
+The UML use-case diagram and the data model (collection) diagram are in [`docs/diagrams/`](docs/diagrams/). Each has its PlantUML source (`.puml`) and is exported as SVG and PNG.
+
+| Diagram | Shows | Files |
+| --- | --- | --- |
+| Use-case diagram (SRS 4.1) | Actors Student and Warden/Admin and their use cases | [PNG](docs/diagrams/use-case.png), [SVG](docs/diagrams/use-case.svg), [source](docs/diagrams/use-case.puml) |
+| Data model (SRS 4.2, SAD 3.b.5) | Eight MongoDB collections, references by `_id`, embedded arrays (`payments`, `history`) | [PNG](docs/diagrams/er-collections.png), [SVG](docs/diagrams/er-collections.svg), [source](docs/diagrams/er-collections.puml) |
+
+![HMS use-case diagram](docs/diagrams/use-case.png)
+
+![HMS data model](docs/diagrams/er-collections.png)
+
+To regenerate the exports after editing a source (needs Java and Graphviz; GitHub does not render `.puml` files itself):
+
+```bash
+java -jar plantuml.jar -tsvg docs/diagrams/*.puml
+java -jar plantuml.jar -tpng docs/diagrams/*.puml
+```
+
 ---
 
 ## 4. Technology Stack
