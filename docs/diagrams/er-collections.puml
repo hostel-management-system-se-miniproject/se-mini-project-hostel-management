@@ -1,0 +1,127 @@
+@startuml er-collections
+title HMS Data Model: eight MongoDB collections (SAD 3.b.5, SRS 4.2)
+hide circle
+skinparam shadowing false
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #F7FAFF
+  BorderColor #3B5B92
+}
+
+entity "users" as users {
+  * _id
+  --
+  email  <<unique>>
+  passwordHash
+  role  (student / admin)
+  failedAttempts
+  lockUntil
+  createdAt
+}
+
+entity "students" as students {
+  * _id
+  --
+  userId  <<unique>>
+  usn  <<unique, 13 chars>>
+  name
+  email
+  phone
+}
+
+entity "rooms" as rooms {
+  * _id
+  --
+  roomNo  <<unique>>
+  block
+  floor
+  sharingType
+  capacity
+  occupancy
+}
+
+entity "allocations" as allocations {
+  * _id
+  --
+  studentId
+  roomId
+  status  (active / inactive)
+  startedAt
+  endedAt
+  endReason  (reallocated / vacated)
+  ..
+  one active per studentId (partial unique index)
+}
+
+entity "fees" as fees {
+  * _id
+  --
+  studentId  <<unique>>
+  amountDue
+  dueDate
+  totalPaid
+  lastNotifiedOn
+  ..
+  payments[ ]  (embedded array)
+  amount, paidOn, recordedBy, recordedAt
+}
+
+entity "complaints" as complaints {
+  * _id
+  --
+  studentId
+  category
+  description
+  status
+  isOpen
+  remarks
+  createdAt
+  updatedAt
+  ..
+  history[ ]  (embedded array)
+  status, remarks, at, by
+  ..
+  one open per (studentId, category) (partial unique index)
+}
+
+entity "leaves" as leaves {
+  * _id
+  --
+  studentId
+  startDate
+  endDate
+  reason
+  status
+  decidedBy
+  decidedAt
+  createdAt
+}
+
+entity "visitors" as visitors {
+  * _id
+  --
+  studentId
+  name
+  contact
+  purpose
+  entryTime
+  exitTime
+  recordedBy
+}
+
+users ||--o| students : userId
+students ||--o{ allocations : studentId
+rooms ||--o{ allocations : roomId
+students ||--o| fees : studentId
+students ||--o{ complaints : studentId
+students ||--o{ leaves : studentId
+students ||--o{ visitors : studentId
+
+note bottom of visitors
+  A separate sessions collection is managed by the session
+  store (TTL index on the expiry field) and is not drawn.
+  References are stored as _id values; MongoDB does not
+  enforce them (SAD 3.b.5.1).
+end note
+@enduml
