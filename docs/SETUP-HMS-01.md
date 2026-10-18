@@ -10,10 +10,11 @@ This scaffold uses React + Vite for the frontend, Node.js + Express for the REST
 1. Open Command Prompt in `backend`.
 2. Run `copy .env.example .env`.
 3. Open `backend/.env` and confirm `MONGODB_URI` points to your local database or your own Atlas URI. Do not commit `.env`.
-4. Run `npm install`.
-5. Run `npm test`, `npm run lint`, and `npm run check`.
-6. Run `npm run dev`.
-7. Open `http://localhost:5000/health`. A healthy response has HTTP 200 and JSON with `status: "ok"` and `database: "connected"`.
+4. Set `MONGODB_URI_TEST` in `backend/.env` to a separate database whose name ends in `_test`.
+5. Run `npm install`.
+6. Run `npm test`, `npm run lint`, and `npm run check`.
+7. Run `npm run dev`.
+8. Open `http://localhost:5000/health`. A healthy response has HTTP 200 and JSON with `status: "ok"` and `database: "connected"`.
 
 ## Frontend
 1. Open a second Command Prompt in `frontend`.
