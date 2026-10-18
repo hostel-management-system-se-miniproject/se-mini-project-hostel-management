@@ -2,12 +2,14 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const { createApp } = require('./app');
 const { connectDatabase } = require('./config/database');
+const { ensureIndexes } = require('./config/indexes');
 
 const port = Number(process.env.PORT) || 5000;
 
 async function startServer() {
   try {
     await connectDatabase();
+    await ensureIndexes();
     const app = createApp();
     const server = app.listen(port, () => {
       console.log(`HMS API listening on http://localhost:${port}`);
