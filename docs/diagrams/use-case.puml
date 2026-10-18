@@ -1,0 +1,52 @@
+@startuml use-case
+title HMS Use Case Diagram (SRS 4.1)
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam nodesep 12
+skinparam ranksep 90
+skinparam usecase {
+  BackgroundColor #F7FAFF
+  BorderColor #3B5B92
+}
+
+actor "Student" as S
+actor "Warden/Admin" as A
+
+rectangle "Hostel Management System" {
+  usecase "Register" as UC1
+  usecase "View Room Status" as UC3
+  usecase "View Fee Status" as UC4
+  usecase "Raise Complaint" as UC5
+  usecase "View Complaint History" as UC6
+  usecase "Request Leave" as UC7
+  usecase "Login" as UC2
+  usecase "Allocate/Reallocate/Vacate Room" as UC8
+  usecase "Record Fee Payment" as UC9
+  usecase "Resolve Complaint" as UC10
+  usecase "Approve/Reject Leave" as UC11
+  usecase "Log Visitor Entry/Exit" as UC12
+  usecase "View/Export Reports" as UC13
+}
+
+S --> UC1
+S --> UC2
+S --> UC3
+S --> UC4
+S --> UC5
+S --> UC6
+S --> UC7
+
+UC2 <-- A
+UC8 <-- A
+UC9 <-- A
+UC10 <-- A
+UC11 <-- A
+UC12 <-- A
+UC13 <-- A
+
+legend bottom
+  Login is shared by both actors. Use cases are those listed in SRS 4.1.
+endlegend
+@enduml
