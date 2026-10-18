@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { ProtectedRoute } from './ProtectedRoute';
 import { NAV_ITEMS, filterMenuItemsByRole, getDefaultPathForRole } from './navigation';
@@ -34,7 +33,7 @@ describe('role-based menu configuration', () => {
 describe('route guard behaviour', () => {
   it('blocks unauthorized access', () => {
     const html = renderToStaticMarkup(
-      <ProtectedRoute allowedRoles={['admin']} currentRole="student">
+      <ProtectedRoute allowedRoles={["admin"]} currentRole="student">
         <div>Allowed content</div>
       </ProtectedRoute>,
     );
@@ -45,7 +44,7 @@ describe('route guard behaviour', () => {
 
   it('allows authorized access', () => {
     const html = renderToStaticMarkup(
-      <ProtectedRoute allowedRoles={['student']} currentRole="student">
+      <ProtectedRoute allowedRoles={["student"]} currentRole="student">
         <div>Allowed content</div>
       </ProtectedRoute>,
     );

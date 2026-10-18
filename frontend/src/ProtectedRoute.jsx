@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 import { formatRoleName } from './navigation';
 
 export function ProtectedRoute({ allowedRoles, currentRole, children }) {
@@ -13,3 +13,9 @@ export function ProtectedRoute({ allowedRoles, currentRole, children }) {
 
   return children;
 }
+
+ProtectedRoute.propTypes = {
+  allowedRoles: PropTypes.arrayOf(PropTypes.string).isRequired,
+  currentRole: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+};

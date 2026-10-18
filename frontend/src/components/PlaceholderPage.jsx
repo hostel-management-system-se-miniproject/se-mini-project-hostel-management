@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
 export function PlaceholderPage({ title, description }) {
   return (
@@ -10,3 +10,8 @@ export function PlaceholderPage({ title, description }) {
     </div>
   );
 }
+
+PlaceholderPage.propTypes = {
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+};

@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
 export function Alert({ variant = 'info', title, message }) {
   return (
@@ -8,3 +8,9 @@ export function Alert({ variant = 'info', title, message }) {
     </div>
   );
 }
+
+Alert.propTypes = {
+  variant: PropTypes.oneOf(['info', 'success', 'error', 'warning']),
+  title: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
+};

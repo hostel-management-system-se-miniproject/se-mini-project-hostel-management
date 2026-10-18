@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
 export function LoadingState({ label = 'Loading …' }) {
   return (
@@ -8,3 +8,7 @@ export function LoadingState({ label = 'Loading …' }) {
     </div>
   );
 }
+
+LoadingState.propTypes = {
+  label: PropTypes.string,
+};

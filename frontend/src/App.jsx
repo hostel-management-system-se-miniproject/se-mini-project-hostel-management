@@ -1,7 +1,6 @@
 import React from 'react';
 import { Alert } from './components/Alert';
 import { FormDemo } from './components/FormDemo';
-import { LoadingState } from './components/LoadingState';
 import { PlaceholderPage } from './components/PlaceholderPage';
 import { Table } from './components/Table';
 import { ProtectedRoute } from './ProtectedRoute';

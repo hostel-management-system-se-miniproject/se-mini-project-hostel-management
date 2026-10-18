@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
 export function Table({ columns, rows }) {
   return (
@@ -33,3 +33,13 @@ export function Table({ columns, rows }) {
     </div>
   );
 }
+
+Table.propTypes = {
+  columns: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  rows: PropTypes.arrayOf(PropTypes.object).isRequired,
+};

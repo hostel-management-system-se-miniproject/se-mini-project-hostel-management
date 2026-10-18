@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export function FormDemo() {
   const [form, setForm] = React.useState({ name: '', room: '', note: '' });
@@ -77,5 +78,11 @@ function Alert({ variant = 'info', title, message }) {
     </div>
   );
 }
+
+Alert.propTypes = {
+  variant: PropTypes.oneOf(['info', 'success', 'error', 'warning']),
+  title: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
+};
 
 export { Alert };
