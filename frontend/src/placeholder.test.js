@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { ProtectedRoute } from './ProtectedRoute';
 import { NAV_ITEMS, filterMenuItemsByRole, getDefaultPathForRole } from './navigation';
@@ -32,22 +33,26 @@ describe('role-based menu configuration', () => {
 
 describe('route guard behaviour', () => {
   it('blocks unauthorized access', () => {
-    const html = renderToStaticMarkup(
-      <ProtectedRoute allowedRoles={["admin"]} currentRole="student">
-        <div>Allowed content</div>
-      </ProtectedRoute>,
+    const element = React.createElement(
+      ProtectedRoute,
+      { allowedRoles: ['admin'], currentRole: 'student' },
+      React.createElement('div', null, 'Allowed content'),
     );
+
+    const html = renderToStaticMarkup(element);
 
     expect(html).toContain('Access restricted');
     expect(html).not.toContain('Allowed content');
   });
 
   it('allows authorized access', () => {
-    const html = renderToStaticMarkup(
-      <ProtectedRoute allowedRoles={["student"]} currentRole="student">
-        <div>Allowed content</div>
-      </ProtectedRoute>,
+    const element = React.createElement(
+      ProtectedRoute,
+      { allowedRoles: ['student'], currentRole: 'student' },
+      React.createElement('div', null, 'Allowed content'),
     );
+
+    const html = renderToStaticMarkup(element);
 
     expect(html).toContain('Allowed content');
   });
