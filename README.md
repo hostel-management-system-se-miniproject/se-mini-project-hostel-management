@@ -6,7 +6,7 @@ HMS replaces register- and spreadsheet-based hostel record keeping with a centra
 
 > **Important:** The submitted SRS, Software Architecture & Design Specification (SAD) and Test Plan are the baseline for implementation. Any deviation from them must be recorded in `docs/DEVIATIONS.md` and explained during the final demo.
 
-*Last updated: 14 October 2026*
+*Last updated: 18 October 2026*
 
 ---
 
@@ -156,43 +156,42 @@ MongoDB does not enforce foreign keys or CHECK constraints, so the rules the SRS
 
 ## 5. Repository Structure
 
-The structure may evolve as the scaffold (HMS-01) is merged.
-
 ```text
 .
 ├── .github/
 │   ├── workflows/            # GitHub Actions CI workflows
-│   ├── ISSUE_TEMPLATE/       # Issue templates
-│   ├── pull_request_template.md
-│   └── CODEOWNERS            # If configured
-├── backend/                  # Node.js + Express API, business modules, tests
-├── frontend/                 # React application
+│   ├── ISSUE_TEMPLATE/       # Issue templates (story, bug report)
+│   └── PULL_REQUEST_TEMPLATE.md
+├── backend/                  # Node.js + Express API (src/, test/)
+├── frontend/                 # React + Vite application (src/)
 ├── docs/
-│   ├── SRS.md
-│   ├── SAD.md
-│   ├── TEST_PLAN.md
-│   ├── RTM.md
-│   ├── DEVIATIONS.md
-│   ├── ADR-001.md
-│   ├── API_CONTRACT.md       # Agreed endpoints, request/response shapes
-│   └── diagrams/             # UML and ER diagrams
+│   ├── baseline/             # Submitted v1.0 documents, never edited
+│   ├── SRS.md                # v1.1
+│   ├── SAD.md                # v1.1
+│   ├── TEST_PLAN.md          # v1.1
+│   ├── COMMIT_PLAN.md        # Day-by-day schedule, owners, reviewers
+│   ├── DEVIATIONS.md         # Differences from the submitted documents
+│   ├── ADR-001.md            # Technology decision
+│   ├── API_CONTRACT.md       # Agreed endpoints
+│   ├── RTM.md                # Requirements traceability matrix
+│   ├── SETUP-HMS-01.md       # Windows setup walkthrough
+│   └── diagrams/             # UML use-case and ER diagrams
 ├── videos/                   # Sprint demo videos
 └── README.md
 ```
 
-Keep the originally submitted v1.0 documents available as the baseline. Any revised version must be clearly distinguishable; do not silently overwrite the submitted baseline.
+Some files are added by later stories (ADR-001 and API_CONTRACT by HMS-30, diagrams by HMS-31, RTM by HMS-23). Section 16 shows which are in the repository now.
 
+Keep the originally submitted v1.0 documents in `docs/baseline/`. Any revised version must be clearly distinguishable; do not silently overwrite the submitted baseline.
 ---
 
 ## 6. Getting Started
 
-> The exact script names are finalized when the scaffold story (HMS-01) is merged. Update this section at that point.
-
 **Prerequisites**
 
 - Git
-- Node.js 20 LTS and npm
-- MongoDB: a local MongoDB Community Server or a free MongoDB Atlas cluster
+- Node.js 20 or newer and npm (CI uses Node 22)
+- MongoDB Atlas: the team uses MongoDB Atlas, so MongoDB is **not** run locally and nothing needs to be installed (CI tests against MongoDB 7)
 - (Optional) MongoDB Compass, to inspect collections
 
 **Setup**
@@ -203,23 +202,51 @@ git clone <repository-url>
 cd <repository-folder>
 
 # 2. Configure environment variables (see Section 7)
-cp backend/.env.example backend/.env
-# edit backend/.env with your local values; never commit it
+cp backend/.env.example backend/.env          # macOS / Linux
+# copy backend\.env.example backend\.env       (Windows Command Prompt)
+# edit backend/.env with your own values; never commit it
 
 # 3. Install and start the backend
 cd backend
 npm install
-npm run seed        # sample admin, students and rooms (story HMS-26)
 npm run dev
+```
 
+`backend/.env.example` still contains local MongoDB addresses. Set `MONGODB_URI` and `MONGODB_URI_TEST` in `backend/.env` to your Atlas connection strings (database names `hms` and `hms_test`) **before** starting the backend or running the tests.
+
+Open `http://localhost:5000/health`. A healthy response is HTTP 200 with `status: "ok"` and `database: "connected"`.
+
+```bash
 # 4. In a second terminal, install and start the frontend
 cd frontend
 npm install
 npm run dev
 ```
 
-**Seed data:** the seed script creates one admin account, about 20 sample students and rooms across blocks, for development and demos only. Credentials are documented in `backend/.env.example` / the seed script comments and are test data, never real student information.
+Open the URL printed by Vite (normally `http://localhost:5173`). If your API runs on another URL, copy `frontend/.env.example` to `frontend/.env` and set `VITE_API_BASE_URL`.
 
+**Scripts**
+
+| Folder | Command | What it does |
+| --- | --- | --- |
+| `backend` | `npm run dev` | Start the API with auto-restart |
+| `backend` | `npm start` | Start the API once |
+| `backend` | `npm test` | Run the backend tests (needs `MONGODB_URI_TEST`, see Section 7) |
+| `backend` | `npm run lint` | Run ESLint |
+| `backend` | `npm run check` | Syntax-check the source files |
+| `frontend` | `npm run dev` | Start the Vite dev server |
+| `frontend` | `npm test` | Run the frontend tests (Vitest) |
+| `frontend` | `npm run lint` | Run ESLint |
+| `frontend` | `npm run build` | Build for production |
+
+**Troubleshooting**
+
+- `connect ECONNREFUSED 127.0.0.1:27017` at start-up: `backend/.env` still has the local default. Put your Atlas connection string in the `MONGODB_URI` line.
+- `Set MONGODB_URI_TEST to a database whose name ends in _test` from `npm test`: `backend/.env` is missing or that line is empty.
+
+**Seed data:** `npm run seed` (run from `backend`) creates sample data for development and demos. The test accounts and rooms are listed in [Seed data for development and testing](#seed-data-for-development-and-testing) at the top of this README. They are test data, never real student information.
+
+A Windows walkthrough is in [`docs/SETUP-HMS-01.md`](docs/SETUP-HMS-01.md).
 ---
 
 ## 7. Environment Variables
@@ -230,7 +257,8 @@ Copy `backend/.env.example` to `backend/.env`. Only placeholders belong in `.env
 | --- | --- | --- |
 | `NODE_ENV` | Runtime mode | `development` |
 | `PORT` | API port | `5000` |
-| `MONGODB_URI` | MongoDB connection string (local or Atlas) | `mongodb://localhost:27017/hms` (placeholder; never commit a real Atlas URI) |
+| `MONGODB_URI` | MongoDB Atlas connection string | `mongodb+srv://<db_user>:<db_password>@<cluster-host>/hms?retryWrites=true&w=majority` (placeholder; never commit a real connection string) |
+| `MONGODB_URI_TEST` | Separate database for the automated tests. Its name must end in `_test`; the tests delete all data in it | `mongodb+srv://<db_user>:<db_password>@<cluster-host>/hms_test?retryWrites=true&w=majority` (placeholder; never point it at the `hms` database) |
 | `SESSION_SECRET` | Secret used to sign sessions | long random placeholder |
 | `SESSION_TIMEOUT_MINUTES` | Inactivity timeout (NFR-002) | `30` |
 | `MAX_FAILED_LOGINS` | Failed attempts before lockout (FR-001.3) | `5` |
@@ -544,15 +572,19 @@ ffmpeg -i raw-recording.mp4 -vf scale=-2:720 -c:v libx264 -crf 28 -preset medium
 
 Keep these in `docs/`:
 
-- Software Requirements Specification (SRS)
-- Software Architecture & Design Specification (SAD)
-- Test Plan
-- Requirements Traceability Matrix (RTM)
-- `DEVIATIONS.md`
-- `ADR-001.md` (technology decision)
-- `API_CONTRACT.md` (agreed endpoints)
-- `diagrams/` (UML use-case and ER diagrams)
-
+| Document | File | Notes |
+| --- | --- | --- |
+| Software Requirements Specification (SRS) | [`docs/SRS.md`](docs/SRS.md) | v1.1; v1.0 kept in `docs/baseline/` |
+| Software Architecture & Design Specification (SAD) | [`docs/SAD.md`](docs/SAD.md) | v1.1; v1.0 kept in `docs/baseline/` |
+| Test Plan | [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md) | v1.1 |
+| Commit plan | [`docs/COMMIT_PLAN.md`](docs/COMMIT_PLAN.md) | Schedule, owners, reviewers |
+| Deviations | [`docs/DEVIATIONS.md`](docs/DEVIATIONS.md) | Every difference from the submitted documents |
+| ADR-001 | [`docs/ADR-001.md`](docs/ADR-001.md) | Technology decision |
+| API contract | [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md) | Agreed endpoints |
+| Diagrams | [`docs/diagrams`](docs/diagrams) | UML use-case and ER diagrams |
+| Requirements Traceability Matrix (RTM) | `docs/RTM.md` (pending HMS-23) | Requirement to test traceability |
+| Baseline (submitted v1.0) | [`docs/baseline`](docs/baseline) | SRS and SAD v1.0, never edited |
+| Setup guide | [`docs/SETUP-HMS-01.md`](docs/SETUP-HMS-01.md) | Windows walkthrough |
 ---
 
 **Team:** Team 3, Class 5-J
