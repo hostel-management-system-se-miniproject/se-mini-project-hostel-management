@@ -95,6 +95,14 @@ test('rejects duplicate room numbers', async () => {
   );
 });
 
+test('accepts room upserts that run update validators', async () => {
+  await assert.doesNotReject(() => Room.findOneAndUpdate(
+    { roomNo: 'A-101' },
+    { $set: { roomNo: 'A-101', block: 'A', floor: 1, sharingType: 'triple', capacity: 3, occupancy: 3 } },
+    { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true }
+  ));
+});
+
 test('declares the required room indexes', async () => {
   const indexes = await Room.collection.indexes();
 
