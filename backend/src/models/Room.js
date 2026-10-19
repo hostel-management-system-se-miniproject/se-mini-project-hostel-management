@@ -45,6 +45,7 @@ const roomSchema = new mongoose.Schema({
       },
       {
         validator: function (value) {
+          if (!this || typeof this.capacity !== 'number') return true;
           return value <= this.capacity;
         },
         message: 'Occupancy cannot exceed capacity'
