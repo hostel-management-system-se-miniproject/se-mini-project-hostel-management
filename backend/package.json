@@ -10,7 +10,7 @@
     "seed": "node scripts/seed.js",
     "test": "node --test --test-concurrency=1",
     "lint": "eslint .",
-    "check": "node --check src/server.js && node --check src/app.js && node --check src/config/database.js && node --check src/config/indexes.js && node --check src/routes/health.js && node --check test-support/db.js && node --check src/models/User.js && node --check src/models/Student.js && node --check src/models/Room.js && node --check src/models/Allocation.js && node --check src/models/Fee.js && node --check src/models/Complaint.js && node --check src/models/Leave.js && node --check src/models/Visitor.js && node --check src/models/index.js && node --check scripts/seed.js" 
+    "check": "node --check src/server.js && node --check src/app.js && node --check src/config/database.js && node --check src/config/indexes.js && node --check src/routes/health.js && node --check test-support/db.js && node --check src/models/User.js && node --check src/models/Student.js && node --check src/models/Room.js && node --check src/models/Allocation.js && node --check src/models/Fee.js && node --check src/models/Complaint.js && node --check src/models/Leave.js && node --check src/models/Visitor.js && node --check src/models/index.js && node --check src/services/allocationService.js && node --check scripts/seed.js" 
   },
   "engines": {
     "node": ">=20"
