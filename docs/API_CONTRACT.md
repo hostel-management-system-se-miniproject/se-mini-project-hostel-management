@@ -1,7 +1,7 @@
 # HMS API Contract
 
 **Project:** Hostel Management System (HMS), Team 3, Class 5-J, PES University
-**Version:** 1.0
+**Version:** 1.1
 **Status:** The freeze takes effect when this pull request is merged. This file was written on Sun 18 Oct 2026.
 **Owner:** Harsh M (Technical Lead)
 **Related:** Issue HMS-30 (GitHub issue #37), docs/SAD.md (3.b.3 API Design, 3.b.4 Error Handling), docs/ADR-001.md, docs/DEVIATIONS.md (D-06, D-09)
@@ -36,6 +36,16 @@ The contract is frozen. If an endpoint must change, post in the group chat and u
 - No session or an expired session: 401 `SESSION_EXPIRED`.
 - A role that is not allowed: 403 `FORBIDDEN`. This includes an admin calling a Student-only endpoint and a student calling an Admin-only endpoint. Role checks happen before validation.
 - Student routes that carry a USN or a record id return 403 `FORBIDDEN` when the record belongs to another student.
+
+**Access control middleware.** The backend checks access on the server with three middleware functions in backend/src/middleware/auth.js. Hiding a button in the UI is not access control.
+
+| Middleware | Applied to | When it fails |
+|---|---|---|
+| requireAuth | Every endpoint except register and login | 401 `SESSION_EXPIRED` |
+| requireRole(role) | Endpoints whose role is Student or Admin | 403 `FORBIDDEN` |
+| selfOrAdmin | Endpoints marked Student (own) / Admin that carry a USN in the path | 403 `FORBIDDEN` |
+
+After login the session holds a `user` with `id`, `role` and `usn` (`usn` is `null` for an admin). requireAuth copies it to `req.user`. selfOrAdmin lets an admin use any USN, and lets a student use only their own USN (compared without regard to upper or lower case). Endpoints marked Owner / Admin have an `{id}` in the path and no USN, so the endpoint checks that the record belongs to the student, and returns 403 `FORBIDDEN` when it does not.
 
 **Success response.**
 
@@ -704,6 +714,7 @@ The full error handling rules are in SAD 3.b.4.
 | Version | Date | Change | Announced |
 |---|---|---|---|
 | 1.0 | 18 Oct 2026 | Initial contract for all 31 endpoints in SAD 3.b.3. Frozen when the HMS-30 pull request is merged. | Group chat |
+| 1.1 | 20 Oct 2026 | Added the access control middleware description (HMS-06). No endpoint, field or error code changed. | Group chat |
 
 ## 8. Outside this contract
 
