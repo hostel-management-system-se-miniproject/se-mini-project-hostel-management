@@ -9,9 +9,10 @@
     "dev": "nodemon src/server.js",
     "seed": "node scripts/seed.js",
     "check:consistency": "node scripts/check-consistency.js",
+    "race:last-bed": "node scripts/race-last-bed.js",
     "test": "node --test --test-concurrency=1",
     "lint": "eslint .",
-    "check": "node --check src/server.js && node --check src/app.js && node --check src/config/database.js && node --check src/config/indexes.js && node --check src/routes/health.js && node --check src/routes/students.js && node --check src/routes/allocations.js && node --check test-support/db.js && node --check src/models/User.js && node --check src/models/Student.js && node --check src/models/Room.js && node --check src/models/Allocation.js && node --check src/models/Fee.js && node --check src/models/Complaint.js && node --check src/models/Leave.js && node --check src/models/Visitor.js && node --check src/models/index.js && node --check src/services/allocationService.js && node --check scripts/check-consistency.js && node --check scripts/seed.js && node --check src/validation/registration.js && node --check src/routes/auth.js && node --check src/middleware/auth.js && node --check src/routes/rooms.js"
+    "check": "node --check src/server.js && node --check src/app.js && node --check src/config/database.js && node --check src/config/indexes.js && node --check src/routes/health.js && node --check src/routes/students.js && node --check src/routes/allocations.js && node --check test-support/db.js && node --check src/models/User.js && node --check src/models/Student.js && node --check src/models/Room.js && node --check src/models/Allocation.js && node --check src/models/Fee.js && node --check src/models/Complaint.js && node --check src/models/Leave.js && node --check src/models/Visitor.js && node --check src/models/index.js && node --check src/services/allocationService.js && node --check scripts/check-consistency.js && node --check scripts/race-last-bed.js && node --check scripts/seed.js && node --check src/validation/registration.js && node --check src/routes/auth.js && node --check src/middleware/auth.js && node --check src/routes/rooms.js"
   },
   "engines": {
     "node": ">=20"
