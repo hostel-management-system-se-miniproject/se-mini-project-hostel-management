@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const { createHealthRouter } = require('./routes/health');
 const { createAuthRouter } = require('./routes/auth');
 const { createRoomsRouter } = require('./routes/rooms');
+const { createStudentsRouter } = require('./routes/students');
+const { createAllocationsRouter } = require('./routes/allocations');
 
 function createApp({ getDatabaseStatus = () => (mongoose.connection.readyState === 1 ? 'connected' : 'disconnected') } = {}) {
   const app = express();
@@ -13,6 +15,8 @@ function createApp({ getDatabaseStatus = () => (mongoose.connection.readyState =
   app.use('/health', createHealthRouter(getDatabaseStatus));
   app.use('/api/auth', createAuthRouter());
   app.use('/api/rooms', createRoomsRouter());
+  app.use('/api/students', createStudentsRouter());
+  app.use('/api/allocations', createAllocationsRouter());
 
   app.use((_req, res) => {
     res.status(404).json({ error: 'Route not found' });

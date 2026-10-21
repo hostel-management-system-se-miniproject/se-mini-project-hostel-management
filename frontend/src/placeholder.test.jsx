@@ -18,6 +18,7 @@ describe('role-based menu configuration', () => {
       'Complaints',
       'Leave',
       'Rooms',
+      'Allocations',
       'Fees',
       'Visitors',
       'Reports',

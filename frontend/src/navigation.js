@@ -5,6 +5,7 @@ export const NAV_ITEMS = [
   { label: 'Complaints', path: '/complaints', roles: ['student', 'admin'], icon: '⚑' },
   { label: 'Leave', path: '/leave', roles: ['student', 'admin'], icon: '✈' },
   { label: 'Rooms', path: '/rooms', roles: ['admin'], icon: '⌂' },
+  { label: 'Allocations', path: '/allocations', roles: ['admin'], icon: '+' },
   { label: 'Fees', path: '/fees', roles: ['admin'], icon: '₹' },
   { label: 'Visitors', path: '/visitors', roles: ['admin'], icon: '◎' },
   { label: 'Reports', path: '/reports', roles: ['admin'], icon: '▤' },

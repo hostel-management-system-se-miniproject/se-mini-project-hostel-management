@@ -500,3 +500,14 @@ th {
     overflow: hidden;
   }
 }
+
+/* Allocations page */
+.allocation-form { display: grid; gap: 16px; }
+.allocation-search { display: grid; gap: 6px; font-weight: 600; max-width: 420px; }
+.allocation-search input { padding: 8px 10px; font: inherit; border: 1px solid #c9d3df; border-radius: 8px; }
+.allocation-form fieldset { border: 1px solid #d9e1ea; border-radius: 10px; padding: 12px 14px; margin: 0; }
+.allocation-form legend { padding: 0 6px; font-weight: 600; }
+.allocation-options { display: grid; gap: 6px; max-height: 260px; overflow-y: auto; }
+.allocation-option { display: flex; gap: 10px; align-items: flex-start; padding: 6px 4px; cursor: pointer; }
+.allocation-summary { font-weight: 600; margin: 0; }
+.allocation-retry { margin-bottom: 12px; padding: 6px 14px; font: inherit; border: 1px solid #c9d3df; border-radius: 8px; background: #fff; cursor: pointer; }
