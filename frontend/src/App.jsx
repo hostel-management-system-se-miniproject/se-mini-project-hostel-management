@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Alert } from './components/Alert';
 import { FormDemo } from './components/FormDemo';
 import { PlaceholderPage } from './components/PlaceholderPage';
@@ -153,8 +154,10 @@ function renderPageContent(path, role) {
   );
 }
 
-function App() {
-  const [role, setRole] = React.useState('student');
+function App({ user = null, onLogout = null }) {
+  // With a logged-in user the role comes from the server session. Without one
+  // (the HMS-03 demo and its tests) the role switcher is shown instead.
+  const [role, setRole] = React.useState(user?.role ?? 'student');
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [currentPath, navigate] = useCurrentPath();
 
@@ -206,18 +209,27 @@ function App() {
           </div>
         </div>
 
-        <div className="role-switcher" aria-label="Role selector">
-          {['student', 'admin'].map((item) => (
-            <button
-              key={item}
-              type="button"
-              className={item === role ? 'active' : ''}
-              onClick={() => handleRoleChange(item)}
-            >
-              {formatRoleName(item)}
+        {user ? (
+          <div className="user-box">
+            <span>{user.name || user.usn || formatRoleName(user.role)}</span>
+            <button type="button" onClick={onLogout}>
+              Log out
             </button>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className="role-switcher" aria-label="Role selector">
+            {['student', 'admin'].map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={item === role ? 'active' : ''}
+                onClick={() => handleRoleChange(item)}
+              >
+                {formatRoleName(item)}
+              </button>
+            ))}
+          </div>
+        )}
       </header>
 
       <div className="layout-shell">
@@ -258,5 +270,14 @@ function App() {
     </div>
   );
 }
+
+App.propTypes = {
+  user: PropTypes.shape({
+    role: PropTypes.string.isRequired,
+    usn: PropTypes.string,
+    name: PropTypes.string,
+  }),
+  onLogout: PropTypes.func,
+};
 
 export default App;
