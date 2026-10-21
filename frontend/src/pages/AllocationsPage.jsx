@@ -244,7 +244,7 @@ export function AllocationsPage() {
         <>
           {updating ? <div role="status" className="inline-note">Updating…</div> : null}
           {loadFailed ? (
-            <button type="button" onClick={() => loadLists(search)}>Try again</button>
+            <button type="button" className="allocation-retry" onClick={() => loadLists(search)}>Try again</button>
           ) : null}
           <AllocationForm
             students={students}

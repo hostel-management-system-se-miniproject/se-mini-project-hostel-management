@@ -82,8 +82,8 @@ async function allocateRoom({ usn, roomId }) {
   if (updatedRoom === null) {
     try {
       await Allocation.deleteOne({ _id: allocation._id });
-    } catch (compensationError) {
-      console.error(compensationError);
+    } catch (cleanupError) {
+      console.error('allocateRoom: could not remove allocation after ROOM_FULL:', cleanupError.message);
     }
     throw new AllocationError('ROOM_FULL', 409, 'Room at full capacity');
   }
