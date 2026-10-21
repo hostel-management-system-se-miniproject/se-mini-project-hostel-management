@@ -1,19 +1,54 @@
 const express = require('express');
 const cors = require('cors');
+const session = require('express-session');
 const mongoose = require('mongoose');
 const { createHealthRouter } = require('./routes/health');
 const { createAuthRouter } = require('./routes/auth');
+const { createSessionRouter } = require('./routes/authSession');
 const { createRoomsRouter } = require('./routes/rooms');
 const { createStudentsRouter } = require('./routes/students');
 const { createAllocationsRouter } = require('./routes/allocations');
+const { SESSION_COOKIE_NAME } = require('./config/auth');
 
-function createApp({ getDatabaseStatus = () => (mongoose.connection.readyState === 1 ? 'connected' : 'disconnected') } = {}) {
+function createApp({
+  getDatabaseStatus = () => (mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'),
+  authConfig,
+  loginService,
+  sessionStore
+} = {}) {
   const app = express();
 
-  app.use(cors({ origin: process.env.FRONTEND_ORIGIN || 'http://localhost:5173' }));
+  app.use(cors({ origin: process.env.FRONTEND_ORIGIN || 'http://localhost:5173', credentials: true }));
   app.use(express.json({ limit: '1mb' }));
   app.use('/health', createHealthRouter(getDatabaseStatus));
+
+  // Sessions and login are mounted only when they are configured. server.js
+  // refuses to start without SESSION_SECRET.
+  const sessionsEnabled = Boolean(authConfig && authConfig.sessionSecret && loginService);
+
+  // The session middleware comes before every /api router, so that requireAuth
+  // and the other checks can read req.session.
+  if (sessionsEnabled) {
+    app.use('/api', session({
+      name: SESSION_COOKIE_NAME,
+      secret: authConfig.sessionSecret,
+      store: sessionStore,
+      resave: false,
+      saveUninitialized: false,
+      rolling: true,
+      cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: 'auto',
+        maxAge: Math.round(authConfig.sessionTimeoutMinutes * 60000)
+      }
+    }));
+  }
+
   app.use('/api/auth', createAuthRouter());
+  if (sessionsEnabled) {
+    app.use('/api/auth', createSessionRouter({ loginService, cookieName: SESSION_COOKIE_NAME }));
+  }
   app.use('/api/rooms', createRoomsRouter());
   app.use('/api/students', createStudentsRouter());
   app.use('/api/allocations', createAllocationsRouter());
