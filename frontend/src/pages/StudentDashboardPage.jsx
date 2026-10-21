@@ -55,7 +55,10 @@ export function DashboardView({ data }) {
             <div className="student-dash-details">
               <Detail label="Block" value={room.block} />
               <Detail label="Floor" value={room.floor} />
-              <Detail label="Sharing type" value={room.sharingType} />
+              <Detail
+                label="Sharing type"
+                value={room.sharingType.charAt(0).toUpperCase() + room.sharingType.slice(1)}
+              />
             </div>
           </>
         ) : (
