@@ -3,6 +3,8 @@ import { Alert } from './components/Alert';
 import { FormDemo } from './components/FormDemo';
 import { PlaceholderPage } from './components/PlaceholderPage';
 import { Table } from './components/Table';
+import { RoomsPage } from './pages/RoomsPage';
+import { AllocationsPage } from './pages/AllocationsPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import {
   NAV_ITEMS,
@@ -109,12 +111,11 @@ function renderPageContent(path, role) {
   }
 
   if (path === '/rooms') {
-    return (
-      <PlaceholderPage
-        title="Rooms"
-        description="Room allocation, occupancy, and maintenance tasks can be managed here."
-      />
-    );
+    return <RoomsPage />;
+  }
+
+  if (path === '/allocations') {
+    return <AllocationsPage />;
   }
 
   if (path === '/fees') {

@@ -3,7 +3,11 @@ const cors = require('cors');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const { createHealthRouter } = require('./routes/health');
+const { createAuthRouter } = require('./routes/auth');
 const { createSessionRouter } = require('./routes/authSession');
+const { createRoomsRouter } = require('./routes/rooms');
+const { createStudentsRouter } = require('./routes/students');
+const { createAllocationsRouter } = require('./routes/allocations');
 const { SESSION_COOKIE_NAME } = require('./config/auth');
 
 function createApp({
@@ -20,7 +24,11 @@ function createApp({
 
   // Sessions and login are mounted only when they are configured. server.js
   // refuses to start without SESSION_SECRET.
-  if (authConfig && authConfig.sessionSecret && loginService) {
+  const sessionsEnabled = Boolean(authConfig && authConfig.sessionSecret && loginService);
+
+  // The session middleware comes before every /api router, so that requireAuth
+  // and the other checks can read req.session.
+  if (sessionsEnabled) {
     app.use('/api', session({
       name: SESSION_COOKIE_NAME,
       secret: authConfig.sessionSecret,
@@ -35,26 +43,28 @@ function createApp({
         maxAge: Math.round(authConfig.sessionTimeoutMinutes * 60000)
       }
     }));
+  }
+
+  app.use('/api/auth', createAuthRouter());
+  if (sessionsEnabled) {
     app.use('/api/auth', createSessionRouter({ loginService, cookieName: SESSION_COOKIE_NAME }));
   }
+  app.use('/api/rooms', createRoomsRouter());
+  app.use('/api/students', createStudentsRouter());
+  app.use('/api/allocations', createAllocationsRouter());
 
   app.use((_req, res) => {
     res.status(404).json({ error: 'Route not found' });
   });
 
+  // Safe error format: no stack traces or internal details are sent to the client (SAD 3.b.4).
   // eslint-disable-next-line no-unused-vars
-  app.use((error, _req, res, _next) => {
-    if (error.type === 'entity.parse.failed') {
-      return res.status(400).json({
-        success: false,
-        error: { code: 'VALIDATION_ERROR', message: 'Request body is not valid JSON' }
-      });
+  app.use((err, _req, res, _next) => {
+    if (err && err.type === 'entity.parse.failed') {
+      return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Request body must be valid JSON', details: {} } });
     }
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: { code: 'INTERNAL_ERROR', message: 'Something went wrong. Please try again' }
-    });
+    console.error('Unhandled error:', err && err.message);
+    return res.status(500).json({ success: false, error: { code: 'INTERNAL_ERROR', message: 'Something went wrong. Please try again', details: {} } });
   });
 
   return app;
