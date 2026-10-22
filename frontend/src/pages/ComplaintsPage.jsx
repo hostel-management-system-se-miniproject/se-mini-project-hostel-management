@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert } from '../components/Alert';
 import { LoadingState } from '../components/LoadingState';
@@ -95,10 +94,38 @@ export function ComplaintsPage({ role = 'student' }) {
   }, []);
 
   React.useEffect(() => {
-    if (role === 'student') {
-      loadComplaints();
+    if (role !== 'student') {
+      return undefined;
     }
-  }, [loadComplaints, role]);
+
+    let isMounted = true;
+
+    const load = async () => {
+      setLoading(true);
+      setError('');
+
+      try {
+        const nextComplaints = await fetchMyComplaints();
+        if (isMounted) {
+          setComplaints(nextComplaints);
+        }
+      } catch (caught) {
+        if (isMounted) {
+          setError(caught.message || 'Could not load complaints.');
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void load();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [role]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;

@@ -1,2 +1,5 @@
-import React from 'react';
-import { App } from './App';
+function App() {
+  return null;
+}
+
+export default App;
