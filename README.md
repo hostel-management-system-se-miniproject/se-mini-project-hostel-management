@@ -6,7 +6,7 @@ HMS replaces register- and spreadsheet-based hostel record keeping with a centra
 
 > **Important:** The submitted SRS, Software Architecture & Design Specification (SAD) and Test Plan are the baseline for implementation. Any deviation from them must be recorded in `docs/DEVIATIONS.md` and explained during the final demo.
 
-*Last updated: 18 October 2026*
+*Last updated: 22 October 2026*
 
 ---
 
@@ -183,6 +183,7 @@ MongoDB does not enforce foreign keys or CHECK constraints, so the rules the SRS
 Some files are added by later stories (ADR-001 and API_CONTRACT by HMS-30, diagrams by HMS-31, RTM by HMS-23). Section 16 shows which are in the repository now.
 
 Keep the originally submitted v1.0 documents in `docs/baseline/`. Any revised version must be clearly distinguishable; do not silently overwrite the submitted baseline.
+
 ---
 
 ## 6. Getting Started
@@ -247,6 +248,7 @@ Open the URL printed by Vite (normally `http://localhost:5173`). If your API run
 **Seed data:** `npm run seed` (run from `backend`) creates sample data for development and demos. The test accounts and rooms are listed in [Seed data for development and testing](#seed-data-for-development-and-testing) at the top of this README. They are test data, never real student information.
 
 A Windows walkthrough is in [`docs/SETUP-HMS-01.md`](docs/SETUP-HMS-01.md).
+
 ---
 
 ## 7. Environment Variables
@@ -281,16 +283,17 @@ For testing, `SESSION_TIMEOUT_MINUTES` and `LOCKOUT_MINUTES` can be set to `1` s
 
 ## 9. Git and GitHub Workflow
 
-### 9.1 The `main` branch is protected
+### 9.1 The `main` and `dev` branches are protected
 
-- `main` is the shared, stable branch. **Never work or push directly on `main`.**
-- Every change is made on a separate branch and reaches `main` only through a Pull Request (PR).
+- `main` is the stable branch that is submitted. `dev` is the integration branch where all sprint work lands first. Both are protected. **Never work or push directly on `main` or `dev`.**
+- Every change is made on a separate branch created from the latest `dev` and reaches `dev` only through a Pull Request (PR). This is deviation D-12 in `docs/DEVIATIONS.md`.
+- `dev` reaches `main` only through a **promotion PR** at each sprint freeze (Section 9.6). Nobody opens a feature PR against `main`.
 - A PR needs approval from **at least one teammate other than its author**.
 - **The author must not review, approve or merge their own PR.**
 - **Any teammate other than the author may review and merge** an approved PR whose checks pass.
 - Fresh commits after an approval require a new approval.
 - Resolve all review conversations before merging.
-- Required CI checks must pass before merging once the GitHub Actions workflow (HMS-25) is in place.
+- The required CI checks, **Backend: install & test** and **Frontend: install & build**, must pass before merging.
 - Do not bypass branch protection to save time.
 
 > GitHub stops an author from approving their own PR, but it cannot stop them from pressing *Merge* after someone else approves. The "merger is not the author" rule is therefore a **team rule**: tick the PR-template checkbox and follow it.
@@ -351,7 +354,8 @@ Types: `feat`, `fix`, `test`, `docs`, `refactor`, `chore`.
 
 ### 9.5 Pull request checklist
 
-- Title is clear; description includes `Closes #<issue-number>`.
+- The PR **targets `dev`** (only the sprint promotion PR targets `main`).
+- Title is clear; description includes `Closes #<issue-number>`. GitHub closes an issue automatically only when the PR merges into the default branch, so for a PR merged into `dev` the issue is closed by hand (or by the promotion PR).
 - Lists the SRS requirement IDs and test case IDs covered.
 - Relevant tests were actually run; do not claim tests passed unless they did.
 - No secrets, `.env` files or unrelated files are included.
@@ -377,6 +381,17 @@ Example PR description:
 Closes #12
 ```
 
+### 9.6 Sprint promotion (`dev` into `main`)
+
+At each sprint freeze (Sprint 1: Fri 23 Oct, 1 PM) the project manager promotes the work on `dev` to `main`:
+
+1. Confirm that every finished story of the sprint is merged into `dev`.
+2. Check that the CI checks on `dev` pass.
+3. Open a PR with base `main` and compare `dev`, titled for example "Sprint 1 release".
+4. A teammate other than the author approves it.
+5. Merge it with a **merge commit** (not a squash), so the individual commits stay in the history.
+6. Close the sprint's issues that are still open and move them to Done on the project board.
+
 ---
 
 ## 10. Essential Git Commands
@@ -392,15 +407,15 @@ git remote -v
 git status
 ```
 
-### 10.2 Start a task from the latest `main`
+### 10.2 Start a task from the latest `dev`
 
 ```bash
-git switch main
-git pull origin main
+git switch dev
+git pull origin dev
 git switch -c feature/12-user-registration
 ```
 
-`-c` creates the branch and switches to it. Do not branch from an old or unrelated feature branch.
+`-c` creates the branch and switches to it. Do not branch from an old or unrelated feature branch. If `git switch dev` says the branch does not exist, run `git fetch origin` first.
 
 ### 10.3 Check your branch before changing anything
 
@@ -409,7 +424,7 @@ git branch --show-current
 git status
 ```
 
-The branch name must be your task branch, **not `main`**.
+The branch name must be your task branch, **not `main` or `dev`**.
 
 ### 10.4 Stage and commit
 
@@ -430,14 +445,14 @@ git push                                          # later pushes
 
 Check the branch name first with `git branch --show-current`.
 
-### 10.6 Keep your branch up to date with `main`
+### 10.6 Keep your branch up to date with `dev`
 
 ```bash
 git fetch origin
-git switch main
-git pull origin main
+git switch dev
+git pull origin dev
 git switch feature/12-user-registration
-git merge main
+git merge dev
 ```
 
 Resolve conflicts carefully, then:
@@ -453,22 +468,24 @@ Do not force-push shared branches without coordinating with the team.
 ### 10.7 Open a pull request
 
 1. On GitHub, go to **Pull requests → New pull request**.
-2. Set **base** to `main` and **compare** to your branch.
+2. Set **base** to `dev` and **compare** to your branch.
 3. Review the changed files, then fill in the PR description (Section 9.5).
 4. Request a reviewer (Section 9.2).
 5. Make requested changes on the same branch, commit and push; the PR updates automatically.
 6. After approval and passing checks, a teammate who is not the author merges.
 
+The sprint promotion PR is the only exception: its base is `main` and its compare branch is `dev` (Section 9.6).
+
 ### 10.8 Delete a branch after its PR is merged
 
 ```bash
-git switch main
-git pull origin main
+git switch dev
+git pull origin dev
 git branch -d feature/12-user-registration
 git push origin --delete feature/12-user-registration
 ```
 
-GitHub's *Delete branch* button removes only the remote branch. Use `git branch -D` only for an unmerged local branch you are sure you no longer need.
+GitHub's *Delete branch* button removes only the remote branch. Use `git branch -D` only for an unmerged local branch you are sure you no longer need. Never delete `dev`.
 
 ### 10.9 Everyday commands
 
@@ -477,6 +494,7 @@ git status                   # working-tree state
 git branch                   # local branches
 git branch -a                # local and remote branches
 git fetch origin             # fetch remote updates
+git pull origin dev          # update local dev
 git pull origin main         # update local main
 git diff                     # unstaged changes
 git diff --staged            # staged changes
@@ -496,9 +514,10 @@ A story is done only when all applicable items are true:
 - [ ] It maps to a GitHub Issue and an agreed requirement or documentation task.
 - [ ] The work is on a task-specific branch.
 - [ ] Acceptance criteria are met and relevant tests are run, with results recorded.
-- [ ] The PR targets `main`, references the issue and lists SRS and test case IDs.
+- [ ] The PR targets `dev`, references the issue and lists SRS and test case IDs.
 - [ ] A teammate other than the author approved it, and required CI checks pass.
 - [ ] A teammate other than the author merged it.
+- [ ] The work reaches `main` through the sprint promotion PR (Section 9.6).
 - [ ] Documentation and the RTM are updated where needed.
 - [ ] Any deviation from the submitted SRS, SAD or Test Plan is in `docs/DEVIATIONS.md`.
 
@@ -530,6 +549,7 @@ Deviations identified so far (to be confirmed as the implementation progresses):
 - **NFR test IDs:** NFR-001 / NFR-002 are verified through sub-checks (page load, 200 users, hashing, RBAC, session expiry).
 - **Database:** MongoDB (from the professor's MERN stack) is used instead of the relational database in SRS 2.4, 3.2 and 7 and SAD 3.a.3, 3.a.6 and 3.b.5. Entities become collections; the integrity rules in Section 4.1 replace foreign keys and constraints. Story HMS-02 is read as "MongoDB data model, indexes and setup".
 - **Process:** any teammate may review and merge, as long as they are not the PR author.
+- **Branch workflow (D-12):** sprint PRs target `dev`, and `dev` is promoted to `main` by a merge-commit PR at each sprint freeze (Section 9).
 
 ---
 
@@ -585,6 +605,7 @@ Keep these in `docs/`:
 | Requirements Traceability Matrix (RTM) | `docs/RTM.md` (pending HMS-23) | Requirement to test traceability |
 | Baseline (submitted v1.0) | [`docs/baseline`](docs/baseline) | SRS and SAD v1.0, never edited |
 | Setup guide | [`docs/SETUP-HMS-01.md`](docs/SETUP-HMS-01.md) | Windows walkthrough |
+
 ---
 
 **Team:** Team 3, Class 5-J
