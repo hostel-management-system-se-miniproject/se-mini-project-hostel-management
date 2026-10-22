@@ -9,6 +9,7 @@ const { createRoomsRouter } = require('./routes/rooms');
 const { createStudentsRouter } = require('./routes/students');
 const { createAllocationsRouter } = require('./routes/allocations');
 const { createVisitorsRouter } = require('./routes/visitors');
+const { createComplaintsRouter } = require('./routes/complaints');
 const { SESSION_COOKIE_NAME } = require('./config/auth');
 
 function createApp({
@@ -23,12 +24,8 @@ function createApp({
   app.use(express.json({ limit: '1mb' }));
   app.use('/health', createHealthRouter(getDatabaseStatus));
 
-  // Sessions and login are mounted only when they are configured. server.js
-  // refuses to start without SESSION_SECRET.
   const sessionsEnabled = Boolean(authConfig && authConfig.sessionSecret && loginService);
 
-  // The session middleware comes before every /api router, so that requireAuth
-  // and the other checks can read req.session.
   if (sessionsEnabled) {
     app.use('/api', session({
       name: SESSION_COOKIE_NAME,
@@ -54,13 +51,12 @@ function createApp({
   app.use('/api/students', createStudentsRouter());
   app.use('/api/allocations', createAllocationsRouter());
   app.use('/api/visitors', createVisitorsRouter());
+  app.use('/api/complaints', createComplaintsRouter());
 
   app.use((_req, res) => {
     res.status(404).json({ error: 'Route not found' });
   });
 
-  // Safe error format: no stack traces or internal details are sent to the client (SAD 3.b.4).
-  // eslint-disable-next-line no-unused-vars
   app.use((err, _req, res, _next) => {
     if (err && err.type === 'entity.parse.failed') {
       return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Request body must be valid JSON', details: {} } });
