@@ -526,3 +526,30 @@ th {
   .student-dash-layout { grid-template-columns: 1fr; }
   .student-dash-profile { grid-column: auto; }
 }
+
+/* Visitors page */
+.visitor-page { display: grid; gap: 1rem; }
+.visitor-page h3 { margin: 0; }
+.visitor-form { display: grid; gap: 1rem; }
+.visitor-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem; }
+.visitor-field { display: grid; gap: 0.45rem; font-weight: 600; color: var(--muted); }
+.visitor-field-wide { grid-column: 1 / -1; }
+.visitor-field input, .visitor-exit-row input { width: 100%; border: 1px solid var(--line); background: #fbfdff; border-radius: 0.8rem; padding: 0.8rem 0.85rem; color: var(--text); }
+.visitor-field-error { color: var(--danger); font-size: 0.82rem; font-weight: 600; }
+.visitor-list { display: grid; gap: 0.8rem; }
+.visitor-list h3 { margin-top: 0.5rem; }
+.visitor-table td strong, .visitor-student-name { display: block; }
+.visitor-student-name { color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; }
+.visitor-inside-label { display: inline-block; margin-right: 0.6rem; font-weight: 700; color: var(--warning); }
+.visitor-action-button, .visitor-retry-button, .visitor-cancel-button { border: 1px solid var(--line); border-radius: 0.7rem; background: var(--surface); color: var(--accent-strong); font-weight: 700; padding: 0.6rem 0.75rem; }
+.visitor-retry-button { justify-self: start; }
+.visitor-empty-state { margin: 0; padding: 1rem; }
+.visitor-exit-row td { background: var(--bg-soft); }
+.visitor-exit-row form { display: flex; align-items: end; gap: 0.7rem; flex-wrap: wrap; }
+.visitor-exit-row label { display: grid; gap: 0.35rem; color: var(--muted); font-weight: 600; }
+.visitor-exit-row .visitor-field-error { align-self: center; }
+
+@media (max-width: 640px) {
+  .visitor-form-grid { grid-template-columns: 1fr; }
+  .visitor-field-wide { grid-column: auto; }
+}

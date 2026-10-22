@@ -6,6 +6,7 @@ import { PlaceholderPage } from './components/PlaceholderPage';
 import { Table } from './components/Table';
 import { RoomsPage } from './pages/RoomsPage';
 import { AllocationsPage } from './pages/AllocationsPage';
+import { VisitorsPage } from './pages/VisitorsPage';
 import { StudentDashboardPage } from './pages/StudentDashboardPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import {
@@ -133,12 +134,7 @@ function renderPageContent(path, role, user) {
   }
 
   if (path === '/visitors') {
-    return (
-      <PlaceholderPage
-        title="Visitors"
-        description="Visitor logs and gate-entry approval details will appear in this screen."
-      />
-    );
+    return <VisitorsPage />;
   }
 
   if (path === '/reports') {

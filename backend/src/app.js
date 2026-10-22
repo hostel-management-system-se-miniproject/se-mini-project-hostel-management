@@ -8,6 +8,7 @@ const { createSessionRouter } = require('./routes/authSession');
 const { createRoomsRouter } = require('./routes/rooms');
 const { createStudentsRouter } = require('./routes/students');
 const { createAllocationsRouter } = require('./routes/allocations');
+const { createVisitorsRouter } = require('./routes/visitors');
 const { SESSION_COOKIE_NAME } = require('./config/auth');
 
 function createApp({
@@ -52,6 +53,7 @@ function createApp({
   app.use('/api/rooms', createRoomsRouter());
   app.use('/api/students', createStudentsRouter());
   app.use('/api/allocations', createAllocationsRouter());
+  app.use('/api/visitors', createVisitorsRouter());
 
   app.use((_req, res) => {
     res.status(404).json({ error: 'Route not found' });
