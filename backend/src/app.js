@@ -57,12 +57,31 @@ function createApp({
     res.status(404).json({ error: 'Route not found' });
   });
 
-  app.use((err, _req, res) => {
+  app.use((err, _req, res, next) => {
     if (err && err.type === 'entity.parse.failed') {
-      return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Request body must be valid JSON', details: {} } });
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Request body must be valid JSON',
+          details: {}
+        }
+      });
     }
-    console.error('Unhandled error:', err && err.message);
-    return res.status(500).json({ success: false, error: { code: 'INTERNAL_ERROR', message: 'Something went wrong. Please try again', details: {} } });
+
+    if (err) {
+      console.error('Unhandled error:', err && err.message);
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Something went wrong. Please try again',
+          details: {}
+        }
+      });
+    }
+
+    return next();
   });
 
   return app;
