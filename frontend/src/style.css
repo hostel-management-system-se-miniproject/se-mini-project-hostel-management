@@ -511,3 +511,18 @@ th {
 .allocation-option { display: flex; gap: 10px; align-items: flex-start; padding: 6px 4px; cursor: pointer; }
 .allocation-summary { font-weight: 600; margin: 0; }
 .allocation-retry { margin-bottom: 12px; padding: 6px 14px; font: inherit; border: 1px solid #c9d3df; border-radius: 8px; background: #fff; cursor: pointer; }
+
+/* Student dashboard */
+.student-dash-layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.student-dash-profile { grid-column: 1 / -1; }
+.student-dash-card, .student-dash-profile { padding: 1rem; }
+.student-dash-card h2, .student-dash-profile h2 { margin-top: 0; margin-bottom: 1rem; }
+.student-dash-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.9rem; }
+.student-dash-detail { display: grid; gap: 0.3rem; }
+.student-dash-detail span { color: var(--muted); font-size: 0.82rem; }
+.student-dash-highlight, .student-dash-count { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; }
+
+@media (max-width: 640px) {
+  .student-dash-layout { grid-template-columns: 1fr; }
+  .student-dash-profile { grid-column: auto; }
+}

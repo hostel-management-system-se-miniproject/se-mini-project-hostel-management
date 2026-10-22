@@ -3,7 +3,7 @@
 **Project:** Hostel Management System (HMS), Team 3, Class 5-J, PES University
 **Baseline:** SRS v1.0, SAD v1.0, Test Plan v1.0 (as submitted)
 **Current:** SRS v1.1, SAD v1.1, Test Plan v1.1
-**Owner:** Chiranthan Sathrasala (PM). **Last updated:** 17 Oct 2026 (Dry Run)
+**Owner:** Chiranthan Sathrasala (PM). **Last updated:** 21 Oct 2026 (Sprint 1)
 **Related:** Issue HMS-32
 
 Anything that differs from the submitted SRS, SAD or Test Plan is listed here with the reason, the documents it affects and its impact. Add new rows as they are found. The final version is due on Fri 23 Oct.
@@ -32,12 +32,13 @@ Anything that differs from the submitted SRS, SAD or Test Plan is listed here wi
 |---|---|---|---|---|---|---|
 | D-10 | Who may merge | Only the repo owners merge | Any teammate may merge an approved PR, but never their own. `main` is protected: 1 approving review and CI must pass. | Keeps the work moving when an owner is busy. | Branch protection is the control. Reviews by non-owners are allowed. | Done |
 | D-11 | CI as a required check | Required from the start | `Backend: install & test` and `Frontend: install & build` are required status checks on `main` since 17 Oct 2026. A failing check blocks the merge (shown on a throwaway PR, see HMS-25). | A check can only be selected as required after it has run once on the repository. | CI was not enforced between repository setup and 17 Oct 2026. | Done |
+| D-12 | Sprint PRs target `dev` | Every feature PR targets `main` (README section 9.1) | Feature PRs target the `dev` branch. `dev` is protected like `main` (1 approving review, and `Backend: install & test` and `Frontend: install & build` must pass), and the CI workflow runs on pushes and pull requests for both branches. At each sprint freeze `dev` is merged into `main` through a promotion PR, using a merge commit and not a squash. Applies from Sprint 1 (20 Oct 2026). | Keeps `main` stable and demo-ready while four people merge many PRs each day. `main` changes once per sprint, after the freeze checks. | GitHub closes an issue through `Closes #n` only when the PR merges into the default branch (`main`), so issues are closed by hand after the merge into `dev`, or through the promotion PR, which lists the issues it delivers. Authors pick `dev` as the base when they open a PR. README section 9 is updated to match. The submitted project is the state of `main` after the Sprint 2 promotion. | Done |
 
 ---
 
 ## 3. How to add a deviation
 
-1. Add a row with the next ID (D-12, D-13, ...).
+1. Add a row with the next ID (D-13, D-14, ...).
 2. Fill in every column. "Affected documents" must name the section or test ID.
 3. If the SRS, SAD or Test Plan wording changes, update it too, and keep the traceability matrix consistent.
 4. Mention the D-number in the PR description.

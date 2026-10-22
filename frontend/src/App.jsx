@@ -6,6 +6,7 @@ import { PlaceholderPage } from './components/PlaceholderPage';
 import { Table } from './components/Table';
 import { RoomsPage } from './pages/RoomsPage';
 import { AllocationsPage } from './pages/AllocationsPage';
+import { StudentDashboardPage } from './pages/StudentDashboardPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import {
   NAV_ITEMS,
@@ -88,8 +89,11 @@ function DashboardPage() {
   );
 }
 
-function renderPageContent(path, role) {
+function renderPageContent(path, role, user) {
   if (path === '/dashboard') {
+    if (role === 'student' && user?.usn) {
+      return <StudentDashboardPage usn={user.usn} />;
+    }
     return <DashboardPage />;
   }
 
@@ -263,7 +267,7 @@ function App({ user = null, onLogout = null }) {
           </div>
 
           <ProtectedRoute allowedRoles={activePage?.roles ?? ['student', 'admin']} currentRole={role}>
-            {renderPageContent(currentPath, role)}
+            {renderPageContent(currentPath, role, user)}
           </ProtectedRoute>
         </main>
       </div>

@@ -1,7 +1,13 @@
 'use strict';
 
 const express = require('express');
-const { requireAuth, requireRole, ROLES } = require('../middleware/auth');
+const {
+  requireAuth,
+  requireRole,
+  selfOrAdmin,
+  ROLES
+} = require('../middleware/auth');
+const { getStudentDashboard } = require('../services/dashboardService');
 
 function escapeRegex(text) {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -14,9 +20,31 @@ function createStudentsRouter(options = {}) {
     return {
       Student: options.Student || models.Student,
       Allocation: options.Allocation || models.Allocation,
-      Room: options.Room || models.Room
+      Room: options.Room || models.Room,
+      Fee: options.Fee || models.Fee,
+      Complaint: options.Complaint || models.Complaint,
+      Leave: options.Leave || models.Leave
     };
   };
+
+  router.get('/:usn/dashboard', requireAuth, selfOrAdmin('usn'), async (req, res, next) => {
+    try {
+      const data = await getStudentDashboard(req.params.usn, getModels());
+      if (!data) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Student not found',
+            details: {}
+          }
+        });
+      }
+      return res.json({ success: true, data });
+    } catch (error) {
+      return next(error);
+    }
+  });
 
   router.get('/', requireAuth, requireRole(ROLES.ADMIN), async (req, res, next) => {
     try {
