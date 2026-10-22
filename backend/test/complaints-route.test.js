@@ -2,7 +2,6 @@ const assert = require('node:assert/strict');
 const { before, beforeEach, after, test } = require('node:test');
 const express = require('express');
 const request = require('supertest');
-const mongoose = require('mongoose');
 const { connectTestDb, clearTestDb, disconnectTestDb } = require('../test-support/db');
 const { User, Student, Complaint } = require('../src/models');
 const { createComplaintsRouter } = require('../src/routes/complaints');

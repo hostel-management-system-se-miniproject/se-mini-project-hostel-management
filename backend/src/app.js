@@ -57,7 +57,7 @@ function createApp({
     res.status(404).json({ error: 'Route not found' });
   });
 
-  app.use((err, _req, res, _next) => {
+  app.use((err, _req, res) => {
     if (err && err.type === 'entity.parse.failed') {
       return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Request body must be valid JSON', details: {} } });
     }
