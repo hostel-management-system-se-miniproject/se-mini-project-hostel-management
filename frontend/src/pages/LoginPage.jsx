@@ -45,6 +45,10 @@ export function LoginForm({ identifier, password, error, submitting, onChange, o
         <button type="submit" className="primary-button" disabled={submitting}>
           {submitting ? 'Signing in...' : 'Log in'}
         </button>
+
+        <p className="login-hint full-width">
+          New student? <a href="/register">Register here</a>
+        </p>
       </div>
     </form>
   );

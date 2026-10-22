@@ -1,0 +1,13 @@
+.field-error {
+  color: #b42318;
+  font-size: 0.85rem;
+}
+
+.form-grid input[aria-invalid='true'] {
+  border-color: #b42318;
+}
+
+.auth-switch {
+  margin: 16px 0 0;
+  font-size: 0.95rem;
+}

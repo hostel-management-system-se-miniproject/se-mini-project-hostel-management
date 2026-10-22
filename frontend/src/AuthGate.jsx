@@ -1,6 +1,7 @@
 import React from 'react';
 import App from './App';
 import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 import { fetchCurrentUser, logout } from './api/auth';
 import { Alert } from './components/Alert';
 
@@ -43,6 +44,10 @@ export function AuthGate() {
   }
 
   if (state.status === 'out') {
+    // Registration is public, so it is shown at /register while nobody is logged in.
+    if (window.location.pathname.replace(/\/+$/, '') === '/register') {
+      return <RegisterPage />;
+    }
     return <LoginPage onLoggedIn={handleLoggedIn} notice={state.notice} />;
   }
 
