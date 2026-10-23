@@ -553,3 +553,22 @@ th {
   .visitor-form-grid { grid-template-columns: 1fr; }
   .visitor-field-wide { grid-column: auto; }
 }
+
+/* Complaints page */
+.complaint-page { display: grid; gap: 1rem; }
+.complaint-form { display: grid; gap: 1rem; }
+.complaint-form-grid { display: grid; gap: 0.9rem; }
+.complaint-form-grid label { display: grid; gap: 0.45rem; font-weight: 600; color: var(--muted); }
+.complaint-form-grid select, .complaint-form-grid textarea { width: 100%; border: 1px solid var(--line); background: #fbfdff; border-radius: 0.8rem; padding: 0.8rem 0.85rem; color: var(--text); }
+.complaint-form-grid textarea { resize: vertical; min-height: 120px; }
+.complaint-list { display: grid; gap: 0.8rem; }
+.complaint-item { border: 1px solid var(--line); border-radius: 0.9rem; padding: 0.9rem 1rem; background: var(--surface); }
+.complaint-item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.complaint-item-header h4 { margin: 0.25rem 0 0; }
+.complaint-status { padding: 0.3rem 0.7rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: var(--accent-soft); color: var(--accent-strong); }
+.complaint-status-in-progress { background: rgba(168, 95, 0, 0.1); color: var(--warning); }
+.complaint-status-resolved { background: rgba(24, 121, 78, 0.1); color: var(--success); }
+.complaint-status-rejected { background: rgba(180, 35, 24, 0.1); color: var(--danger); }
+.complaint-description { margin: 0.6rem 0; }
+.complaint-remarks { margin: 0.4rem 0; color: var(--accent-strong); }
+.complaint-meta { display: flex; gap: 1rem; color: var(--muted); font-size: 0.82rem; }
