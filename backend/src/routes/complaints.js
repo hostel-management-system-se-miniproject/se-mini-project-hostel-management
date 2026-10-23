@@ -1,7 +1,10 @@
 'use strict';
 
 const express = require('express');
+const mongoose = require('mongoose');
 const { requireAuth, requireRole, ROLES } = require('../middleware/auth');
+
+const CATEGORY_NAMES = ['Electrical', 'Plumbing', 'Furniture'];
 
 function errorBody(code, message, details = {}) {
   return { success: false, error: { code, message, details } };
@@ -67,9 +70,10 @@ function createComplaintsRouter(options = {}) {
       const { Complaint, Student } = getModels();
       const category = typeof req.body?.category === 'string' ? req.body.category.trim() : '';
       const description = typeof req.body?.description === 'string' ? req.body.description.trim() : '';
+      const canonicalCategory = CATEGORY_NAMES.find((name) => name.toLowerCase() === category.toLowerCase());
 
-      if (!category) {
-        return res.status(400).json(errorBody('VALIDATION_ERROR', 'Category is required', { category: 'Category is required' }));
+      if (!canonicalCategory) {
+        return res.status(400).json(errorBody('VALIDATION_ERROR', 'Select a valid category', { category: 'Select a valid category' }));
       }
 
       if (!description) {
@@ -81,22 +85,30 @@ function createComplaintsRouter(options = {}) {
         return res.status(404).json(errorBody('NOT_FOUND', 'Student profile not found', {}));
       }
 
-      const existingOpen = await Complaint.exists({ studentId: student._id, category, isOpen: true });
+      const existingOpen = await Complaint.exists({ studentId: student._id, category: canonicalCategory, isOpen: true });
       if (existingOpen) {
-        return res.status(409).json(errorBody('COMPLAINT_CATEGORY_OPEN', 'You already have an open complaint in this category', { category }));
+        return res.status(409).json(errorBody('COMPLAINT_CATEGORY_OPEN', 'You already have an open complaint in this category', { category: canonicalCategory }));
       }
 
-      const complaint = await Complaint.create({
-        studentId: student._id,
-        category,
-        description,
-        status: 'Open',
-        isOpen: true,
-        remarks: null,
-        history: []
-      });
+      try {
+        const now = new Date();
+        const complaint = await Complaint.create({
+          studentId: student._id,
+          category: canonicalCategory,
+          description,
+          status: 'Open',
+          isOpen: true,
+          remarks: null,
+          history: [{ status: 'Open', remarks: null, at: now, by: req.user.id }]
+        });
 
-      return res.status(201).json({ success: true, data: toComplaintView(complaint) });
+        return res.status(201).json({ success: true, data: toComplaintView(complaint) });
+      } catch (error) {
+        if (error && error.code === 11000) {
+          return res.status(409).json(errorBody('COMPLAINT_CATEGORY_OPEN', 'You already have an open complaint in this category', { category: canonicalCategory }));
+        }
+        throw error;
+      }
     } catch (error) {
       return next(error);
     }
@@ -153,6 +165,10 @@ function createComplaintsRouter(options = {}) {
   router.get('/:id', requireAuth, async (req, res, next) => {
     try {
       const { Complaint, Student } = getModels();
+      if (!mongoose.isValidObjectId(req.params.id)) {
+        return res.status(404).json(errorBody('NOT_FOUND', 'Complaint not found', {}));
+      }
+
       const complaint = await Complaint.findById(req.params.id).lean();
       if (!complaint) {
         return res.status(404).json(errorBody('NOT_FOUND', 'Complaint not found', {}));
@@ -184,14 +200,18 @@ function createComplaintsRouter(options = {}) {
       const { Complaint } = getModels();
       const status = typeof req.body?.status === 'string' ? req.body.status.trim() : '';
       const remarks = typeof req.body?.remarks === 'string' ? req.body.remarks.trim() : '';
-      const validStatuses = ['Open', 'In Progress', 'Resolved', 'Rejected'];
+      const validStatuses = ['In Progress', 'Resolved', 'Rejected'];
 
       if (!status || !validStatuses.includes(status)) {
-        return res.status(400).json(errorBody('VALIDATION_ERROR', 'Invalid complaint status', { status: 'Status must be Open, In Progress, Resolved or Rejected' }));
+        return res.status(400).json(errorBody('VALIDATION_ERROR', 'Invalid status', { status: 'Invalid status' }));
       }
 
-      if (status === 'Rejected' && remarks === '') {
-        return res.status(400).json(errorBody('VALIDATION_ERROR', 'Remarks are required when rejecting a complaint', { remarks: 'Remarks are required when rejecting a complaint' }));
+      if (remarks === '') {
+        return res.status(400).json(errorBody('VALIDATION_ERROR', 'Remarks are required', { remarks: 'Remarks are required' }));
+      }
+
+      if (!mongoose.isValidObjectId(req.params.id)) {
+        return res.status(404).json(errorBody('NOT_FOUND', 'Complaint not found', {}));
       }
 
       const complaint = await Complaint.findById(req.params.id);
@@ -199,19 +219,26 @@ function createComplaintsRouter(options = {}) {
         return res.status(404).json(errorBody('NOT_FOUND', 'Complaint not found', {}));
       }
 
-      const nextRemarks = status === 'Rejected' || status === 'Resolved' ? remarks : complaint.remarks ?? null;
       const nextHistoryEntry = {
         status,
-        remarks: remarks !== '' ? remarks : null,
+        remarks,
         at: new Date(),
         by: req.user.id
       };
 
       complaint.status = status;
-      complaint.remarks = nextRemarks;
-      complaint.isOpen = status !== 'Resolved' && status !== 'Rejected';
+      complaint.remarks = remarks;
+      complaint.isOpen = status === 'In Progress';
       complaint.history.push(nextHistoryEntry);
-      const saved = await complaint.save();
+      let saved;
+      try {
+        saved = await complaint.save();
+      } catch (error) {
+        if (error && error.code === 11000) {
+          return res.status(409).json(errorBody('COMPLAINT_CATEGORY_OPEN', 'You already have an open complaint in this category', { category: complaint.category }));
+        }
+        throw error;
+      }
 
       return res.json({ success: true, data: toComplaintView(saved) });
     } catch (error) {

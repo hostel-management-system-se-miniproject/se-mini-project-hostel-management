@@ -43,11 +43,16 @@ describe('complaint API helpers', () => {
 });
 
 describe('ComplaintsPage', () => {
-  it('renders the complaint form and a list heading for students', () => {
+  it('renders exactly the contract complaint categories', () => {
     const html = renderToStaticMarkup(<ComplaintsPage role="student" />);
     expect(html).toContain('Raise a complaint');
     expect(html).toContain('Your complaints');
     expect(html).toContain('name="category"');
     expect(html).toContain('name="description"');
+    expect(html.match(/<option\b/g)).toHaveLength(3);
+    expect(html).toContain('>Electrical</option>');
+    expect(html).toContain('>Plumbing</option>');
+    expect(html).toContain('>Furniture</option>');
+    expect(html).not.toContain('>Other</option>');
   });
 });

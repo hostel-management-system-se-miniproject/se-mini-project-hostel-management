@@ -7,10 +7,7 @@ import { fetchMyComplaints, submitComplaint } from '../api/complaints';
 const CATEGORY_OPTIONS = [
   'Electrical',
   'Plumbing',
-  'Maintenance',
-  'Cleaning',
-  'Internet',
-  'Other',
+  'Furniture',
 ];
 
 function formatDate(value) {
