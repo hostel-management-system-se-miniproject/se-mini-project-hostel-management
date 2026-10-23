@@ -29,9 +29,9 @@ A test ID is recorded as passed only when it was executed. "Automated" means a t
 | FR-003.2 | Paid / Partially Paid / Due status | Not started | UT-14, UT-15, IT-06 | No merged Sprint 1 implementation exists for this feature set. (The student dashboard already derives the fee status from a fee record, but there is no fee management yet.) |
 | FR-003.3 | Due-date notification within 7 days (if enabled) | Not started | IT-07, IT-17 | Requires the fee-tracking feature and a configured SMTP environment. |
 | FR-003.4 | Reject zero, negative or excessive payments | Not started | UT-16, UT-33, UT-34 | Payment validation is not yet implemented in the Sprint 1 merged branch. |
-| FR-004.1 | One open complaint per category | Partial | UT-17, UT-18, UT-19, UT-35, IT-20 | HMS-13 is merged (`POST /api/complaints`, student Complaints page). Passed (automated): UT-17 and UT-18. UT-19 and IT-20 are covered only at model level so far; UT-35 has no test yet. Known gaps against the API contract (category list, duplicate-key handling) are being fixed on `fix/complaints-contract`; re-run these tests after it merges. |
-| FR-004.2 | Admin status and remarks update | Partial | UT-20, UT-36, UT-37, UT-21, ST-04 | The backend `PUT /api/complaints/{id}` exists. Passed (automated): UT-36 (rejection needs remarks). Open: UT-20, UT-37 and UT-21 have no test yet; ST-04 cannot run until the admin complaint screen is built. |
-| FR-004.3 | Complaint history with timestamps | Partial | IT-08, ST-04 | The student sees their own complaints, newest first, with status, remarks and dates, and the backend stores a history list. IT-08 has not been executed yet; ST-04 cannot run without the admin screen. |
+| FR-004.1 | One open complaint per category | Verified | UT-17, UT-18, UT-19, UT-35, IT-20 | HMS-13 is merged (`POST /api/complaints`, student Complaints page), and the contract fixes are in (categories Electrical, Plumbing and Furniture only, duplicate-key errors return 409). All five passed (automated, `backend/test/complaints-route.test.js`): UT-17 (201, status Open, first history entry Open), UT-18 (second open complaint in a category returns 409), UT-19 (a different category is allowed), UT-35 (blank and spaces-only description return 400), IT-20 (In Progress still blocks; Resolved and Rejected allow a new complaint). |
+| FR-004.2 | Admin status and remarks update | Partial | UT-20, UT-36, UT-37, UT-21, ST-04 | The backend `PUT /api/complaints/{id}` is implemented. Passed (automated): UT-20 (In Progress then Resolved, with remarks and history), UT-36 (Rejected needs remarks), UT-37 (invalid statuses such as "Closed" and "done" return 400) and UT-21 (a student cannot update a complaint: 403). Open: ST-04 cannot run until the admin complaint screen is built. |
+| FR-004.3 | Complaint history with timestamps | Partial | IT-08, ST-04 | Passed (automated): the student's complaint list returns only their own complaints, newest first, with status, remarks and dates, and every status change is stored in the history with a timestamp. Open: IT-08 has not been run in the browser, and ST-04 cannot run without the admin screen. |
 | FR-005.1 | Leave request submission | Not started | UT-22, UT-23, UT-38, ST-05 | Leave workflow is not part of the merged Sprint 1 scope. |
 | FR-005.2 | Leave approval or rejection; student views status | Not started | UT-24, UT-25, IT-22, ST-05 | Pending later work. |
 | FR-005.3 | Visitor entry and exit log | Verified | UT-26, UT-27, UT-39, UT-40 | HMS-17 is merged (`/api/visitors`, admin Visitors page). All four passed (automated, `backend/test/visitors-routes.test.js`) and were checked by hand on 22 Oct 2026: field errors, an exit earlier than the entry refused, a later exit saved on the same record. Re-recording an exit overwrites the earlier exit time (the contract defines no conflict error). |
@@ -40,7 +40,7 @@ A test ID is recorded as passed only when it was executed. "Automated" means a t
 | NFR-001.a | Standard page load within 3 seconds | Not runnable | NFR-01 | Requires deployment or a stable browser-perf test environment. |
 | NFR-001.b | At least 200 concurrent users | Not runnable | NFR-04 | Load testing needs a proper runtime environment and benchmarking setup. |
 | NFR-002.a | Password hashing | Verified | NFR-02 | Password hashing is in the implementation and verified by the security checks. |
-| NFR-002.b | Role-based access control; students see only their own records | Partial | IT-05, UT-21, IT-18, IT-19, IT-21 | Passed (automated): IT-05 (a student cannot allocate rooms: 401 without a session, 403 for a student); the dashboard half of IT-18 (a student gets 403 for another student's dashboard, 200 for their own and for an admin); the visitor half of IT-21 (no session 401, student 403 on `/api/visitors`). Open: the fee half of IT-18 and the report half of IT-21 (those features are not built), IT-19 (leave requests are not built) and UT-21 (no test yet). |
+| NFR-002.b | Role-based access control; students see only their own records | Partial | IT-05, UT-21, IT-18, IT-19, IT-21 | Passed (automated): IT-05 (a student cannot allocate rooms: 401 without a session, 403 for a student); the dashboard half of IT-18 (a student gets 403 for another student's dashboard, 200 for their own and for an admin); the visitor half of IT-21 (no session 401, student 403 on `/api/visitors`); UT-21 (a student cannot update a complaint); the complaint half of IT-19 (a student lists only their own complaints and gets 403 for another student's complaint). Open: the fee half of IT-18, the report half of IT-21 and the leave half of IT-19, because those features are not built. |
 | NFR-002.c | Session expiry after 30 minutes of inactivity | Verified | NFR-03, NFR-05 | Session expiry is implemented and default configuration is documented. |
 
 ## Test cases that cannot yet run
@@ -62,9 +62,8 @@ These cases belong to features that are merged, but no test has been run for the
 
 | Test IDs | What is needed |
 | --- | --- |
-| UT-19, UT-35, IT-20 | Route-level complaint tests (a different category is allowed, a blank description is rejected, a new complaint is allowed once the earlier one is closed). |
-| UT-20, UT-37, UT-21 | Route-level tests for the admin status update, an invalid status and a student attempting the update. |
-| IT-08, IT-19 | A run against the real application with two students: complaint history and own-records-only access. |
+| IT-08 | A run in the browser against the real application: the student opens their complaints and sees status, remarks and dates. |
+| IT-19 (leave half) | The leave requests feature must exist first. |
 
 ## Review of merged PR traceability
 
@@ -80,10 +79,10 @@ Later Sprint 1 stories, by issue:
 - HMS-08 (room allocation): FR-002.2 to FR-002.4, IT-05, UT-09 to UT-11, ST-01, ST-02
 - HMS-34 (student dashboard): NFR-002.b, the dashboard half of IT-18, ST-01 (student side)
 - HMS-17 (visitor log): FR-005.3, UT-26, UT-27, UT-39, UT-40, the visitor half of IT-21
-- HMS-13 (complaints): FR-004.1 to FR-004.3, UT-17, UT-18, UT-36
+- HMS-13 (complaints): FR-004.1 to FR-004.3, UT-17 to UT-21, UT-35 to UT-37, IT-20, the complaint half of IT-19
 
 This is the traceability record that should be used during Sprint 1 review and before promoting the work to the next integration stage.
 
 ## Final Sprint 1 status
 
-The merged Sprint 1 work covers authentication, registration, room availability, room allocation, the student dashboard, the visitor log and the first part of complaint management (student submission and listing, plus the backend update endpoint). Several of the functional and non-functional checks are already mapped to real test IDs that were executed and passed. The rows marked Partial list exactly which test IDs are still open, and the remaining requirement groups (fees, leave, reports, the admin dashboard, reallocation and vacate) stay marked as not started or not runnable until their implementation and test evidence are complete.
+The merged Sprint 1 work covers authentication, registration, room availability, room allocation, the student dashboard, the visitor log and complaint management on the student side and in the backend (submission, listing and the admin update endpoint; the admin complaint screen is still to come). Several of the functional and non-functional checks are already mapped to real test IDs that were executed and passed. The rows marked Partial list exactly which test IDs are still open, and the remaining requirement groups (fees, leave, reports, the admin dashboard, reallocation and vacate) stay marked as not started or not runnable until their implementation and test evidence are complete.
