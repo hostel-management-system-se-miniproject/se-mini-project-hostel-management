@@ -1,13 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Alert } from './components/Alert';
 import { FormDemo } from './components/FormDemo';
 import { PlaceholderPage } from './components/PlaceholderPage';
 import { Table } from './components/Table';
-import { RoomsPage } from './pages/RoomsPage';
-import { AllocationsPage } from './pages/AllocationsPage';
-import { VisitorsPage } from './pages/VisitorsPage';
-import { StudentDashboardPage } from './pages/StudentDashboardPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import {
   NAV_ITEMS,
@@ -90,11 +85,8 @@ function DashboardPage() {
   );
 }
 
-function renderPageContent(path, role, user) {
+function renderPageContent(path, role) {
   if (path === '/dashboard') {
-    if (role === 'student' && user?.usn) {
-      return <StudentDashboardPage usn={user.usn} />;
-    }
     return <DashboardPage />;
   }
 
@@ -117,11 +109,12 @@ function renderPageContent(path, role, user) {
   }
 
   if (path === '/rooms') {
-    return <RoomsPage />;
-  }
-
-  if (path === '/allocations') {
-    return <AllocationsPage />;
+    return (
+      <PlaceholderPage
+        title="Rooms"
+        description="Room allocation, occupancy, and maintenance tasks can be managed here."
+      />
+    );
   }
 
   if (path === '/fees') {
@@ -134,7 +127,12 @@ function renderPageContent(path, role, user) {
   }
 
   if (path === '/visitors') {
-    return <VisitorsPage />;
+    return (
+      <PlaceholderPage
+        title="Visitors"
+        description="Visitor logs and gate-entry approval details will appear in this screen."
+      />
+    );
   }
 
   if (path === '/reports') {
@@ -154,10 +152,8 @@ function renderPageContent(path, role, user) {
   );
 }
 
-function App({ user = null, onLogout = null }) {
-  // With a logged-in user the role comes from the server session. Without one
-  // (the HMS-03 demo and its tests) the role switcher is shown instead.
-  const [role, setRole] = React.useState(user?.role ?? 'student');
+function App() {
+  const [role, setRole] = React.useState('student');
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [currentPath, navigate] = useCurrentPath();
 
@@ -209,27 +205,18 @@ function App({ user = null, onLogout = null }) {
           </div>
         </div>
 
-        {user ? (
-          <div className="user-box">
-            <span>{user.name || user.usn || formatRoleName(user.role)}</span>
-            <button type="button" onClick={onLogout}>
-              Log out
+        <div className="role-switcher" aria-label="Role selector">
+          {['student', 'admin'].map((item) => (
+            <button
+              key={item}
+              type="button"
+              className={item === role ? 'active' : ''}
+              onClick={() => handleRoleChange(item)}
+            >
+              {formatRoleName(item)}
             </button>
-          </div>
-        ) : (
-          <div className="role-switcher" aria-label="Role selector">
-            {['student', 'admin'].map((item) => (
-              <button
-                key={item}
-                type="button"
-                className={item === role ? 'active' : ''}
-                onClick={() => handleRoleChange(item)}
-              >
-                {formatRoleName(item)}
-              </button>
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
       </header>
 
       <div className="layout-shell">
@@ -263,21 +250,12 @@ function App({ user = null, onLogout = null }) {
           </div>
 
           <ProtectedRoute allowedRoles={activePage?.roles ?? ['student', 'admin']} currentRole={role}>
-            {renderPageContent(currentPath, role, user)}
+            {renderPageContent(currentPath, role)}
           </ProtectedRoute>
         </main>
       </div>
     </div>
   );
 }
-
-App.propTypes = {
-  user: PropTypes.shape({
-    role: PropTypes.string.isRequired,
-    usn: PropTypes.string,
-    name: PropTypes.string,
-  }),
-  onLogout: PropTypes.func,
-};
 
 export default App;
