@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const { createHealthRouter } = require('./routes/health');
@@ -12,15 +13,33 @@ const { createVisitorsRouter } = require('./routes/visitors');
 const { createComplaintsRouter } = require('./routes/complaints');
 const { SESSION_COOKIE_NAME } = require('./config/auth');
 
+// TRUST_PROXY is the number of reverse proxies in front of the API (0 or empty
+// means none). Behind an HTTPS proxy it must be set (for example to 1), or
+// Express cannot tell the request was HTTPS and the session cookie would not
+// get the Secure flag.
+function parseTrustProxy(value) {
+  const hops = Number.parseInt(value, 10);
+  return Number.isInteger(hops) && hops > 0 ? hops : false;
+}
+
 function createApp({
   getDatabaseStatus = () => (mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'),
   authConfig,
   loginService,
-  sessionStore
+  sessionStore,
+  frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
+  trustProxy = process.env.TRUST_PROXY
 } = {}) {
   const app = express();
 
-  app.use(cors({ origin: process.env.FRONTEND_ORIGIN || 'http://localhost:5173', credentials: true }));
+  const proxyHops = parseTrustProxy(trustProxy);
+  if (proxyHops) {
+    app.set('trust proxy', proxyHops);
+  }
+
+  // Security headers (helmet) and CORS limited to the one frontend origin.
+  app.use(helmet());
+  app.use(cors({ origin: frontendOrigin, credentials: true }));
   app.use(express.json({ limit: '1mb' }));
   app.use('/health', createHealthRouter(getDatabaseStatus));
 
@@ -37,6 +56,7 @@ function createApp({
       cookie: {
         httpOnly: true,
         sameSite: 'lax',
+        // 'auto' sets Secure when the request arrived over HTTPS (see TRUST_PROXY).
         secure: 'auto',
         maxAge: Math.round(authConfig.sessionTimeoutMinutes * 60000)
       }
