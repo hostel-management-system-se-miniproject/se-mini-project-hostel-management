@@ -1,8 +1,14 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Alert } from './components/Alert';
 import { FormDemo } from './components/FormDemo';
 import { PlaceholderPage } from './components/PlaceholderPage';
 import { Table } from './components/Table';
+import { RoomsPage } from './pages/RoomsPage';
+import { AllocationsPage } from './pages/AllocationsPage';
+import { VisitorsPage } from './pages/VisitorsPage';
+import { ComplaintsPage } from './pages/ComplaintsPage';
+import { StudentDashboardPage } from './pages/StudentDashboardPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import {
   NAV_ITEMS,
@@ -85,18 +91,16 @@ function DashboardPage() {
   );
 }
 
-function renderPageContent(path, role) {
+function renderPageContent(path, role, user) {
   if (path === '/dashboard') {
+    if (role === 'student' && user?.usn) {
+      return <StudentDashboardPage usn={user.usn} />;
+    }
     return <DashboardPage />;
   }
 
   if (path === '/complaints') {
-    return (
-      <PlaceholderPage
-        title="Complaints"
-        description="Students and admins can track complaints, open tickets, and review actions here."
-      />
-    );
+    return <ComplaintsPage role={role} />;
   }
 
   if (path === '/leave') {
@@ -109,12 +113,11 @@ function renderPageContent(path, role) {
   }
 
   if (path === '/rooms') {
-    return (
-      <PlaceholderPage
-        title="Rooms"
-        description="Room allocation, occupancy, and maintenance tasks can be managed here."
-      />
-    );
+    return <RoomsPage />;
+  }
+
+  if (path === '/allocations') {
+    return <AllocationsPage />;
   }
 
   if (path === '/fees') {
@@ -127,12 +130,7 @@ function renderPageContent(path, role) {
   }
 
   if (path === '/visitors') {
-    return (
-      <PlaceholderPage
-        title="Visitors"
-        description="Visitor logs and gate-entry approval details will appear in this screen."
-      />
-    );
+    return <VisitorsPage />;
   }
 
   if (path === '/reports') {
@@ -152,8 +150,10 @@ function renderPageContent(path, role) {
   );
 }
 
-function App() {
-  const [role, setRole] = React.useState('student');
+function App({ user = null, onLogout = null }) {
+  // With a logged-in user the role comes from the server session. Without one
+  // (the HMS-03 demo and its tests) the role switcher is shown instead.
+  const [role, setRole] = React.useState(user?.role ?? 'student');
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [currentPath, navigate] = useCurrentPath();
 
@@ -205,18 +205,27 @@ function App() {
           </div>
         </div>
 
-        <div className="role-switcher" aria-label="Role selector">
-          {['student', 'admin'].map((item) => (
-            <button
-              key={item}
-              type="button"
-              className={item === role ? 'active' : ''}
-              onClick={() => handleRoleChange(item)}
-            >
-              {formatRoleName(item)}
+        {user ? (
+          <div className="user-box">
+            <span>{user.name || user.usn || formatRoleName(user.role)}</span>
+            <button type="button" onClick={onLogout}>
+              Log out
             </button>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className="role-switcher" aria-label="Role selector">
+            {['student', 'admin'].map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={item === role ? 'active' : ''}
+                onClick={() => handleRoleChange(item)}
+              >
+                {formatRoleName(item)}
+              </button>
+            ))}
+          </div>
+        )}
       </header>
 
       <div className="layout-shell">
@@ -250,12 +259,21 @@ function App() {
           </div>
 
           <ProtectedRoute allowedRoles={activePage?.roles ?? ['student', 'admin']} currentRole={role}>
-            {renderPageContent(currentPath, role)}
+            {renderPageContent(currentPath, role, user)}
           </ProtectedRoute>
         </main>
       </div>
     </div>
   );
 }
+
+App.propTypes = {
+  user: PropTypes.shape({
+    role: PropTypes.string.isRequired,
+    usn: PropTypes.string,
+    name: PropTypes.string,
+  }),
+  onLogout: PropTypes.func,
+};
 
 export default App;

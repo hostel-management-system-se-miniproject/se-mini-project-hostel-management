@@ -1,0 +1,28 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-hint {
+  margin: 0 0 16px;
+  opacity: 0.8;
+}
+
+.login-checking {
+  padding: 24px;
+  text-align: center;
+}
+
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
