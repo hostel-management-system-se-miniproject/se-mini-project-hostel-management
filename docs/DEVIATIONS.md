@@ -3,7 +3,7 @@
 **Project:** Hostel Management System (HMS), Team 3, Class 5-J, PES University
 **Baseline:** SRS v1.0, SAD v1.0, Test Plan v1.0 (as submitted)
 **Current:** SRS v1.1, SAD v1.1, Test Plan v1.1
-**Owner:** Chiranthan Sathrasala (PM). **Last updated:** 21 Oct 2026 (Sprint 1)
+**Owner:** Chiranthan Sathrasala (PM). **Last updated:** 23 Oct 2026 (Sprint 1)
 **Related:** Issue HMS-32
 
 Anything that differs from the submitted SRS, SAD or Test Plan is listed here with the reason, the documents it affects and its impact. Add new rows as they are found. The final version is due on Fri 23 Oct.
@@ -25,6 +25,8 @@ Anything that differs from the submitted SRS, SAD or Test Plan is listed here wi
 | D-07 | Roles | Roles not fully fixed | Two roles only: Student and Warden/Admin. Admin accounts are created by the seed script. | There is no admin self-registration. | SRS, SAD 3.a.1, 3.a.5 | Role middleware on every protected route, plus a self-or-admin check on routes carrying a USN. | Done |
 | D-08 | NFR sub-IDs | NFR-001, NFR-002 | NFR-001.a/b and NFR-002.a/b/c | Each NFR needs its own testable ID so it can be traced to a test case. | SRS, SAD traceability, Test Plan (NFR-01 to NFR-05) | The traceability matrix is now per sub-requirement. | Done |
 | D-09 | Login identifier and lockout | Not detailed | One `identifier` field accepts a USN or an email. 5 failed logins lock the account for 15 minutes. Session timeout is 30 minutes. All three values are configurable (test mode uses 1 minute). | A single field is simpler for users. Configurable limits make the lockout and timeout testable in a short time. | SRS FR-001.3, SAD 3.a.5, Test Plan UT-06, UT-07, IT-01, IT-02, NFR-05 | Unknown user and wrong password return the same 401 message so accounts cannot be enumerated. | Done |
+| D-13 | Room filter behaviour | `GET /api/rooms` filters `block`, `floor`, `sharing` and `available` (only `true` described) | `block` and `sharing` match the whole value, ignoring letter case. `available=false` is accepted and adds no filter. Other values return 400 VALIDATION_ERROR. | Seed data stores sharing types in lower case while the contract example shows `Triple`, and a case-sensitive match would return nothing. | SAD 3.b.3, API_CONTRACT (rooms), Test Plan UT-08, UT-31 | No change for clients that send `true` or leave the filter out. | Done |
+| D-14 | Phone number rule | API contract: required, maximum 15 characters | Required, 7 to 15 digits with an optional leading `+`. Letters, spaces and other characters are rejected. | A phone number needs a minimum length and digits only to be useful, and the registration form shows the same rule. | API_CONTRACT (register), SRS FR-001.1, Test Plan UT-04 | A shorter number or a number containing spaces is now rejected with a field message. | Done |
 
 ## 2. Process deviations
 
