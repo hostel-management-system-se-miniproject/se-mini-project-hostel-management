@@ -177,6 +177,28 @@ test('a phone number with letters is rejected', async () => {
   assert.equal(response.body.error.details.phone, 'Enter a valid phone number');
 });
 
+test('a 15-digit phone number is accepted', async () => {
+  const fakes = createFakes();
+  const response = await request(makeApp(fakes)).post('/api/auth/register').send({ ...valid, phone: '987654321012345' });
+
+  assert.equal(response.status, 201);
+  assert.equal(fakes.students[0].phone, '987654321012345');
+});
+
+test('a 16-digit phone number is rejected', async () => {
+  const response = await request(makeApp(createFakes())).post('/api/auth/register').send({ ...valid, phone: '9876543210123456' });
+
+  assert.equal(response.status, 400);
+  assert.equal(response.body.error.details.phone, 'Enter a valid phone number');
+});
+
+test('a 6-digit phone number is rejected', async () => {
+  const response = await request(makeApp(createFakes())).post('/api/auth/register').send({ ...valid, phone: '123456' });
+
+  assert.equal(response.status, 400);
+  assert.equal(response.body.error.details.phone, 'Enter a valid phone number');
+});
+
 test('non-string values are rejected instead of crashing', async () => {
   const response = await request(makeApp(createFakes())).post('/api/auth/register')
     .send({ usn: 12345, name: ['x'], email: { a: 1 }, phone: 9876543210, password: 123456 });

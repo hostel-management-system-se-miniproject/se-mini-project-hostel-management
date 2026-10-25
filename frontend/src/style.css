@@ -362,6 +362,12 @@ button {
   color: var(--accent-strong);
 }
 
+.alert-warning {
+  background: rgba(176, 106, 0, 0.08);
+  border: 1px solid rgba(176, 106, 0, 0.25);
+  color: #8a5300;
+}
+
 .table-wrap {
   overflow-x: auto;
 }

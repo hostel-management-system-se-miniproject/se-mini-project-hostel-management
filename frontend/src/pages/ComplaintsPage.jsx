@@ -70,22 +70,34 @@ ComplaintList.propTypes = {
   })).isRequired,
 };
 
+export function ComplaintError({ title, message }) {
+  if (!message) return null;
+
+  return <Alert variant="error" title={title} message={message} />;
+}
+
+ComplaintError.propTypes = {
+  title: PropTypes.string.isRequired,
+  message: PropTypes.string,
+};
+
 export function ComplaintsPage({ role = 'student' }) {
   const [form, setForm] = React.useState({ category: CATEGORY_OPTIONS[0], description: '' });
   const [complaints, setComplaints] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [loadError, setLoadError] = React.useState('');
   const [success, setSuccess] = React.useState('');
 
   const loadComplaints = React.useCallback(async () => {
     setLoading(true);
-    setError('');
+    setLoadError('');
     try {
       const nextComplaints = await fetchMyComplaints();
       setComplaints(nextComplaints);
     } catch (caught) {
-      setError(caught.message || 'Could not load complaints.');
+      setLoadError(caught.message || 'Could not load complaints.');
     } finally {
       setLoading(false);
     }
@@ -100,7 +112,7 @@ export function ComplaintsPage({ role = 'student' }) {
 
     const load = async () => {
       setLoading(true);
-      setError('');
+      setLoadError('');
 
       try {
         const nextComplaints = await fetchMyComplaints();
@@ -109,7 +121,7 @@ export function ComplaintsPage({ role = 'student' }) {
         }
       } catch (caught) {
         if (isMounted) {
-          setError(caught.message || 'Could not load complaints.');
+          setLoadError(caught.message || 'Could not load complaints.');
         }
       } finally {
         if (isMounted) {
@@ -193,7 +205,7 @@ export function ComplaintsPage({ role = 'student' }) {
             </label>
           </div>
 
-          {error ? <Alert variant="error" title="Could not submit complaint" message={error} /> : null}
+          <ComplaintError title="Could not submit complaint" message={error} />
           {success ? <Alert variant="success" title="Complaint submitted" message={success} /> : null}
 
           <button type="submit" className="primary-button" disabled={submitting}>
@@ -204,6 +216,7 @@ export function ComplaintsPage({ role = 'student' }) {
 
       <div className="widget-card">
         <h3>Your complaints</h3>
+        <ComplaintError title="Could not load complaints" message={loadError} />
         {loading ? <LoadingState label="Loading complaints …" /> : <ComplaintList complaints={complaints} />}
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import { fetchMyComplaints, submitComplaint } from './api/complaints';
-import { ComplaintsPage } from './pages/ComplaintsPage';
+import { ComplaintError, ComplaintsPage } from './pages/ComplaintsPage';
 
 function fakeFetch(status, body) {
   return vi.fn().mockResolvedValue({
@@ -43,6 +43,22 @@ describe('complaint API helpers', () => {
 });
 
 describe('ComplaintsPage', () => {
+  it('renders a load failure in the complaints card', () => {
+    const html = renderToStaticMarkup(
+      <ComplaintError title="Could not load complaints" message="Request failed" />,
+    );
+
+    expect(html).toContain('Could not load complaints');
+  });
+
+  it('renders submit failures with the submit error title', () => {
+    const html = renderToStaticMarkup(
+      <ComplaintError title="Could not submit complaint" message="Request failed" />,
+    );
+
+    expect(html).toContain('Could not submit complaint');
+  });
+
   it('renders exactly the contract complaint categories', () => {
     const html = renderToStaticMarkup(<ComplaintsPage role="student" />);
     expect(html).toContain('Raise a complaint');
