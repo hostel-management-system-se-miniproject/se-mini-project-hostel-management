@@ -4,7 +4,7 @@
 
 const USN_PATTERN = /^[A-Za-z0-9]{13}$/;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_PATTERN = /^\+?[0-9]{7,14}$/;
+const PHONE_PATTERN = /^\+?[0-9]{7,15}$/;
 
 export const REGISTRATION_FIELDS = ['usn', 'name', 'email', 'phone', 'password'];
 

@@ -1,7 +1,7 @@
 // Validation for POST /api/auth/register (SRS FR-001.1, SAD 3.b.3 and 3.b.4).
 const USN_PATTERN = /^[A-Za-z0-9]{13}$/;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_PATTERN = /^\+?[0-9]{7,14}$/;
+const PHONE_PATTERN = /^\+?[0-9]{7,15}$/;
 
 const USN_MESSAGE = 'Enter a valid USN (13 alphanumeric characters, for example PES1UG24CS924)';
 
