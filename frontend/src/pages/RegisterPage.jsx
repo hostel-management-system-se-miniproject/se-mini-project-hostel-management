@@ -1,5 +1,6 @@
 import React from 'react';
 import { Alert } from '../components/Alert';
+import { AuthLayout } from '../components/AuthLayout';
 import { registerStudent } from '../api/register';
 import { REGISTRATION_FIELDS, validateRegistration } from '../validation';
 import '../register.css';
@@ -68,7 +69,7 @@ export function RegisterPage() {
 
   if (registered) {
     return (
-      <main className="login-page">
+      <AuthLayout>
         <div className="form-card login-card">
           <Alert
             variant="success"
@@ -79,12 +80,12 @@ export function RegisterPage() {
             <a href={LOGIN_PATH}>Go to login</a>
           </p>
         </div>
-      </main>
+      </AuthLayout>
     );
   }
 
   return (
-    <main className="login-page">
+    <AuthLayout>
       <div className="form-card login-card">
         <h2>Student registration</h2>
 
@@ -127,6 +128,6 @@ export function RegisterPage() {
           Already registered? <a href={LOGIN_PATH}>Log in</a>
         </p>
       </div>
-    </main>
+    </AuthLayout>
   );
 }

@@ -14,6 +14,11 @@ export function formatDueDate(value) {
   return `${Number(day)} ${MONTH_NAMES[Number(month) - 1]} ${year}`;
 }
 
+export function feePercentPaid(fee) {
+  if (!fee.amountDue || fee.amountDue <= 0) return 0;
+  return Math.max(0, Math.min(100, Math.round((fee.totalPaid / fee.amountDue) * 100)));
+}
+
 export function formatMoney(value) {
   return `₹${Number(value).toLocaleString('en-IN')}`;
 }
@@ -47,7 +52,7 @@ export function DashboardView({ data }) {
         </div>
       </section>
 
-      <section className="widget-card student-dash-card">
+      <section className="widget-card student-dash-card student-dash-room">
         <h2>Room</h2>
         {room ? (
           <>
@@ -69,13 +74,25 @@ export function DashboardView({ data }) {
       <section className="widget-card student-dash-card">
         <h2>Fee</h2>
         {fee ? (
-          <div className="student-dash-details">
-            <Detail label="Amount due" value={formatMoney(fee.amountDue)} />
-            <Detail label="Paid" value={formatMoney(fee.totalPaid)} />
-            <Detail label="Balance" value={formatMoney(fee.balance)} />
-            <Detail label="Due date" value={formatDueDate(fee.dueDate)} />
-            <Detail label="Status" value={fee.status} />
-          </div>
+          <>
+            <div
+              className="fee-meter"
+              role="img"
+              aria-label={`${feePercentPaid(fee)}% of the fee paid`}
+            >
+              <span style={{ width: `${feePercentPaid(fee)}%` }} />
+            </div>
+            <div className="student-dash-details">
+              <Detail label="Amount due" value={formatMoney(fee.amountDue)} />
+              <Detail label="Paid" value={formatMoney(fee.totalPaid)} />
+              <Detail label="Balance" value={formatMoney(fee.balance)} />
+              <Detail label="Due date" value={formatDueDate(fee.dueDate)} />
+              <Detail
+                label="Status"
+                value={<span className={`pill pill-${fee.status.toLowerCase().replace(/\s+/g, '-')}`}>{fee.status}</span>}
+              />
+            </div>
+          </>
         ) : (
           <p className="inline-note">No fee record yet.</p>
         )}

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert } from './components/Alert';
+import { NavIcon } from './components/NavIcon';
 import { FormDemo } from './components/FormDemo';
 import { PlaceholderPage } from './components/PlaceholderPage';
 import { Table } from './components/Table';
@@ -40,6 +41,14 @@ function useCurrentPath() {
   }, []);
 
   return [currentPath, navigate];
+}
+
+function getInitials(name) {
+  // Use the first letters of the first two words that start with a letter ("Student 001" gives "ST").
+  const words = String(name).trim().split(/\s+/).filter((word) => /^[A-Za-z]/.test(word));
+  if (words.length === 0) return '?';
+  const letters = words.length === 1 ? words[0].slice(0, 2) : words[0][0] + words[1][0];
+  return letters.toUpperCase();
 }
 
 function DashboardPage() {
@@ -183,81 +192,89 @@ function App({ user = null, onLogout = null }) {
     setMobileMenuOpen(false);
   };
 
+  const displayName = user?.name || user?.usn || formatRoleName(role);
+
   return (
     <div className="app-shell">
-      <header className="topbar">
-        <div className="topbar-left">
-          <button
-            type="button"
-            className="menu-toggle"
-            aria-label="Toggle navigation menu"
-            onClick={() => setMobileMenuOpen((open) => !open)}
-          >
-            ☰
-          </button>
-
-          <div className="brand">
-            <span className="brand-mark">HMS</span>
-            <div>
-              <strong>Hostel Management</strong>
-              <small>Role console</small>
-            </div>
+      <aside id="app-sidebar" className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
+        <div className="brand">
+          <span className="brand-mark">HMS</span>
+          <div>
+            <strong>Hostel Management</strong>
+            <small>{role === 'admin' ? 'Hostel office' : 'Student portal'}</small>
           </div>
         </div>
 
-        {user ? (
-          <div className="user-box">
-            <span>{user.name || user.usn || formatRoleName(user.role)}</span>
-            <button type="button" onClick={onLogout}>
-              Log out
+        <nav aria-label="Sidebar navigation">
+          {menuItems.map((item) => (
+            <button
+              key={item.path}
+              type="button"
+              className={currentPath === item.path ? 'nav-item active' : 'nav-item'}
+              aria-current={currentPath === item.path ? 'page' : undefined}
+              onClick={() => handleNavigation(item.path)}
+            >
+              <span className="icon" aria-hidden="true"><NavIcon name={item.icon} /></span>
+              <span>{item.label}</span>
             </button>
-          </div>
-        ) : (
-          <div className="role-switcher" aria-label="Role selector">
-            {['student', 'admin'].map((item) => (
-              <button
-                key={item}
-                type="button"
-                className={item === role ? 'active' : ''}
-                onClick={() => handleRoleChange(item)}
-              >
-                {formatRoleName(item)}
-              </button>
-            ))}
-          </div>
-        )}
-      </header>
+          ))}
+        </nav>
 
-      <div className="layout-shell">
-        <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
-          <nav aria-label="Sidebar navigation">
-            {menuItems.map((item) => (
-              <button
-                key={item.path}
-                type="button"
-                className={currentPath === item.path ? 'nav-item active' : 'nav-item'}
-                onClick={() => handleNavigation(item.path)}
-              >
-                <span className="icon" aria-hidden="true">{item.icon}</span>
-                <span>{item.label}</span>
+        {user ? (
+          <div className="sidebar-foot">
+            <div className="user-box">
+              <span className="avatar" aria-hidden="true">{getInitials(displayName)}</span>
+              <div className="user-meta">
+                <strong>{displayName}</strong>
+                <small>{formatRoleName(user.role)}</small>
+              </div>
+              <button type="button" onClick={onLogout}>
+                Log out
               </button>
-            ))}
-          </nav>
-        </aside>
+            </div>
+          </div>
+        ) : null}
+      </aside>
+
+      <div
+        className={mobileMenuOpen ? 'scrim visible' : 'scrim'}
+        aria-hidden="true"
+        onClick={() => setMobileMenuOpen(false)}
+      />
+
+      <div className="main-column">
+        <header className="topbar">
+          <div className="topbar-left">
+            <button
+              type="button"
+              className="menu-toggle"
+              aria-label="Toggle navigation menu"
+              aria-controls="app-sidebar"
+              aria-expanded={mobileMenuOpen}
+              onClick={() => setMobileMenuOpen((open) => !open)}
+            >
+              ☰
+            </button>
+            <h1>{activePage?.label ?? 'Overview'}</h1>
+          </div>
+
+          {user ? null : (
+            <div className="role-switcher" aria-label="Role selector">
+              {['student', 'admin'].map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={item === role ? 'active' : ''}
+                  onClick={() => handleRoleChange(item)}
+                >
+                  {formatRoleName(item)}
+                </button>
+              ))}
+            </div>
+          )}
+        </header>
 
         <main className="content-area">
-          <div className="page-header">
-            <div>
-              <p className="eyebrow">{formatRoleName(role)} access</p>
-              <h1>{activePage?.label ?? 'Overview'}</h1>
-            </div>
-
-            <div className="page-status">
-              <span className="status-dot" aria-hidden="true" />
-              Active
-            </div>
-          </div>
-
           <ProtectedRoute allowedRoles={activePage?.roles ?? ['student', 'admin']} currentRole={role}>
             {renderPageContent(currentPath, role, user)}
           </ProtectedRoute>
