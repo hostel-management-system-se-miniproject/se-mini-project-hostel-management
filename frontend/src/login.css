@@ -1,28 +1,146 @@
-.login-page {
+/* Login and registration: a deep-pine panel with a hostel at night, and the form beside it. */
+
+.auth-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
   min-height: 100vh;
+}
+
+.auth-aside {
+  position: relative;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2rem 2.25rem;
+  overflow: hidden;
+  background: var(--pine-900);
+  color: #fff;
+}
+
+.auth-aside .brand {
+  padding: 0;
+}
+
+.auth-facade {
+  width: 100%;
+  max-width: 26rem;
+  margin: 0 auto;
+}
+
+.auth-facade .wall {
+  fill: var(--pine-800);
+}
+
+.auth-facade .ground {
+  fill: var(--pine-950);
+}
+
+.auth-facade .door {
+  fill: var(--pine-950);
+}
+
+.auth-facade .win {
+  fill: var(--pine-950);
+}
+
+.auth-facade .win.lit {
+  animation: window-on 0.9s ease-out forwards;
+  animation-delay: calc(var(--n) * 160ms + 350ms);
+}
+
+@keyframes window-on {
+  from {
+    fill: var(--pine-950);
+  }
+
+  to {
+    fill: var(--marigold);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-facade .win.lit {
+    animation: none;
+    fill: var(--marigold);
+  }
+}
+
+.auth-tagline {
+  max-width: 30ch;
+  margin: 0;
+  color: var(--pine-200);
+  font-size: 1.05rem;
+}
+
+.auth-main {
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.5rem;
+  background: var(--paper);
 }
 
 .login-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 26rem;
+}
+
+.auth-main .form-card {
+  padding: 2rem;
+}
+
+.auth-main .form-card h2 {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+}
+
+.auth-main .form-card h2 + .login-hint {
+  margin-top: -0.65rem;
 }
 
 .login-hint {
-  margin: 0 0 16px;
-  opacity: 0.8;
+  margin: 0 0 1.25rem;
+  color: var(--muted);
+}
+
+.login-hint.full-width {
+  margin: 0;
+}
+
+.login-card .primary-button {
+  justify-self: stretch;
 }
 
 .login-checking {
-  padding: 24px;
+  padding: 2rem;
   text-align: center;
+  color: var(--muted);
 }
 
-.user-box {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+@media (max-width: 820px) {
+  .auth-layout {
+    display: block;
+  }
+
+  .auth-aside {
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem 1.25rem;
+  }
+
+  .auth-facade,
+  .auth-tagline {
+    display: none;
+  }
+
+  .auth-main {
+    min-height: calc(100vh - 4.5rem);
+    align-items: start;
+    padding: 1.5rem 1rem;
+  }
+
+  .auth-main .form-card {
+    padding: 1.5rem;
+  }
 }
