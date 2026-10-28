@@ -2,13 +2,33 @@ import { describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import {
   allocateRoom,
+  fetchActiveAllocations,
   fetchAvailableRooms,
   fetchUnallocatedStudents,
+  reallocateAllocation,
+  vacateAllocation,
 } from './api/allocations';
-import { AllocationForm, AllocationResult } from './pages/AllocationsPage';
+import { ConfirmDialog } from './components/ConfirmDialog';
+import {
+  AllocationForm,
+  AllocationResult,
+  AllocationsTable,
+  ReallocatePanel,
+} from './pages/AllocationsPage';
 
 const student = { usn: 'PES1UG24CS001', name: 'Ravi Kumar', email: 'ravi@example.com' };
 const room = { id: 'r1', roomNo: 'A-204', block: 'A', floor: 2, sharingType: 'Triple', capacity: 3, vacancy: 1 };
+const allocation = {
+  id: 'allocation/1',
+  usn: 'PES1UG24CS001',
+  studentName: 'Ravi Kumar',
+  roomId: room.id,
+  roomNo: room.roomNo,
+  status: 'active',
+  startedAt: '2026-10-20T09:30:00.000Z',
+  endedAt: null,
+  endReason: null,
+};
 
 function fakeFetch(status, body) {
   return vi.fn().mockResolvedValue({
@@ -83,6 +103,53 @@ describe('allocation API', () => {
       })).rejects.toMatchObject({ message, code });
     }
   });
+
+  it('fetches active allocations and sends reallocate and vacate requests', async () => {
+    const fetchImpl = fakeFetch(200, { success: true, data: [allocation] });
+    await expect(fetchActiveAllocations({ fetchImpl })).resolves.toEqual([allocation]);
+    expect(fetchImpl.mock.calls[0][0]).toContain('/api/allocations?active=true');
+    expect(fetchImpl.mock.calls[0][1].credentials).toBe('include');
+
+    const reallocateFetch = fakeFetch(200, { success: true, data: allocation });
+    await reallocateAllocation('allocation/1', 'r2', { fetchImpl: reallocateFetch });
+    expect(reallocateFetch.mock.calls[0]).toEqual([
+      expect.stringContaining('/api/allocations/allocation%2F1/reallocate'),
+      expect.objectContaining({
+        credentials: 'include',
+        method: 'PUT',
+        body: JSON.stringify({ roomId: 'r2' }),
+      }),
+    ]);
+
+    const vacateFetch = fakeFetch(200, { success: true, data: { ...allocation, status: 'inactive' } });
+    await vacateAllocation('allocation/1', { fetchImpl: vacateFetch });
+    expect(vacateFetch.mock.calls[0][1]).toMatchObject({
+      credentials: 'include',
+      method: 'POST',
+      body: JSON.stringify({ confirm: true }),
+    });
+  });
+
+  it('maps allocation action errors', async () => {
+    for (const [code, status, message] of [
+      ['ROOM_FULL', 409, 'This room has just become full. Please choose another room.'],
+      ['NOT_FOUND', 404, 'This allocation is no longer active. Refresh the list.'],
+      ['CONFIRMATION_REQUIRED', 400, 'Confirmation is required.'],
+    ]) {
+      await expect(vacateAllocation('a1', {
+        fetchImpl: fakeFetch(status, { success: false, error: { code, message } }),
+      })).rejects.toMatchObject({ code, message });
+    }
+    await expect(vacateAllocation('a1', {
+      fetchImpl: vi.fn().mockRejectedValue(new TypeError('network')),
+    })).rejects.toMatchObject({ code: 'NETWORK_ERROR' });
+    await expect(vacateAllocation('a1', {
+      fetchImpl: fakeFetch(401, { success: false }),
+    })).rejects.toMatchObject({ code: 'SESSION_EXPIRED' });
+    await expect(vacateAllocation('a1', {
+      fetchImpl: fakeFetch(403, { success: false }),
+    })).rejects.toMatchObject({ code: 'FORBIDDEN' });
+  });
 });
 
 describe('allocation components', () => {
@@ -118,5 +185,65 @@ describe('allocation components', () => {
     );
     expect(failed).not.toContain('Every student already has a room');
     expect(failed).not.toContain('No rooms currently have vacancy');
+  });
+
+  it('renders current allocation rows, actions and the empty state', () => {
+    const markup = renderToStaticMarkup(
+      <AllocationsTable allocations={[allocation]} rooms={[room]} />,
+    );
+    expect(markup).toContain('Ravi Kumar');
+    expect(markup).toContain('Reallocate');
+    expect(markup).toContain('Vacate');
+    expect(markup).toContain('Oct 2026');
+    expect(renderToStaticMarkup(<AllocationsTable allocations={[]} rooms={[]} />))
+      .toContain('No active allocations yet');
+  });
+
+  it('lets the success title change so a vacate is not called an allocation', () => {
+    const markup = renderToStaticMarkup(
+      <AllocationResult success="Ravi Kumar left room A-204." successTitle="Room vacated" />,
+    );
+    expect(markup).toContain('Room vacated');
+    expect(markup).not.toContain('Room allocated');
+    expect(renderToStaticMarkup(<AllocationResult success="Done." />)).toContain('Room allocated');
+  });
+
+  it('renders a reallocate panel without the current room', () => {
+    const otherRoom = { ...room, id: 'r2', roomNo: 'A-205', vacancy: 2 };
+    const markup = renderToStaticMarkup(
+      <ReallocatePanel allocation={allocation} rooms={[room, otherRoom]} />,
+    );
+    expect(markup).toContain('A-205');
+    expect(markup).not.toContain('value="r1"');
+    expect(markup).toContain('disabled');
+    expect(renderToStaticMarkup(
+      <ReallocatePanel allocation={allocation} rooms={[room, otherRoom]} selectedRoom="r2" />,
+    )).toContain('Move Ravi Kumar (PES1UG24CS001) from A-204 to A-205?');
+  });
+
+  it('renders the controlled confirmation dialog', () => {
+    const markup = renderToStaticMarkup(
+      <ConfirmDialog
+        isOpen
+        title="Vacate this room?"
+        message="Student 001 will leave room A-101 and the bed will be released."
+        onConfirm={() => {}}
+        onCancel={() => {}}
+      />,
+    );
+    expect(markup).toContain('role="alertdialog"');
+    expect(markup).toContain('Vacate this room?');
+    expect(markup).toContain('Yes, vacate');
+    expect(markup).toContain('Cancel');
+    expect(renderToStaticMarkup(
+      <ConfirmDialog
+        isOpen
+        title="Vacate this room?"
+        message="Busy"
+        onConfirm={() => {}}
+        onCancel={() => {}}
+        busy
+      />,
+    )).toContain('disabled');
   });
 });
