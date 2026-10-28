@@ -1,15 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Alert } from './components/Alert';
 import { NavIcon } from './components/NavIcon';
-import { FormDemo } from './components/FormDemo';
 import { PlaceholderPage } from './components/PlaceholderPage';
-import { Table } from './components/Table';
 import { RoomsPage } from './pages/RoomsPage';
 import { AllocationsPage } from './pages/AllocationsPage';
 import { VisitorsPage } from './pages/VisitorsPage';
 import { ComplaintsPage } from './pages/ComplaintsPage';
 import { StudentDashboardPage } from './pages/StudentDashboardPage';
+import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import {
   NAV_ITEMS,
@@ -51,61 +49,12 @@ function getInitials(name) {
   return letters.toUpperCase();
 }
 
-function DashboardPage() {
-  const stats = [
-    { label: 'Occupied rooms', value: '84%' },
-    { label: 'Open complaints', value: '12' },
-    { label: 'Pending leave', value: '7' },
-  ];
-
-  const rows = [
-    { name: 'Aisha', room: 'A-204', status: 'Checked in' },
-    { name: 'Ravi', room: 'B-118', status: 'Pending' },
-    { name: 'Nirmal', room: 'C-301', status: 'Approved' },
-  ];
-
-  return (
-    <>
-      <Alert
-        variant="success"
-        title="Welcome back"
-        message="The role-based landing screen is active and ready to guide the user."
-      />
-
-      <div className="stats-grid">
-        {stats.map((stat) => (
-          <div className="stat-card" key={stat.label}>
-            <span>{stat.label}</span>
-            <strong>{stat.value}</strong>
-          </div>
-        ))}
-      </div>
-
-      <div className="panel-grid">
-        <FormDemo />
-
-        <div className="widget-card">
-          <h3>Recent activity</h3>
-          <Table
-            columns={[
-              { key: 'name', label: 'Name' },
-              { key: 'room', label: 'Room' },
-              { key: 'status', label: 'Status' },
-            ]}
-            rows={rows}
-          />
-        </div>
-      </div>
-    </>
-  );
-}
-
-function renderPageContent(path, role, user) {
+function renderPageContent(path, role, user, onNavigate) {
   if (path === '/dashboard') {
     if (role === 'student' && user?.usn) {
       return <StudentDashboardPage usn={user.usn} />;
     }
-    return <DashboardPage />;
+    return <AdminDashboardPage onNavigate={onNavigate} />;
   }
 
   if (path === '/complaints') {
@@ -276,7 +225,7 @@ function App({ user = null, onLogout = null }) {
 
         <main className="content-area">
           <ProtectedRoute allowedRoles={activePage?.roles ?? ['student', 'admin']} currentRole={role}>
-            {renderPageContent(currentPath, role, user)}
+            {renderPageContent(currentPath, role, user, handleNavigation)}
           </ProtectedRoute>
         </main>
       </div>

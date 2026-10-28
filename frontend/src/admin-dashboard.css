@@ -1,0 +1,325 @@
+/* Admin dashboard. Uses the tokens from style.css; layout and colour only. */
+
+.admin-dash {
+  display: grid;
+  gap: 1.1rem;
+}
+
+/* ---------- Hero ---------- */
+
+.admin-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.6rem 1.8rem;
+  overflow: hidden;
+  border-radius: var(--r-panel);
+  background:
+    radial-gradient(circle at 88% 10%, rgb(242 169 59 / 0.22), transparent 42%),
+    linear-gradient(135deg, var(--pine-900), var(--pine-800));
+  color: #fff;
+}
+
+/* Faint grid of "lit windows", the same motif as the login facade. */
+.admin-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgb(255 255 255 / 0.1) 1.2px, transparent 1.4px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(90deg, transparent 35%, #000);
+  pointer-events: none;
+}
+
+.admin-hero-text,
+.admin-ring {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-hero-date {
+  margin: 0 0 0.35rem;
+  color: var(--pine-200);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-hero h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  letter-spacing: -0.03em;
+}
+
+.admin-hero-line {
+  margin: 0.5rem 0 0;
+  color: var(--pine-100);
+  font-size: 1.05rem;
+}
+
+.admin-ring {
+  position: relative;
+  flex: none;
+  width: 8.5rem;
+  height: 8.5rem;
+}
+
+.admin-ring svg {
+  width: 100%;
+  height: 100%;
+}
+
+.admin-ring circle {
+  fill: none;
+  stroke-width: 10;
+}
+
+.admin-ring-track {
+  stroke: rgb(255 255 255 / 0.14);
+}
+
+.admin-ring-fill {
+  stroke: var(--marigold);
+  stroke-linecap: round;
+}
+
+.admin-ring-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.admin-ring-label strong {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  letter-spacing: -0.03em;
+}
+
+.admin-ring-label small {
+  color: var(--pine-200);
+  font-size: 0.78rem;
+}
+
+/* ---------- KPI cards ---------- */
+
+.admin-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+}
+
+.admin-kpi {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'icon label'
+    'value value'
+    'note note';
+  align-items: center;
+  gap: 0.2rem 0.7rem;
+  padding: 1.05rem 1.15rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+}
+
+.admin-kpi-icon {
+  grid-area: icon;
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 10px;
+  background: var(--pine-50);
+  color: var(--pine-700);
+}
+
+.admin-kpi-icon svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.admin-kpi-label {
+  grid-area: label;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.admin-kpi-value {
+  grid-area: value;
+  margin-top: 0.45rem;
+  font-family: var(--font-display);
+  font-size: 2.1rem;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.admin-kpi-note {
+  grid-area: note;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.admin-kpi-danger .admin-kpi-icon {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.admin-kpi-danger .admin-kpi-note {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.admin-kpi-warn .admin-kpi-icon {
+  background: var(--marigold-soft);
+  color: var(--marigold-text);
+}
+
+/* ---------- Lower panels ---------- */
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.admin-panel h3 {
+  margin: 0 0 1rem;
+}
+
+.admin-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.admin-action {
+  display: grid;
+  justify-items: start;
+  gap: 0.15rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.admin-action:hover {
+  transform: translateY(-2px);
+  border-color: var(--pine-600);
+  background: var(--surface);
+}
+
+.admin-action-icon {
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  margin-bottom: 0.45rem;
+  border-radius: 10px;
+  background: var(--marigold-soft);
+  color: var(--marigold-text);
+}
+
+.admin-action-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.admin-action small {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.admin-attention {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-attention li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.7rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 10px;
+  background: var(--paper);
+}
+
+.admin-attention-dot {
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--info);
+}
+
+.admin-attention-danger .admin-attention-dot {
+  background: var(--danger);
+}
+
+.admin-attention-warn .admin-attention-dot {
+  background: var(--marigold);
+}
+
+.admin-attention-text {
+  flex: 1 1 12rem;
+  font-weight: 600;
+}
+
+.admin-attention-link {
+  padding: 0.3rem 0.7rem;
+  border: 0;
+  background: transparent;
+  color: var(--pine-700);
+  font-size: 0.875rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.admin-attention-link:hover {
+  background: var(--pine-50);
+}
+
+.admin-attention-clear {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  background: var(--success-soft);
+  color: var(--success);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.3rem;
+  }
+
+  .admin-ring {
+    width: 7rem;
+    height: 7rem;
+  }
+}
