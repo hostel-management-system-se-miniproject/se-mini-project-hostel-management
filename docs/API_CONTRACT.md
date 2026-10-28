@@ -1,7 +1,7 @@
 # HMS API Contract
 
 **Project:** Hostel Management System (HMS), Team 3, Class 5-J, PES University
-**Version:** 1.1
+**Version:** 1.2
 **Status:** The freeze takes effect when this pull request is merged. This file was written on Sun 18 Oct 2026.
 **Owner:** Harsh M (Technical Lead)
 **Related:** Issue HMS-30 (GitHub issue #37), docs/SAD.md (3.b.3 API Design, 3.b.4 Error Handling), docs/ADR-001.md, docs/DEVIATIONS.md (D-06, D-09)
@@ -636,7 +636,11 @@ Success: 200 OK
 ```json
 {
   "success": true,
-  "data": { "totalOccupancy": 42, "totalCapacity": 60, "vacantRooms": 8, "pendingFeeDues": 350000, "openComplaints": 5 }
+  "data": {
+    "totalOccupancy": 42, "totalCapacity": 60, "vacantRooms": 8, "pendingFeeDues": 350000, "openComplaints": 5,
+    "totalRooms": 20, "fullRooms": 12, "unallocatedStudents": 3, "overdueFees": 2,
+    "pendingLeaves": 4, "visitorsInside": 6
+  }
 }
 ```
 
@@ -647,6 +651,15 @@ Success: 200 OK
 | vacantRooms | Number of rooms where `occupancy < capacity` |
 | pendingFeeDues | Sum of the balances of fee records with a balance above zero |
 | openComplaints | Number of complaints that are Open or In Progress |
+| totalRooms | Number of rooms |
+| fullRooms | Number of rooms where `occupancy >= capacity` |
+| unallocatedStudents | Number of students with no active allocation |
+| overdueFees | Number of fee records with a positive balance and a due date before today (UTC) |
+| pendingLeaves | Number of leaves with status `Pending` |
+| visitorsInside | Number of visitors whose `exitTime` is `null` |
+
+The six fields after `openComplaints` are additive for the admin screen. The original five
+fields and their meanings are unchanged.
 
 Errors: 401, 403.
 
@@ -715,6 +728,7 @@ The full error handling rules are in SAD 3.b.4.
 |---|---|---|---|
 | 1.0 | 18 Oct 2026 | Initial contract for all 31 endpoints in SAD 3.b.3. Frozen when the HMS-30 pull request is merged. | Group chat |
 | 1.1 | 20 Oct 2026 | Added the access control middleware description (HMS-06). No endpoint, field or error code changed. | Group chat |
+| 1.2 | 28 Oct 2026 | Endpoint 29 (admin dashboard) gained six additive fields: `totalRooms`, `fullRooms`, `unallocatedStudents`, `overdueFees`, `pendingLeaves`, `visitorsInside`. The original five fields are unchanged (HMS-18, DEVIATIONS D-15). | Group chat |
 
 ## 8. Outside this contract
 
