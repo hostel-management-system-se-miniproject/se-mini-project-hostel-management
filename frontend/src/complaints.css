@@ -1,11 +1,77 @@
-.complaint-filters { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: end; margin-bottom: 1rem; }
-.complaint-filters label { display: grid; gap: 0.35rem; font-weight: 600; color: var(--muted); }
-.complaint-filters select { border: 1px solid var(--line); background: #fbfdff; border-radius: 0.8rem; padding: 0.6rem 0.8rem; color: var(--text); }
-.complaint-student { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.9rem; }
-.complaint-update { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: start; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid var(--line); }
-.complaint-update select, .complaint-update input { border: 1px solid var(--line); background: #fbfdff; border-radius: 0.8rem; padding: 0.6rem 0.8rem; color: var(--text); }
-.complaint-update input { flex: 1 1 14rem; }
-.complaint-update-error { flex-basis: 100%; margin: 0; color: var(--danger); font-size: 0.85rem; }
-.complaint-history { list-style: none; margin: 0.7rem 0 0; padding: 0.6rem 0 0 0; border-top: 1px solid var(--line); display: grid; gap: 0.4rem; }
-.complaint-history li { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.85rem; color: var(--muted); }
-.complaint-history strong { color: var(--text); }
+/* Admin complaint screen and the status history shown to students.
+   Colours and control styles come from style.css; this file only sets layout. */
+
+.complaint-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.complaint-filters label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.complaint-filters select {
+  min-width: 10rem;
+}
+
+.complaint-student {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.complaint-update {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+}
+
+.complaint-update select {
+  width: auto;
+  min-width: 10rem;
+}
+
+.complaint-update input {
+  flex: 1 1 14rem;
+  width: auto;
+}
+
+.complaint-update-error {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.complaint-history {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.8rem 0 0;
+  padding: 0.7rem 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.complaint-history li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.6rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.complaint-history strong {
+  color: var(--ink);
+}
