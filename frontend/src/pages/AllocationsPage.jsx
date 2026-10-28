@@ -1,14 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert } from '../components/Alert';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { LoadingState } from '../components/LoadingState';
-import { allocateRoom, fetchAvailableRooms, fetchUnallocatedStudents } from '../api/allocations';
+import {
+  allocateRoom,
+  fetchActiveAllocations,
+  fetchAvailableRooms,
+  fetchUnallocatedStudents,
+  reallocateAllocation,
+  vacateAllocation,
+} from '../api/allocations';
+import '../allocations.css';
 
 const noop = () => {};
 
-export function AllocationResult({ success, error, errorTitle = 'Could not allocate room' }) {
+export function AllocationResult({
+  success,
+  error,
+  errorTitle = 'Could not allocate room',
+  successTitle = 'Room allocated',
+}) {
   if (success) {
-    return <Alert variant="success" title="Room allocated" message={success} />;
+    return <Alert variant="success" title={successTitle} message={success} />;
   }
   if (error) {
     return <Alert variant="error" title={errorTitle} message={error} />;
@@ -20,6 +34,7 @@ AllocationResult.propTypes = {
   success: PropTypes.string,
   error: PropTypes.string,
   errorTitle: PropTypes.string,
+  successTitle: PropTypes.string,
 };
 
 export function AllocationForm({
@@ -129,6 +144,165 @@ AllocationForm.propTypes = {
   loadFailed: PropTypes.bool,
 };
 
+function formatAllocationDate(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  return new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+}
+
+export function ReallocatePanel({
+  allocation,
+  rooms,
+  selectedRoom = '',
+  onRoomChange = noop,
+  onSubmit = noop,
+  onCancel = noop,
+  submitting = false,
+}) {
+  const availableRooms = rooms.filter(
+    (room) => Number(room.vacancy) > 0 && room.id !== allocation.roomId,
+  );
+  const selected = availableRooms.find((room) => room.id === selectedRoom);
+
+  return (
+    <div className="reallocate-panel">
+      <label>
+        Move to room
+        <select value={selectedRoom} onChange={onRoomChange} disabled={submitting}>
+          <option value="">Choose a room</option>
+          {availableRooms.map((room) => (
+            <option value={room.id} key={room.id}>{room.roomNo}</option>
+          ))}
+        </select>
+      </label>
+      {selected ? (
+        <p className="reallocate-summary">
+          Move {allocation.studentName} ({allocation.usn}) from {allocation.roomNo} to {selected.roomNo}?
+        </p>
+      ) : null}
+      <div className="reallocate-panel-actions">
+        <button type="button" className="primary-button" onClick={onSubmit} disabled={!selected || submitting}>
+          {submitting ? 'Moving…' : 'Move student'}
+        </button>
+        <button type="button" onClick={onCancel} disabled={submitting}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+ReallocatePanel.propTypes = {
+  allocation: PropTypes.shape({
+    usn: PropTypes.string.isRequired,
+    studentName: PropTypes.string.isRequired,
+    roomId: PropTypes.string.isRequired,
+    roomNo: PropTypes.string.isRequired,
+  }).isRequired,
+  rooms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  selectedRoom: PropTypes.string,
+  onRoomChange: PropTypes.func,
+  onSubmit: PropTypes.func,
+  onCancel: PropTypes.func,
+  submitting: PropTypes.bool,
+};
+
+export function AllocationsTable({
+  allocations,
+  rooms,
+  openAllocationId = '',
+  selectedRoom = '',
+  submitting = false,
+  onReallocate = noop,
+  onVacate = noop,
+  onRoomChange = noop,
+  onMove = noop,
+  onCancel = noop,
+  actionDisabled = false,
+}) {
+  if (allocations.length === 0) {
+    return <p className="inline-note">No active allocations yet</p>;
+  }
+
+  return (
+    <div className="table-wrap">
+      <table className="allocations-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Room</th>
+            <th>Since (date)</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {allocations.map((allocation) => (
+            <React.Fragment key={allocation.id}>
+              <tr>
+                <td>
+                  <span className="allocation-student">
+                    <strong>{allocation.studentName}</strong>
+                    <small>{allocation.usn}</small>
+                  </span>
+                </td>
+                <td><span className="pill">{allocation.roomNo}</span></td>
+                <td>{formatAllocationDate(allocation.startedAt)}</td>
+                <td>
+                  <div className="allocation-actions">
+                    <button
+                      type="button"
+                      onClick={() => onReallocate(allocation.id)}
+                      disabled={actionDisabled}
+                    >
+                      Reallocate
+                    </button>
+                    <button
+                      type="button"
+                      className="allocation-vacate"
+                      onClick={() => onVacate(allocation.id)}
+                      disabled={actionDisabled}
+                    >
+                      Vacate
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              {openAllocationId === allocation.id ? (
+                <tr>
+                  <td colSpan="4">
+                    <ReallocatePanel
+                      allocation={allocation}
+                      rooms={rooms}
+                      selectedRoom={selectedRoom}
+                      onRoomChange={onRoomChange}
+                      onSubmit={onMove}
+                      onCancel={onCancel}
+                      submitting={submitting}
+                    />
+                  </td>
+                </tr>
+              ) : null}
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+AllocationsTable.propTypes = {
+  allocations: PropTypes.arrayOf(PropTypes.object).isRequired,
+  rooms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  openAllocationId: PropTypes.string,
+  selectedRoom: PropTypes.string,
+  submitting: PropTypes.bool,
+  onReallocate: PropTypes.func,
+  onVacate: PropTypes.func,
+  onRoomChange: PropTypes.func,
+  onMove: PropTypes.func,
+  onCancel: PropTypes.func,
+  actionDisabled: PropTypes.bool,
+};
+
 export function AllocationsPage() {
   const [search, setSearch] = React.useState('');
   const [students, setStudents] = React.useState([]);
@@ -142,8 +316,20 @@ export function AllocationsPage() {
   const [error, setError] = React.useState('');
   const [success, setSuccess] = React.useState('');
   const [errorTitle, setErrorTitle] = React.useState('Could not allocate room');
+  const [allocations, setAllocations] = React.useState([]);
+  const [allocationsLoaded, setAllocationsLoaded] = React.useState(false);
+  const [allocationsLoadFailed, setAllocationsLoadFailed] = React.useState(false);
+  const [allocationsLoadError, setAllocationsLoadError] = React.useState('');
+  const [openAllocationId, setOpenAllocationId] = React.useState('');
+  const [reallocateRoomId, setReallocateRoomId] = React.useState('');
+  const [action, setAction] = React.useState(null);
+  const [actionResult, setActionResult] = React.useState(null);
   const requestId = React.useRef(0);
   const activeController = React.useRef(null);
+  const allocationsRequestId = React.useRef(0);
+  const allocationsController = React.useRef(null);
+  const actionRequestId = React.useRef(0);
+  const actionController = React.useRef(null);
   const mounted = React.useRef(true);
   const initialLoadCompleteRef = React.useRef(false);
 
@@ -188,16 +374,51 @@ export function AllocationsPage() {
     }
   }, []);
 
+  const loadAllocations = React.useCallback(async () => {
+    const currentRequestId = allocationsRequestId.current + 1;
+    allocationsRequestId.current = currentRequestId;
+    allocationsController.current?.abort();
+    const controller = new AbortController();
+    allocationsController.current = controller;
+    setAllocationsLoaded(false);
+    setAllocationsLoadFailed(false);
+    setAllocationsLoadError('');
+    try {
+      const allocationList = await fetchActiveAllocations({ signal: controller.signal });
+      if (!mounted.current || currentRequestId !== allocationsRequestId.current) return;
+      setAllocations(allocationList);
+    } catch (loadError) {
+      if (
+        !mounted.current
+        || currentRequestId !== allocationsRequestId.current
+        || loadError?.name === 'AbortError'
+      ) return;
+      setAllocationsLoadError(loadError.message);
+      setAllocationsLoadFailed(true);
+    } finally {
+      if (mounted.current && currentRequestId === allocationsRequestId.current) {
+        setAllocationsLoaded(true);
+      }
+    }
+  }, []);
+
   React.useEffect(() => {
     const timer = window.setTimeout(() => loadLists(search), 300);
     return () => window.clearTimeout(timer);
   }, [loadLists, search]);
 
   React.useEffect(() => {
+    const timer = window.setTimeout(() => loadAllocations(), 0);
+    return () => window.clearTimeout(timer);
+  }, [loadAllocations]);
+
+  React.useEffect(() => {
     mounted.current = true;
     return () => {
       mounted.current = false;
       activeController.current?.abort();
+      allocationsController.current?.abort();
+      actionController.current?.abort();
     };
   }, []);
 
@@ -215,7 +436,7 @@ export function AllocationsPage() {
       setSuccess(`${student.name} was allocated to room ${room.roomNo}.`);
       setSelectedStudent('');
       setSelectedRoom('');
-      await loadLists(search);
+      await Promise.all([loadLists(search), loadAllocations()]);
     } catch (submitError) {
       setErrorTitle('Could not allocate room');
       setError(submitError.message);
@@ -233,6 +454,82 @@ export function AllocationsPage() {
       setSubmitting(false);
     }
   };
+
+  const handleReallocate = (allocationId) => {
+    if (action) return;
+    setOpenAllocationId(allocationId);
+    setReallocateRoomId('');
+    setActionResult(null);
+  };
+
+  const handleVacate = (allocationId) => {
+    if (action) return;
+    setOpenAllocationId('');
+    setReallocateRoomId('');
+    setAction({ type: 'vacate', id: allocationId });
+    setActionResult(null);
+  };
+
+  const finishAction = async (title, message) => {
+    setActionResult({ kind: 'success', title, message });
+    setOpenAllocationId('');
+    setReallocateRoomId('');
+    await Promise.all([loadAllocations(), loadLists(search)]);
+  };
+
+  const handleMove = async () => {
+    const allocation = allocations.find((item) => item.id === openAllocationId);
+    if (!allocation || !reallocateRoomId || action) return;
+    const currentRequestId = actionRequestId.current + 1;
+    actionRequestId.current = currentRequestId;
+    const controller = new AbortController();
+    actionController.current = controller;
+    setAction({ type: 'reallocate', id: allocation.id });
+    setActionResult(null);
+    try {
+      await reallocateAllocation(allocation.id, reallocateRoomId, { signal: controller.signal });
+      if (!mounted.current || currentRequestId !== actionRequestId.current) return;
+      const room = rooms.find((item) => item.id === reallocateRoomId);
+      await finishAction('Room reallocated', `${allocation.studentName} moved to room ${room?.roomNo ?? reallocateRoomId}.`);
+    } catch (actionError) {
+      if (!mounted.current || currentRequestId !== actionRequestId.current || actionError?.name === 'AbortError') return;
+      setActionResult({ kind: 'error', title: 'Could not reallocate', message: actionError.message });
+      if (actionError.code === 'ROOM_FULL') {
+        // Refresh only the rooms (loadLists would clear the message above) and make the admin pick again.
+        setReallocateRoomId('');
+        try {
+          setRooms(await fetchAvailableRooms());
+        } catch (reloadError) {
+          setActionResult({ kind: 'error', title: 'Could not reload rooms', message: reloadError.message });
+        }
+      }
+    } finally {
+      if (mounted.current && currentRequestId === actionRequestId.current) setAction(null);
+    }
+  };
+
+  const handleConfirmVacate = async () => {
+    const allocation = allocations.find((item) => item.id === action?.id);
+    if (!allocation || action?.type !== 'vacate') return;
+    const currentRequestId = actionRequestId.current + 1;
+    actionRequestId.current = currentRequestId;
+    const controller = new AbortController();
+    actionController.current = controller;
+    setAction({ type: 'vacate', id: allocation.id, busy: true });
+    setActionResult(null);
+    try {
+      await vacateAllocation(allocation.id, { signal: controller.signal });
+      if (!mounted.current || currentRequestId !== actionRequestId.current) return;
+      await finishAction('Room vacated', `${allocation.studentName} left room ${allocation.roomNo}.`);
+    } catch (actionError) {
+      if (!mounted.current || currentRequestId !== actionRequestId.current || actionError?.name === 'AbortError') return;
+      setActionResult({ kind: 'error', title: 'Could not vacate', message: actionError.message });
+    } finally {
+      if (mounted.current && currentRequestId === actionRequestId.current) setAction(null);
+    }
+  };
+
+  const selectedAllocation = allocations.find((item) => item.id === action?.id);
 
   return (
     <div className="widget-card">
@@ -263,8 +560,55 @@ export function AllocationsPage() {
             submitting={submitting}
             loadFailed={loadFailed}
           />
+          <section className="allocations-current" aria-labelledby="current-allocations-heading">
+            <h3 id="current-allocations-heading">Current allocations</h3>
+            {actionResult ? (
+              <Alert
+                variant={actionResult.kind === 'success' ? 'success' : 'error'}
+                title={actionResult.title}
+                message={actionResult.message}
+              />
+            ) : null}
+            {allocationsLoadFailed ? (
+              <>
+                <Alert variant="error" title="Could not load current allocations" message={allocationsLoadError} />
+                <button type="button" className="allocation-retry" onClick={loadAllocations}>Try again</button>
+              </>
+            ) : !allocationsLoaded ? (
+              <LoadingState label="Loading current allocations …" />
+            ) : (
+              <AllocationsTable
+                allocations={allocations}
+                rooms={rooms}
+                openAllocationId={openAllocationId}
+                selectedRoom={reallocateRoomId}
+                submitting={action?.type === 'reallocate'}
+                actionDisabled={Boolean(action)}
+                onReallocate={handleReallocate}
+                onVacate={handleVacate}
+                onRoomChange={(event) => setReallocateRoomId(event.target.value)}
+                onMove={handleMove}
+                onCancel={() => {
+                  setOpenAllocationId('');
+                  setReallocateRoomId('');
+                }}
+              />
+            )}
+          </section>
         </>
       )}
+      <ConfirmDialog
+        isOpen={action?.type === 'vacate' && Boolean(selectedAllocation)}
+        title="Vacate this room?"
+        message={selectedAllocation
+          ? `${selectedAllocation.studentName} (${selectedAllocation.usn}) will leave room ${selectedAllocation.roomNo} and the bed will be released.`
+          : ''}
+        onConfirm={handleConfirmVacate}
+        onCancel={() => {
+          if (!action?.busy) setAction(null);
+        }}
+        busy={Boolean(action?.busy)}
+      />
     </div>
   );
 }
