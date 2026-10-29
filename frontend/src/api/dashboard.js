@@ -47,3 +47,42 @@ export async function fetchStudentDashboard(usn, { fetchImpl = fetch, signal } =
 
   throw responseError(response);
 }
+
+function adminResponseError(response) {
+  if (response.status === 401) {
+    return createError('Your session has expired. Please log in again.', 'SESSION_EXPIRED');
+  }
+  if (response.status === 403) {
+    return createError('Only the hostel office can view this dashboard.', 'FORBIDDEN');
+  }
+  return createError('Something went wrong. Please try again.', 'REQUEST_FAILED');
+}
+
+export async function fetchAdminDashboard({ fetchImpl = fetch, signal } = {}) {
+  let response;
+  try {
+    response = await fetchImpl(`${API_BASE}/api/admin/dashboard`, {
+      credentials: 'include',
+      signal,
+    });
+  } catch (error) {
+    if (error?.name === 'AbortError') throw error;
+    throw createError(
+      'Could not reach the server. Check your connection and try again.',
+      'NETWORK_ERROR',
+    );
+  }
+
+  let body = null;
+  try {
+    body = await response.json();
+  } catch {
+    body = null;
+  }
+
+  if (response.ok && body?.success) {
+    return body.data;
+  }
+
+  throw adminResponseError(response);
+}
