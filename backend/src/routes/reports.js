@@ -58,6 +58,12 @@ function toCsv(columns, rows) {
   return `${lines.join('\n')}\n`;
 }
 
+function titleCase(value) {
+  return String(value || '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 function buildPdf(type, columns, rows) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 40, size: 'A4' });
@@ -78,14 +84,14 @@ function buildPdf(type, columns, rows) {
     doc.fontSize(10).text(`Generated: ${generatedAt}`);
     doc.moveDown(1.5);
 
-    const maxWidths = columns.map((column) => {
+    const tableWidths = columns.map((column) => {
       const values = rows.map((row) => String(row[column] ?? ''));
       return Math.max(column.length, ...values.map((value) => value.length), 8);
     });
 
     const renderRow = (values) => {
       const line = values
-        .map((value, index) => String(value ?? '').padEnd(maxWidths[index], ' '))
+        .map((value, index) => String(value ?? '').padEnd(tableWidths[index], ' '))
         .join(' | ');
       doc.fontSize(9).text(line);
     };
@@ -103,12 +109,6 @@ function buildPdf(type, columns, rows) {
 
     doc.end();
   });
-}
-
-function titleCase(value) {
-  return String(value || '')
-    .replace(/[_-]+/g, ' ')
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 async function getStudentRows({ Student, Allocation, Room }) {
@@ -227,7 +227,7 @@ function createReportsRouter(options = {}) {
       const columns = REPORT_COLUMNS[type];
       const timestamp = new Date().toISOString().slice(0, 10);
 
-      if (format === 'csv') {
+      if (format === REPORT_FORMATS.csv) {
         const csv = toCsv(columns, rows);
         res.setHeader('Content-Type', 'text/csv; charset=utf-8');
         res.setHeader('Content-Disposition', `attachment; filename="${type}-report-${timestamp}.csv"`);
@@ -248,4 +248,110 @@ function createReportsRouter(options = {}) {
 
 module.exports = { createReportsRouter, REPORT_TYPES, REPORT_FORMATS, REPORT_COLUMNS, toCsv, buildPdf };
 
-'} ,{
+""" ,{"content":"const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const session = require('express-session');
+const mongoose = require('mongoose');
+const { createHealthRouter } = require('./routes/health');
+const { createAuthRouter } = require('./routes/auth');
+const { createSessionRouter } = require('./routes/authSession');
+const { createRoomsRouter } = require('./routes/rooms');
+const { createStudentsRouter } = require('./routes/students');
+const { createAllocationsRouter } = require('./routes/allocations');
+const { createVisitorsRouter } = require('./routes/visitors');
+const { createComplaintsRouter } = require('./routes/complaints');
+const { createReportsRouter } = require('./routes/reports');
+const { SESSION_COOKIE_NAME } = require('./config/auth');
+
+function parseTrustProxy(value) {
+  const hops = Number.parseInt(value, 10);
+  return Number.isInteger(hops) && hops > 0 ? hops : false;
+}
+
+function createApp({
+  getDatabaseStatus = () => (mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'),
+  authConfig,
+  loginService,
+  sessionStore,
+  frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
+  trustProxy = process.env.TRUST_PROXY
+} = {}) {
+  const app = express();
+
+  const proxyHops = parseTrustProxy(trustProxy);
+  if (proxyHops) {
+    app.set('trust proxy', proxyHops);
+  }
+
+  app.use(helmet());
+  app.use(cors({ origin: frontendOrigin, credentials: true }));
+  app.use(express.json({ limit: '1mb' }));
+  app.use('/health', createHealthRouter(getDatabaseStatus));
+
+  const sessionsEnabled = Boolean(authConfig && authConfig.sessionSecret && loginService);
+
+  if (sessionsEnabled) {
+    app.use('/api', session({
+      name: SESSION_COOKIE_NAME,
+      secret: authConfig.sessionSecret,
+      store: sessionStore,
+      resave: false,
+      saveUninitialized: false,
+      rolling: true,
+      cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: 'auto',
+        maxAge: Math.round(authConfig.sessionTimeoutMinutes * 60000)
+      }
+    }));
+  }
+
+  app.use('/api/auth', createAuthRouter());
+  if (sessionsEnabled) {
+    app.use('/api/auth', createSessionRouter({ loginService, cookieName: SESSION_COOKIE_NAME }));
+  }
+  app.use('/api/rooms', createRoomsRouter());
+  app.use('/api/students', createStudentsRouter());
+  app.use('/api/allocations', createAllocationsRouter());
+  app.use('/api/visitors', createVisitorsRouter());
+  app.use('/api/complaints', createComplaintsRouter());
+  app.use('/api/reports', createReportsRouter());
+
+  app.use((_req, res) => {
+    res.status(404).json({ error: 'Route not found' });
+  });
+
+  app.use((err, _req, res, next) => {
+    if (err && err.type === 'entity.parse.failed') {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Request body must be valid JSON',
+          details: {}
+        }
+      });
+    }
+
+    if (err) {
+      console.error('Unhandled error:', err && err.message);
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Something went wrong. Please try again',
+          details: {}
+        }
+      });
+    }
+
+    return next();
+  });
+
+  return app;
+}
+
+module.exports = { createApp };
+""""} ,{"path":"backend/src/app.js"} ]
