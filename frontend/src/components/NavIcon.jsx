@@ -51,6 +51,14 @@ const PATHS = {
       <path d="M17 13.2c2.6.3 4 2.2 4 4.8" />
     </>
   ),
+  bed: (
+    <>
+      <path d="M3 5v14" />
+      <path d="M3 15h18" />
+      <path d="M21 19v-5a3 3 0 0 0-3-3h-8v4" />
+      <circle cx="6.5" cy="11" r="1.7" />
+    </>
+  ),
   reports: (
     <>
       <path d="M5 20v-9M12 20V4M19 20v-6" />
