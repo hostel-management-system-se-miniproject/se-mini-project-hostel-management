@@ -1,14 +1,22 @@
-## Testing
+## Performance evidence for HMS-20
 
-- The Test Plan (`docs/TEST_PLAN.md`) defines Unit (UT), Integration (IT) and System (ST) test cases for FR-001 to FR-005 and the NFR checks.
-- Record the **Actual Result** and **Test Result (Pass/Fail)** only **after** executing a test. Never mark an unexecuted test as passed.
-- Log every failure as a GitHub Issue (label `bug`) and link it to the test case ID.
-- Use test data only: the sample USNs in the seed data and dates relative to the day of execution.
-- Automated tests run against a separate test database (or an in-memory MongoDB), never against development or demo data.
-- Concurrency (room allocation) is tested with a script that sends two requests at the same time rather than by two people.
-- Requirements that cannot be fully verified in a student environment (for example, 200 concurrent users) are reported honestly as *verified*, *failed*, *not tested* or *limited by environment*; the measurement file in `tests/performance/results.md` records the actual evidence.
-- The 200-user benchmark is scripted in `tests/performance/load-200.js` and checks the login and dashboard endpoints for the NFR-001 requirement.
+The repository includes the performance evidence under `tests/performance` for the NFR-001 issue.
+
+### Required checks
+
+- Login, student dashboard, and admin dashboard page loads must be measured and recorded.
+- A k6-based 200-user load test must run against the login and dashboard endpoints.
+- Results must be either pass or `Limited by environment` with actual numbers and environment notes.
+
+### Commands
 
 ```bash
-node tests/performance/load-200.js --url=http://localhost:5000 --users=200 --usn=PES1UG24CS001 --password=Pass@123
+export API_BASE_URL=http://localhost:5000
+export TEST_USN=PES1UG24CS001
+export TEST_PASSWORD=Pass@123
+k6 run tests/performance/load-200.js
 ```
+
+### Result file
+
+The measured outcomes and environment notes are recorded in `tests/performance/results.md`.
