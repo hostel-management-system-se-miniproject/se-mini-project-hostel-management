@@ -9,6 +9,7 @@ import { ComplaintsPage } from './pages/ComplaintsPage';
 import { StudentDashboardPage } from './pages/StudentDashboardPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { ProtectedRoute } from './ProtectedRoute';
+import { FeesPage } from './pages/FeesPage';
 import {
   NAV_ITEMS,
   filterMenuItemsByRole,
@@ -79,12 +80,7 @@ function renderPageContent(path, role, user, onNavigate) {
   }
 
   if (path === '/fees') {
-    return (
-      <PlaceholderPage
-        title="Fees"
-        description="Payment summaries, outstanding dues, and fee collection records will be displayed here."
-      />
-    );
+    return <FeesPage />;
   }
 
   if (path === '/visitors') {

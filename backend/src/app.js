@@ -1,4 +1,5 @@
 const express = require('express');
+const { createFeesRouter } = require('./routes/fees');
 const cors = require('cors');
 const helmet = require('helmet');
 const session = require('express-session');
@@ -73,6 +74,7 @@ function createApp({
   app.use('/api/allocations', createAllocationsRouter());
   app.use('/api/visitors', createVisitorsRouter());
   app.use('/api/complaints', createComplaintsRouter());
+  app.use('/api/fees', createFeesRouter());
   app.use('/api/admin', createAdminRouter());
 
   app.use((_req, res) => {
