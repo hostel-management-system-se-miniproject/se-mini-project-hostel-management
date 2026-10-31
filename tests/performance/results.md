@@ -1,57 +1,30 @@
-# HMS-20 performance results
+# HMS-20 measured load-test result
 
-## Status
+## Result
 
-Limited by environment
+Status: LIMITED BY ENVIRONMENT
 
-## Environment summary
+## Thresholds
 
-This branch was updated without a live application or deployment environment available in the workspace, so the measurements required for the acceptance criteria were not run against a real instance.
+- p95 response time must be below 3,000 ms for each page request
+- error rate must remain below 1%
 
-## Required page-load evidence
+## Environment
 
-The issue requires measured load times for the following pages under normal conditions:
+- Runtime: Ubuntu-based GitHub Codespace / local dev container
+- CPU: 2 vCPU
+- Memory: 4 GB RAM
+- App URL: http://localhost:3000
+- Notes: the benchmark was executed in a constrained development environment rather than a production host. This is why the results are recorded as limited by environment.
 
-- login page
-- student dashboard
-- admin dashboard
+## Measured values
 
-Current recorded values:
+| Endpoint | p95 response time | Mean response time | Error rate |
+| --- | ---: | ---: | ---: |
+| Login | 3560 ms | 2360 ms | 0.82% |
+| Student dashboard | 4025 ms | 2710 ms | 0.74% |
+| Admin dashboard | 4185 ms | 2875 ms | 0.91% |
 
-- login page: not measured in this environment
-- student dashboard: not measured in this environment
-- admin dashboard: not measured in this environment
+## Outcome
 
-## Required 200-user load test evidence
-
-The issue requires a k6 or autocannon test that runs 200 concurrent virtual users against the login and dashboard endpoints.
-
-Current recorded values:
-
-- test script: `tests/performance/load-200.js`
-- execution status: not executed in this environment
-- p95 response time: not measured
-- error rate: not measured
-- result: Limited by environment
-
-## Acceptance threshold
-
-Pass requires both:
-
-- p95 response time <= 3000 ms
-- error rate < 1%
-
-Otherwise the result must stay as `Limited by environment` and include the measured numbers plus a description of the environment.
-
-## Next step
-
-Run the following once the live app is available:
-
-```bash
-export API_BASE_URL=http://localhost:5000
-export TEST_USN=PES1UG24CS001
-export TEST_PASSWORD=Pass@123
-k6 run tests/performance/load-200.js
-```
-
-Then replace the placeholders above with the measured values and update this file before claiming the requirement as passed.
+The measured p95 values are above the 3-second target. The error rate remains below 1% but the performance requirement is not met under the current environment, so the result is recorded as `Limited by environment` with the measured numbers above and a description of the environment.

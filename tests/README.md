@@ -1,6 +1,6 @@
 # Sprint 1 test artifacts
 
-This directory contains the reproducible support files used for the Sprint 1 validation work.
+This directory contains the reproducible support files used for Sprint 1 validation work.
 
 ## ST-02 parallel request check
 
@@ -17,6 +17,16 @@ The script sets the test-mode values required by the Sprint 1 execution plan:
 - MAX_FAILED_LOGINS=5
 
 It then invokes the existing room-allocation race check in `backend/scripts/race-last-bed.js`.
+
+## HMS-20 performance validation
+
+The 200-user load scenario is stored under `tests/performance`.
+
+```bash
+bash tests/performance/run.sh
+```
+
+This runs a k6 script that exercises the login flow and representative dashboard requests for 200 concurrent virtual users. The recorded benchmark status is stored in `tests/performance/results.json` and `tests/performance/results.md`.
 
 ## Test mode environment
 
