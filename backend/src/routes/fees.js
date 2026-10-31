@@ -3,7 +3,7 @@
 
 const express = require('express');
 const mongoose = require('mongoose');
-const { requireAuth, requireRole, ROLES } = require('../middleware/auth');
+const { requireAuth, requireRole, selfOrAdmin, ROLES } = require('../middleware/auth');
 
 function errorBody(code, message, details = {}) {
   return { success: false, error: { code, message, details } };
@@ -200,6 +200,31 @@ function createFeesRouter(options = {}) {
       }
     }
   );
+
+  // GET /api/fees/{usn} (API contract endpoint 15, HMS-11).
+  // A student may read only their own USN (403 otherwise); an admin may read any.
+  // An unknown student, or a student with no fee record, returns 404 NOT_FOUND.
+  // The USN pattern keeps this apart from the older /:id route below.
+  router.get('/:usn([A-Za-z0-9]{13})', requireAuth, selfOrAdmin('usn'), async (req, res, next) => {
+    try {
+      const { Fee, Student } = getModels();
+      const usn = String(req.params.usn).toUpperCase();
+
+      const student = await Student.findOne({ usn }).select('_id usn name').lean();
+      if (!student) {
+        return res.status(404).json(errorBody('NOT_FOUND', 'Student not found'));
+      }
+
+      const fee = await Fee.findOne({ studentId: student._id }).lean();
+      if (!fee) {
+        return res.status(404).json(errorBody('NOT_FOUND', 'No fee record exists for this student'));
+      }
+
+      return res.json({ success: true, data: toFeeView(fee, student) });
+    } catch (error) {
+      return next(error);
+    }
+  });
 
   // Students can read their own fee record; admins can read any record.
   router.get('/:id', requireAuth, async (req, res, next) => {

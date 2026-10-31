@@ -10,6 +10,7 @@ import { StudentDashboardPage } from './pages/StudentDashboardPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { FeesPage } from './pages/FeesPage';
+import { StudentFeesPage } from './pages/StudentFeesPage';
 import {
   NAV_ITEMS,
   filterMenuItemsByRole,
@@ -80,6 +81,9 @@ function renderPageContent(path, role, user, onNavigate) {
   }
 
   if (path === '/fees') {
+    if (role === 'student' && user?.usn) {
+      return <StudentFeesPage usn={user.usn} />;
+    }
     return <FeesPage />;
   }
 

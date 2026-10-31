@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Alert } from '../components/Alert';
 import { LoadingState } from '../components/LoadingState';
 import { fetchStudentDashboard } from '../api/dashboard';
+import { FeeHistoryMini } from '../components/FeeHistoryMini';
 
 const MONTH_NAMES = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -92,6 +93,7 @@ export function DashboardView({ data }) {
                 value={<span className={`pill pill-${fee.status.toLowerCase().replace(/\s+/g, '-')}`}>{fee.status}</span>}
               />
             </div>
+            <FeeHistoryMini usn={student.usn} />
           </>
         ) : (
           <p className="inline-note">No fee record yet.</p>

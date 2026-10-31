@@ -1,0 +1,7 @@
+.student-fee-page { display: grid; gap: 1rem; }
+.fee-history { width: 100%; border-collapse: collapse; margin-top: 0.6rem; }
+.fee-history th, .fee-history td { text-align: left; padding: 0.55rem 0.4rem; border-bottom: 1px solid var(--line); }
+.fee-history th { color: var(--muted); font-weight: 600; font-size: 0.85rem; }
+.fee-history-mini { list-style: none; margin: 0.8rem 0 0; padding: 0.6rem 0 0; border-top: 1px solid var(--line); display: grid; gap: 0.35rem; }
+.fee-history-mini li { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; color: var(--muted); }
+.fee-history-mini strong { color: var(--ink); }
