@@ -12,6 +12,7 @@ const { createStudentsRouter } = require('./routes/students');
 const { createAllocationsRouter } = require('./routes/allocations');
 const { createVisitorsRouter } = require('./routes/visitors');
 const { createComplaintsRouter } = require('./routes/complaints');
+const { createLeavesRouter } = require('./routes/leaves');
 const { createAdminRouter } = require('./routes/admin');
 const { SESSION_COOKIE_NAME } = require('./config/auth');
 
@@ -74,6 +75,7 @@ function createApp({
   app.use('/api/allocations', createAllocationsRouter());
   app.use('/api/visitors', createVisitorsRouter());
   app.use('/api/complaints', createComplaintsRouter());
+  app.use('/api/leaves', createLeavesRouter());
   app.use('/api/fees', createFeesRouter());
   app.use('/api/admin', createAdminRouter());
 
