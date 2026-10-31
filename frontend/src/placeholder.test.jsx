@@ -7,7 +7,7 @@ describe('role-based menu configuration', () => {
   it('returns the student menu items only for the student role', () => {
     const studentMenu = filterMenuItemsByRole(NAV_ITEMS, 'student');
 
-    expect(studentMenu.map((item) => item.label)).toEqual(['Dashboard', 'Complaints', 'Leave']);
+    expect(studentMenu.map((item) => item.label)).toEqual(['Dashboard', 'Complaints', 'Leave', 'Fees']);
   });
 
   it('returns all admin menu items for the admin role', () => {
