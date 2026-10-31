@@ -111,9 +111,15 @@ function ReportsPage({ role = 'admin' }) {
 
     try {
       await downloadReport(type, format);
-      setStatus({ kind: 'success', message: `${type} ${format.toUpperCase()} export started.` });
+      setStatus({
+        kind: 'success',
+        message: `${type} ${format.toUpperCase()} export started.`,
+      });
     } catch (error) {
-      setStatus({ kind: 'error', message: error.message || 'The export could not be created.' });
+      setStatus({
+        kind: 'error',
+        message: error.message || 'The export could not be created.',
+      });
     } finally {
       setBusy(null);
     }
@@ -159,7 +165,8 @@ function ReportsPage({ role = 'admin' }) {
               padding: '12px 14px',
               borderRadius: '10px',
               border: '1px solid #d0d7de',
-              background: busy === `${option.type}:${option.format}` ? '#f0f4f8' : '#ffffff',
+              background:
+                busy === `${option.type}:${option.format}` ? '#f0f4f8' : '#ffffff',
               cursor: busy !== null ? 'wait' : 'pointer',
               fontWeight: 600,
               textAlign: 'left',
@@ -337,7 +344,10 @@ function App({ user = null, onLogout = null }) {
             </div>
           </div>
 
-          <ProtectedRoute allowedRoles={activePage?.roles ?? ['student', 'admin']} currentRole={role}>
+          <ProtectedRoute
+            allowedRoles={activePage?.roles ?? ['student', 'admin']}
+            currentRole={role}
+          >
             {renderPageContent(currentPath, role, user)}
           </ProtectedRoute>
         </main>

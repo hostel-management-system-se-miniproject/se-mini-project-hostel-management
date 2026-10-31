@@ -1,0 +1,109 @@
+.allocations-current {
+  margin-top: 1.5rem;
+}
+
+.allocations-table td:last-child {
+  white-space: nowrap;
+}
+
+.allocation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.allocation-actions button {
+  padding: 0.4rem 0.65rem;
+  font-size: 0.82rem;
+}
+
+.allocation-actions .allocation-vacate {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.allocation-actions .allocation-vacate:hover:not(:disabled) {
+  background: var(--danger-soft);
+}
+
+.allocation-student {
+  display: flex;
+  flex-direction: column;
+}
+
+.allocation-student small {
+  color: var(--muted);
+}
+
+.reallocate-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  background: var(--pine-50);
+  border-bottom: 1px solid var(--line);
+}
+
+.reallocate-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1 1 14rem;
+  max-width: 24rem;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.reallocate-summary {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--marigold-text);
+  font-weight: 700;
+}
+
+.reallocate-panel-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.confirm-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(10, 38, 35, .45);
+}
+
+.confirm-dialog {
+  width: min(100%, 26rem);
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+}
+
+.confirm-dialog h2 {
+  margin: 0 0 0.5rem;
+}
+
+.confirm-dialog p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.confirm-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 390px) {
+  .confirm-dialog-actions {
+    flex-direction: column-reverse;
+  }
+}

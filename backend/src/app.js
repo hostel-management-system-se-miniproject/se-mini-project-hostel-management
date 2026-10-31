@@ -1,4 +1,5 @@
 const express = require('express');
+const { createFeesRouter } = require('./routes/fees');
 const cors = require('cors');
 const helmet = require('helmet');
 const session = require('express-session');
@@ -11,6 +12,8 @@ const { createStudentsRouter } = require('./routes/students');
 const { createAllocationsRouter } = require('./routes/allocations');
 const { createVisitorsRouter } = require('./routes/visitors');
 const { createComplaintsRouter } = require('./routes/complaints');
+const { createLeavesRouter } = require('./routes/leaves');
+const { createAdminRouter } = require('./routes/admin');
 const { SESSION_COOKIE_NAME } = require('./config/auth');
 
 // TRUST_PROXY is the number of reverse proxies in front of the API (0 or empty
@@ -72,6 +75,9 @@ function createApp({
   app.use('/api/allocations', createAllocationsRouter());
   app.use('/api/visitors', createVisitorsRouter());
   app.use('/api/complaints', createComplaintsRouter());
+  app.use('/api/leaves', createLeavesRouter());
+  app.use('/api/fees', createFeesRouter());
+  app.use('/api/admin', createAdminRouter());
 
   app.use((_req, res) => {
     res.status(404).json({ error: 'Route not found' });

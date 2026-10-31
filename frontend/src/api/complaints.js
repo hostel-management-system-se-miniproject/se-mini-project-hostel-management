@@ -103,3 +103,29 @@ export async function fetchComplaints(filters = {}, { fetchImpl = fetch, signal 
 
   throw responseError(response, body);
 }
+
+// PUT /api/complaints/{id} (admin). Resolves to the updated complaint.
+export async function updateComplaint(id, { status, remarks }, { fetchImpl = fetch, signal } = {}) {
+  let response;
+  try {
+    response = await fetchImpl(`${API_BASE}/api/complaints/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, remarks }),
+      signal,
+    });
+  } catch (error) {
+    if (error?.name === 'AbortError') throw error;
+    throw createError('Could not reach the server. Check your connection and try again.', 'NETWORK_ERROR');
+  }
+
+  const body = await readBody(response);
+  if (response.ok && body?.success && body.data) {
+    return body.data;
+  }
+  if (response.status === 404) {
+    throw createError('This complaint could not be found. Refresh the list.', 'NOT_FOUND');
+  }
+  throw responseError(response, body);
+}

@@ -26,6 +26,13 @@ function createAllocationsRouter(options = {}) {
   const getAllocateRoom = () => (
     options.allocateRoom || require('../services/allocationService').allocateRoom
   );
+  const getReallocateAllocation = () => (
+    options.reallocateAllocation
+      || require('../services/allocationService').reallocateAllocation
+  );
+  const getVacateAllocation = () => (
+    options.vacateAllocation || require('../services/allocationService').vacateAllocation
+  );
 
   router.get('/', requireAuth, requireRole(ROLES.ADMIN), async (req, res, next) => {
     try {
@@ -100,6 +107,36 @@ function createAllocationsRouter(options = {}) {
     try {
       const data = await getAllocateRoom()(req.body || {});
       return res.status(201).json({ success: true, data });
+    } catch (error) {
+      if (error instanceof AllocationError) {
+        return res.status(error.status).json(errorBody(error.code, error.message));
+      }
+      return next(error);
+    }
+  });
+
+  router.put('/:id/reallocate', requireAuth, requireRole(ROLES.ADMIN), async (req, res, next) => {
+    try {
+      const data = await getReallocateAllocation()({
+        ...(req.body || {}),
+        allocationId: req.params.id
+      });
+      return res.status(200).json({ success: true, data });
+    } catch (error) {
+      if (error instanceof AllocationError) {
+        return res.status(error.status).json(errorBody(error.code, error.message));
+      }
+      return next(error);
+    }
+  });
+
+  router.post('/:id/vacate', requireAuth, requireRole(ROLES.ADMIN), async (req, res, next) => {
+    try {
+      const data = await getVacateAllocation()({
+        ...(req.body || {}),
+        allocationId: req.params.id
+      });
+      return res.status(200).json({ success: true, data });
     } catch (error) {
       if (error instanceof AllocationError) {
         return res.status(error.status).json(errorBody(error.code, error.message));
