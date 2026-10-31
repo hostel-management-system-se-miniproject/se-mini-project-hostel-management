@@ -6,6 +6,7 @@ import { RoomsPage } from './pages/RoomsPage';
 import { AllocationsPage } from './pages/AllocationsPage';
 import { VisitorsPage } from './pages/VisitorsPage';
 import { ComplaintsPage } from './pages/ComplaintsPage';
+import { LeavePage } from './pages/LeavePage';
 import { StudentDashboardPage } from './pages/StudentDashboardPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { ProtectedRoute } from './ProtectedRoute';
@@ -64,12 +65,7 @@ function renderPageContent(path, role, user, onNavigate) {
   }
 
   if (path === '/leave') {
-    return (
-      <PlaceholderPage
-        title="Leave"
-        description="Leave status, approval flow, and balance information will live here."
-      />
-    );
+    return <LeavePage role={role} />;
   }
 
   if (path === '/rooms') {

@@ -1,0 +1,20 @@
+/* Student leave page. It reuses the complaint card styles from style.css;
+   this file only adds the Approved status colour and the date row layout. */
+
+.complaint-status-approved {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.leave-date-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+
+.leave-field-error {
+  margin: 0.25rem 0 0;
+  color: var(--danger);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
