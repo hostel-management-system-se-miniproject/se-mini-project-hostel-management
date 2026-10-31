@@ -7,6 +7,8 @@ const { ensureIndexes } = require('./config/indexes');
 const { getAuthConfig, assertAuthConfig } = require('./config/auth');
 const { createLoginService } = require('./services/loginService');
 const { createAccountStore } = require('./services/accountStore');
+const { createFeeNotifier } = require('./services/feeNotificationService');
+const { startFeeNotificationJob } = require('./jobs/feeNotificationJob');
 
 const port = Number(process.env.PORT) || 5000;
 
@@ -30,8 +32,13 @@ async function startServer() {
       console.log(`Health endpoint: http://localhost:${port}/health`);
     });
 
+    const feeJob = startFeeNotificationJob({ notifier: createFeeNotifier() });
+
     const shutdown = async (signal) => {
       console.log(`${signal} received; shutting down HMS API...`);
+      if (feeJob && typeof feeJob.stop === 'function') {
+        feeJob.stop();
+      }
       server.close(async () => {
         await sessionStore.close();
         await mongoose.disconnect();
