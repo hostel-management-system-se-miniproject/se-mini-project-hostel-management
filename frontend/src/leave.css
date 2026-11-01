@@ -18,3 +18,25 @@
   font-size: 0.85rem;
   font-weight: 600;
 }
+
+.complaint-status-pending {
+  background: var(--marigold-soft);
+  color: var(--marigold-text);
+}
+
+.leave-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line);
+}
+
+.leave-actions .leave-actions-error {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.85rem;
+  font-weight: 600;
+}

@@ -67,3 +67,39 @@ export async function submitLeave({ startDate, endDate, reason }, { fetchImpl = 
   }
   throw responseError(response, body);
 }
+
+// GET /api/leaves (admin). Optional status: Pending, Approved or Rejected. Resolves to an array.
+export async function fetchLeaves({ status = '' } = {}, { fetchImpl = fetch, signal } = {}) {
+  const query = status ? `?status=${encodeURIComponent(status)}` : '';
+  const response = await send(`${API_BASE}/api/leaves${query}`, { method: 'GET', signal }, fetchImpl);
+  const body = await readBody(response);
+  if (response.ok && body?.success && Array.isArray(body.data)) {
+    return body.data;
+  }
+  throw responseError(response, body);
+}
+
+// PUT /api/leaves/{id}/decision (admin). decision is Approved or Rejected.
+export async function decideLeave(id, decision, { fetchImpl = fetch, signal } = {}) {
+  const response = await send(
+    `${API_BASE}/api/leaves/${encodeURIComponent(id)}/decision`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ decision }),
+      signal,
+    },
+    fetchImpl,
+  );
+  const body = await readBody(response);
+  if (response.ok && body?.success && body.data) {
+    return body.data;
+  }
+  if (response.status === 409) {
+    throw createError('This request has already been decided. The list has been refreshed.', 'ALREADY_DECIDED');
+  }
+  if (response.status === 404) {
+    throw createError('This leave request could not be found. Refresh the list.', 'NOT_FOUND');
+  }
+  throw responseError(response, body);
+}
