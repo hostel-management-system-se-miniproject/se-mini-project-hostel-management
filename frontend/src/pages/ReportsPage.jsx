@@ -64,5 +64,3 @@ export async function downloadReport(type, format = 'csv', { fetchImpl = fetch }
 
   return { fileName, type, format, ok: true };
 }
-
-""" ,{"path":"frontend/src/api/reports.js"} ]
