@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert } from '../components/Alert';
 import { LoadingState } from '../components/LoadingState';
-import { PlaceholderPage } from '../components/PlaceholderPage';
+import { AdminLeavePage } from './AdminLeavePage';
 import { fetchMyLeaves, submitLeave } from '../api/leaves';
 import { formatLeaveDate, leaveStatusClass, validateLeave } from '../leaveFormat';
 import '../complaints.css';
@@ -123,12 +123,7 @@ export function LeavePage({ role = 'student' }) {
   };
 
   if (role !== 'student') {
-    return (
-      <PlaceholderPage
-        title="Leave"
-        description="Leave approval for the hostel office will live here."
-      />
-    );
+    return <AdminLeavePage />;
   }
 
   return (
