@@ -7,8 +7,6 @@ function buildReportFilename(type, format) {
 }
 
 export async function downloadReport(type, format, { fetchImpl = fetch, signal } = {}) {
-  const params = new URLSearchParams({ type: String(type ?? ''), format: String(format ?? '') });
-
   let response;
   try {
     response = await fetchImpl(`${API_BASE}/api/reports/${encodeURIComponent(type)}?format=${encodeURIComponent(format)}`, {
