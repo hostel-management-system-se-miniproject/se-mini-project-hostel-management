@@ -30,7 +30,7 @@ export const options = {
 };
 
 function loginAs(username, password) {
-  const payload = JSON.stringify({ email: username, password });
+  const payload = JSON.stringify({ identifier: username, password });
   const res = http.post(`${BASE_URL}/api/auth/login`, payload, {
     headers: {
       'Content-Type': 'application/json',

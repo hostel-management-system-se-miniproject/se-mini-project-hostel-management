@@ -211,7 +211,7 @@ function createReportsRouter(options = {}) {
 
   router.get('/:type/:format?', requireAuth, requireRole(ROLES.ADMIN), async (req, res, next) => {
     try {
-      const type = normalizeType(req.params.type);
+      const type = normalizeType(req.params.type === 'export' ? req.query.type : req.params.type);
       const format = normalizeFormat(req.query.format || req.params.format || 'csv');
 
       if (!REPORT_TYPES[type]) {

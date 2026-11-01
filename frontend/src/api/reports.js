@@ -11,7 +11,7 @@ export async function downloadReport(type, format, { fetchImpl = fetch, signal }
 
   let response;
   try {
-    response = await fetchImpl(`${API_BASE}/api/reports/export?${params.toString()}`, {
+    response = await fetchImpl(`${API_BASE}/api/reports/${encodeURIComponent(type)}?format=${encodeURIComponent(format)}`, {
       method: 'GET',
       credentials: 'include',
       signal,
