@@ -14,6 +14,7 @@ const { createVisitorsRouter } = require('./routes/visitors');
 const { createComplaintsRouter } = require('./routes/complaints');
 const { createLeavesRouter } = require('./routes/leaves');
 const { createAdminRouter } = require('./routes/admin');
+const { createReportsRouter } = require('./routes/reports');
 const { SESSION_COOKIE_NAME } = require('./config/auth');
 
 // TRUST_PROXY is the number of reverse proxies in front of the API (0 or empty
@@ -78,6 +79,7 @@ function createApp({
   app.use('/api/leaves', createLeavesRouter());
   app.use('/api/fees', createFeesRouter());
   app.use('/api/admin', createAdminRouter());
+  app.use('/api/reports', createReportsRouter());
 
   app.use((_req, res) => {
     res.status(404).json({ error: 'Route not found' });
