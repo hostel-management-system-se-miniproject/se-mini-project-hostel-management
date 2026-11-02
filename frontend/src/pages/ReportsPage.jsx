@@ -1,66 +1,86 @@
-const API_BASE = import.meta.env?.VITE_API_BASE_URL ?? 'http://localhost:5000';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Alert } from '../components/Alert';
+import { downloadReport } from '../api/reports';
+import '../reports.css';
 
-function createError(message, code = 'REQUEST_FAILED') {
-  const error = new Error(message);
-  error.code = code;
-  return error;
-}
+export const EXPORT_OPTIONS = [
+  { label: 'Student CSV', type: 'student', format: 'csv' },
+  { label: 'Student PDF', type: 'student', format: 'pdf' },
+  { label: 'Fee CSV', type: 'fee', format: 'csv' },
+  { label: 'Fee PDF', type: 'fee', format: 'pdf' },
+  { label: 'Complaint CSV', type: 'complaint', format: 'csv' },
+  { label: 'Complaint PDF', type: 'complaint', format: 'pdf' },
+];
 
-function responseError(response, body) {
-  if (response.status === 401) {
-    return createError('Your session has expired. Please log in again.', 'SESSION_EXPIRED');
-  }
-  if (response.status === 403) {
-    return createError('You do not have permission to do that.', 'FORBIDDEN');
-  }
-  if (response.status === 400) {
-    return createError(body?.error?.message ?? 'The report request is invalid.', 'VALIDATION_ERROR');
-  }
-  if (response.status === 404) {
-    return createError('The report could not be found.', 'NOT_FOUND');
-  }
-  return createError(body?.error?.message ?? 'Could not generate the report.', 'REQUEST_FAILED');
-}
+export function ReportsPage({ role = 'admin' }) {
+  const [status, setStatus] = React.useState({ kind: '', message: '' });
+  const [busy, setBusy] = React.useState(null);
 
-async function readBlob(response) {
-  return response.blob();
-}
+  const handleExport = async (type, format) => {
+    setBusy(`${type}:${format}`);
+    setStatus({ kind: '', message: '' });
 
-export async function downloadReport(type, format = 'csv', { fetchImpl = fetch } = {}) {
-  let response;
-  try {
-    response = await fetchImpl(`${API_BASE}/api/reports/${encodeURIComponent(type)}?format=${encodeURIComponent(format)}`, {
-      method: 'GET',
-      credentials: 'include'
-    });
-  } catch (error) {
-    if (error?.name === 'AbortError') throw error;
-    throw createError('Could not reach the server. Check your connection and try again.', 'NETWORK_ERROR');
-  }
-
-  if (!response.ok) {
-    let body = null;
     try {
-      body = await response.json();
-    } catch {
-      body = null;
+      await downloadReport(type, format);
+      setStatus({
+        kind: 'success',
+        message: `The ${type} ${format.toUpperCase()} report was downloaded.`,
+      });
+    } catch (error) {
+      setStatus({
+        kind: 'error',
+        message: error.message || 'The export could not be created.',
+      });
+    } finally {
+      setBusy(null);
     }
-    throw responseError(response, body);
+  };
+
+  if (role !== 'admin') {
+    return (
+      <div className="widget-card">
+        <h3>Reports</h3>
+        <p className="inline-note">Only admins can export hostel reports.</p>
+      </div>
+    );
   }
 
-  const blob = await readBlob(response);
-  const contentDisposition = response.headers.get('Content-Disposition') || '';
-  const match = contentDisposition.match(/filename="?([^";]+)"?/i);
-  const fileName = match ? match[1] : `${type}-report.${format}`;
-  const objectUrl = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
+  return (
+    <div className="widget-card reports-card">
+      <h3>Export reports</h3>
+      <p className="inline-note">Download the current hostel records as CSV or PDF.</p>
 
-  anchor.href = objectUrl;
-  anchor.download = fileName;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+      {status.message ? (
+        <Alert
+          variant={status.kind === 'success' ? 'success' : 'error'}
+          title={status.kind === 'success' ? 'Export ready' : 'Export failed'}
+          message={status.message}
+        />
+      ) : null}
 
-  return { fileName, type, format, ok: true };
+      <div className="reports-grid">
+        {EXPORT_OPTIONS.map((option) => {
+          const key = `${option.type}:${option.format}`;
+          return (
+            <button
+              key={key}
+              type="button"
+              className="report-button"
+              onClick={() => handleExport(option.type, option.format)}
+              disabled={busy !== null}
+            >
+              {busy === key ? 'Preparing …' : option.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
+
+ReportsPage.propTypes = {
+  role: PropTypes.oneOf(['student', 'admin']),
+};
+
+export default ReportsPage;

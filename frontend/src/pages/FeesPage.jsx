@@ -3,6 +3,7 @@ import React from 'react';
 import { Alert } from '../components/Alert';
 import { LoadingState } from '../components/LoadingState';
 import '../fees.css';
+import { feeStatusClass, normalizeFeeStatus } from '../feeFormat';
 import {
   createFee,
   fetchFees,
@@ -33,7 +34,7 @@ export function FeesPage() {
   const [fees, setFees] = React.useState([]);
   const [students, setStudents] = React.useState([]);
   const [status, setStatus] = React.useState('');
-  const [studentId, setStudentId] = React.useState('');
+  const [studentUsn, setStudentUsn] = React.useState('');
   const [amountDue, setAmountDue] = React.useState('');
   const [dueDate, setDueDate] = React.useState('');
   const [paymentAmounts, setPaymentAmounts] = React.useState({});
@@ -78,11 +79,10 @@ export function FeesPage() {
     setSuccess('');
 
     try {
-      const student = students.find((item) => item.id === studentId
-        || item._id === studentId);
+      const student = students.find((item) => item.usn === studentUsn);
 
-      await createFee({ studentId, amountDue, dueDate });
-      setStudentId('');
+      await createFee({ usn: studentUsn, amountDue, dueDate });
+      setStudentUsn('');
       setAmountDue('');
       setDueDate('');
       setSuccess(`Fee record created for ${student?.name || 'the student'}.`);
@@ -136,19 +136,16 @@ export function FeesPage() {
           <label>
             Student
             <select
-              value={studentId}
-              onChange={(event) => setStudentId(event.target.value)}
+              value={studentUsn}
+              onChange={(event) => setStudentUsn(event.target.value)}
               required
             >
               <option value="">Choose a student</option>
-              {students.map((student) => {
-                const id = student.id || student._id;
-                return (
-                  <option key={id} value={id}>
-                    {student.usn} — {student.name}
-                  </option>
-                );
-              })}
+              {students.map((student) => (
+                <option key={student.usn} value={student.usn}>
+                  {student.usn} — {student.name}
+                </option>
+              ))}
             </select>
           </label>
 
@@ -187,7 +184,7 @@ export function FeesPage() {
             Filter by status
             <select value={status} onChange={(event) => setStatus(event.target.value)}>
               <option value="">All statuses</option>
-              <option value="pending">Pending</option>
+              <option value="pending">Due</option>
               <option value="partial">Partially paid</option>
               <option value="paid">Paid</option>
               <option value="overdue">Overdue</option>
@@ -225,7 +222,7 @@ export function FeesPage() {
                       <td>{money(fee.totalPaid)}</td>
                       <td>{money(fee.balance)}</td>
                       <td>{displayDate(fee.dueDate)}</td>
-                      <td><span className={`pill pill-${fee.status.toLowerCase()}`}>{fee.status}</span></td>
+                      <td><span className={feeStatusClass(fee.status)}>{normalizeFeeStatus(fee.status)}</span></td>
                       <td>
                         <button
                           type="button"

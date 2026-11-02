@@ -5,11 +5,19 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { requireAuth, requireRole, selfOrAdmin, ROLES } = require('../middleware/auth');
 
+const USN_PATTERN = /^[A-Za-z0-9]{13}$/;
+
 function errorBody(code, message, details = {}) {
   return { success: false, error: { code, message, details } };
 }
 
-function toFeeView(fee, student = null) {
+// "Today" starts at 00:00 UTC. A fee due today is not overdue until the day is over.
+// The admin dashboard counts overdue fees the same way.
+function startOfTodayUtc(now = new Date()) {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+}
+
+function toFeeView(fee, student = null, now = new Date()) {
   const doc = fee && typeof fee.toObject === 'function'
     ? fee.toObject()
     : fee;
@@ -19,7 +27,7 @@ function toFeeView(fee, student = null) {
   const amountDue = Number(doc.amountDue);
   const totalPaid = Number(doc.totalPaid || 0);
   const balance = Math.max(0, amountDue - totalPaid);
-  const overdue = balance > 0 && new Date(doc.dueDate) < new Date();
+  const overdue = balance > 0 && new Date(doc.dueDate) < startOfTodayUtc(now);
 
   let status = 'Pending';
   if (balance === 0) {
@@ -80,11 +88,20 @@ function createFeesRouter(options = {}) {
     async (req, res, next) => {
       try {
         const { Fee, Student } = getModels();
-        const { studentId, amountDue, dueDate } = req.body || {};
+        const { studentId, usn, amountDue, dueDate } = req.body || {};
+
+        // The student is named by USN (API contract endpoint 12). A record id is still accepted.
+        if (usn !== undefined && (typeof usn !== 'string' || !USN_PATTERN.test(usn))) {
+          return res.status(400).json(errorBody(
+            'INVALID_USN',
+            'Enter a valid USN (13 alphanumeric characters, for example PES1UG24CS924)'
+          ));
+        }
+        const hasStudent = usn !== undefined
+          || (typeof studentId === 'string' && mongoose.isValidObjectId(studentId));
 
         if (
-          typeof studentId !== 'string' ||
-          !mongoose.isValidObjectId(studentId) ||
+          !hasStudent ||
           typeof amountDue !== 'number' ||
           !Number.isFinite(amountDue) ||
           amountDue <= 0 ||
@@ -97,7 +114,9 @@ function createFeesRouter(options = {}) {
           ));
         }
 
-        const student = await Student.findById(studentId).lean();
+        const student = usn !== undefined
+          ? await Student.findOne({ usn: usn.toUpperCase() }).lean()
+          : await Student.findById(studentId).lean();
         if (!student) {
           return res.status(404).json(errorBody('NOT_FOUND', 'Student not found'));
         }
@@ -149,9 +168,8 @@ function createFeesRouter(options = {}) {
           ));
         }
 
-        const now = new Date();
+        const now = startOfTodayUtc();
         const filter = {};
-
         if (status === 'paid') {
           filter.$expr = { $gte: ['$totalPaid', '$amountDue'] };
         } else if (status === 'pending') {

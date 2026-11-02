@@ -623,6 +623,11 @@ form + .eyebrow {
   color: var(--marigold-text);
 }
 
+.pill-overdue {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
 .pill-paid {
   background: var(--success-soft);
   color: var(--success);

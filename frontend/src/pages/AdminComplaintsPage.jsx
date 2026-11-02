@@ -14,6 +14,8 @@ import {
 import '../complaints.css';
 
 const NO_FILTERS = { status: '', category: '' };
+// A Resolved or Rejected complaint is final. The server refuses changes to it as well.
+const CLOSED_STATUSES = ['Resolved', 'Rejected'];
 
 export function ComplaintUpdateForm({ complaint, onUpdated }) {
   const [status, setStatus] = React.useState(ADMIN_STATUSES.includes(complaint.status) ? complaint.status : ADMIN_STATUSES[0]);
@@ -92,7 +94,11 @@ export function AdminComplaintCard({ complaint, onUpdated }) {
         ) : null}
       </div>
 
-      <ComplaintUpdateForm complaint={complaint} onUpdated={onUpdated} />
+      {CLOSED_STATUSES.includes(complaint.status) ? (
+        <p className="inline-note">This complaint is closed and can no longer be changed.</p>
+      ) : (
+        <ComplaintUpdateForm complaint={complaint} onUpdated={onUpdated} />
+      )}
     </article>
   );
 }
