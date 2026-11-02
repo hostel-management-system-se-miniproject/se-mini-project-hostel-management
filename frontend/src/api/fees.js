@@ -59,12 +59,13 @@ export async function fetchFees(status = '', options = {}) {
   return Array.isArray(data) ? data : [];
 }
 
-export async function createFee({ studentId, amountDue, dueDate }, options = {}) {
+// The student is named by USN (the students list has no record id). `studentId` still works for older callers.
+export async function createFee({ studentId, usn, amountDue, dueDate }, options = {}) {
   return request('', {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ studentId, amountDue: Number(amountDue), dueDate })
+    body: JSON.stringify({ studentId, usn, amountDue: Number(amountDue), dueDate })
   });
 }
 

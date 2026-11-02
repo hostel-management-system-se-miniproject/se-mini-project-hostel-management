@@ -40,8 +40,14 @@ function formatDate(value) {
   return date.toISOString().slice(0, 10);
 }
 
+// Spreadsheet apps run cells that start with = + - @ (or tab / CR) as formulas.
+// Prefix them with an apostrophe so user-entered text cannot execute when the CSV is opened.
+function neutraliseFormula(text) {
+  return /^[=+\-@\t\r]/.test(text) ? `'${text}` : text;
+}
+
 function escapeCsvCell(value) {
-  const text = `${value ?? ''}`;
+  const text = neutraliseFormula(`${value ?? ''}`);
   if (/[",\n]/.test(text)) {
     return `"${text.replace(/"/g, '""')}"`;
   }
@@ -114,10 +120,12 @@ function buildPdf(type, columns, rows) {
 async function getStudentRows({ Student, Allocation, Room }) {
   const students = await Student.find({}).sort({ usn: 1 }).lean();
   const allocations = await Allocation.find({ status: 'active' }).lean();
+  const rooms = await Room.find({ _id: { $in: allocations.map((a) => a.roomId) } }).lean();
+  const roomById = new Map(rooms.map((room) => [String(room._id), room]));
   const roomMap = new Map();
 
   for (const allocation of allocations) {
-    const room = await Room.findById(allocation.roomId).lean();
+    const room = roomById.get(String(allocation.roomId));
     if (room) {
       roomMap.set(String(allocation.studentId), room);
     }
@@ -246,4 +254,4 @@ function createReportsRouter(options = {}) {
   return router;
 }
 
-module.exports = { createReportsRouter, REPORT_TYPES, REPORT_FORMATS, REPORT_COLUMNS, toCsv, buildPdf };
+module.exports = { createReportsRouter, REPORT_TYPES, REPORT_FORMATS, REPORT_COLUMNS, toCsv, buildPdf, escapeCsvCell };

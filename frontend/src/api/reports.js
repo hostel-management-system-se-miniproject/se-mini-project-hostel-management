@@ -30,7 +30,8 @@ export async function downloadReport(type, format, { fetchImpl = fetch, signal }
       document.body.appendChild(link);
       link.click();
       link.remove();
-      URL.revokeObjectURL(url);
+      // Revoke later: some browsers cancel the download if the URL disappears at once.
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
     return;

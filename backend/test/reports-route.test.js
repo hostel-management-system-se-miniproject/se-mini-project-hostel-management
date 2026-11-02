@@ -30,6 +30,9 @@ const mockModels = {
     })
   },
   Room: {
+    find: () => ({
+      lean: async () => [{ _id: 'r1', roomNo: 'A-204', block: 'A', floor: 2 }]
+    }),
     findById: (id) => ({
       lean: async () => (id === 'r1' ? { _id: 'r1', roomNo: 'A-204', block: 'A', floor: 2 } : null)
     })
@@ -160,4 +163,12 @@ test('the real app mounts and protects the reports route', async () => {
 
   const anonymous = await request(app).get('/api/reports/student?format=csv');
   assert.equal(anonymous.status, 401);
+});
+
+test('CSV cells that start with a formula character are neutralised', async () => {
+  const { toCsv } = require('../src/routes/reports');
+  const csv = toCsv(['a', 'b', 'c'], [{ a: '=HYPERLINK("x")', b: '-5+2', c: 'plain, text' }]);
+  assert.ok(csv.includes("\"'=HYPERLINK(\"\"x\"\")\""));
+  assert.ok(csv.includes(",'-5+2,"));
+  assert.ok(csv.includes('"plain, text"'));
 });

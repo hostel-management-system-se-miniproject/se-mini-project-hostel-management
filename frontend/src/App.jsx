@@ -1,14 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Alert } from './components/Alert';
-import { FormDemo } from './components/FormDemo';
+import { NavIcon } from './components/NavIcon';
 import { PlaceholderPage } from './components/PlaceholderPage';
-import { Table } from './components/Table';
 import { RoomsPage } from './pages/RoomsPage';
 import { AllocationsPage } from './pages/AllocationsPage';
 import { VisitorsPage } from './pages/VisitorsPage';
 import { ComplaintsPage } from './pages/ComplaintsPage';
 import { StudentDashboardPage } from './pages/StudentDashboardPage';
+import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { LeavePage } from './pages/LeavePage';
+import { FeesPage } from './pages/FeesPage';
+import { StudentFeesPage } from './pages/StudentFeesPage';
+import { ReportsPage } from './pages/ReportsPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import {
   NAV_ITEMS,
@@ -16,16 +19,6 @@ import {
   formatRoleName,
   getDefaultPathForRole,
 } from './navigation';
-import { downloadReport } from './api/reports';
-
-const EXPORT_OPTIONS = [
-  { label: 'Student CSV', type: 'student', format: 'csv' },
-  { label: 'Student PDF', type: 'student', format: 'pdf' },
-  { label: 'Fee CSV', type: 'fee', format: 'csv' },
-  { label: 'Fee PDF', type: 'fee', format: 'pdf' },
-  { label: 'Complaint CSV', type: 'complaint', format: 'csv' },
-  { label: 'Complaint PDF', type: 'complaint', format: 'pdf' },
-];
 
 function useCurrentPath() {
   const [currentPath, setCurrentPath] = React.useState(
@@ -52,144 +45,20 @@ function useCurrentPath() {
   return [currentPath, navigate];
 }
 
-function DashboardPage() {
-  const stats = [
-    { label: 'Occupied rooms', value: '84%' },
-    { label: 'Open complaints', value: '12' },
-    { label: 'Pending leave', value: '7' },
-  ];
-
-  const rows = [
-    { name: 'Aisha', room: 'A-204', status: 'Checked in' },
-    { name: 'Ravi', room: 'B-118', status: 'Pending' },
-    { name: 'Nirmal', room: 'C-301', status: 'Approved' },
-  ];
-
-  return (
-    <>
-      <Alert
-        variant="success"
-        title="Welcome back"
-        message="The role-based landing screen is active and ready to guide the user."
-      />
-
-      <div className="stats-grid">
-        {stats.map((stat) => (
-          <div className="stat-card" key={stat.label}>
-            <span>{stat.label}</span>
-            <strong>{stat.value}</strong>
-          </div>
-        ))}
-      </div>
-
-      <div className="panel-grid">
-        <FormDemo />
-
-        <div className="widget-card">
-          <h3>Recent activity</h3>
-          <Table
-            columns={[
-              { key: 'name', label: 'Name' },
-              { key: 'room', label: 'Room' },
-              { key: 'status', label: 'Status' },
-            ]}
-            rows={rows}
-          />
-        </div>
-      </div>
-    </>
-  );
+function getInitials(name) {
+  // Use the first letters of the first two words that start with a letter ("Student 001" gives "ST").
+  const words = String(name).trim().split(/\s+/).filter((word) => /^[A-Za-z]/.test(word));
+  if (words.length === 0) return '?';
+  const letters = words.length === 1 ? words[0].slice(0, 2) : words[0][0] + words[1][0];
+  return letters.toUpperCase();
 }
 
-function ReportsPage({ role = 'admin' }) {
-  const [status, setStatus] = React.useState({ kind: '', message: '' });
-  const [busy, setBusy] = React.useState(null);
-
-  const handleExport = async (type, format) => {
-    setBusy(`${type}:${format}`);
-    setStatus({ kind: '', message: '' });
-
-    try {
-      await downloadReport(type, format);
-      setStatus({
-        kind: 'success',
-        message: `${type} ${format.toUpperCase()} export started.`,
-      });
-    } catch (error) {
-      setStatus({
-        kind: 'error',
-        message: error.message || 'The export could not be created.',
-      });
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  if (role !== 'admin') {
-    return (
-      <div className="widget-card">
-        <h3>Reports</h3>
-        <p className="inline-note">Only admins can export hostel reports.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="widget-card">
-      <h3>Export reports</h3>
-      <p className="inline-note">Download the current hostel records as CSV or PDF.</p>
-
-      {status.message ? (
-        <Alert
-          variant={status.kind === 'success' ? 'success' : 'error'}
-          title={status.kind === 'success' ? 'Export ready' : 'Export failed'}
-          message={status.message}
-        />
-      ) : null}
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: '12px',
-          marginTop: '18px',
-        }}
-      >
-        {EXPORT_OPTIONS.map((option) => (
-          <button
-            key={`${option.type}-${option.format}`}
-            type="button"
-            onClick={() => handleExport(option.type, option.format)}
-            disabled={busy !== null}
-            style={{
-              padding: '12px 14px',
-              borderRadius: '10px',
-              border: '1px solid #d0d7de',
-              background:
-                busy === `${option.type}:${option.format}` ? '#f0f4f8' : '#ffffff',
-              cursor: busy !== null ? 'wait' : 'pointer',
-              fontWeight: 600,
-              textAlign: 'left',
-            }}
-          >
-            {busy === `${option.type}:${option.format}` ? 'Preparing…' : option.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-ReportsPage.propTypes = {
-  role: PropTypes.oneOf(['student', 'admin']),
-};
-
-function renderPageContent(path, role, user) {
+function renderPageContent(path, role, user, onNavigate) {
   if (path === '/dashboard') {
     if (role === 'student' && user?.usn) {
       return <StudentDashboardPage usn={user.usn} />;
     }
-    return <DashboardPage />;
+    return <AdminDashboardPage onNavigate={onNavigate} />;
   }
 
   if (path === '/complaints') {
@@ -197,12 +66,8 @@ function renderPageContent(path, role, user) {
   }
 
   if (path === '/leave') {
-    return (
-      <PlaceholderPage
-        title="Leave"
-        description="Leave status, approval flow, and balance information will live here."
-      />
-    );
+    // LeavePage shows the admin decision screen when the role is admin.
+    return <LeavePage role={role} />;
   }
 
   if (path === '/rooms') {
@@ -214,10 +79,16 @@ function renderPageContent(path, role, user) {
   }
 
   if (path === '/fees') {
+    if (role === 'admin') {
+      return <FeesPage />;
+    }
+    if (user?.usn) {
+      return <StudentFeesPage usn={user.usn} />;
+    }
     return (
       <PlaceholderPage
         title="Fees"
-        description="Payment summaries, outstanding dues, and fee collection records will be displayed here."
+        description="Log in as a student to see your fee details."
       />
     );
   }
@@ -239,6 +110,8 @@ function renderPageContent(path, role, user) {
 }
 
 function App({ user = null, onLogout = null }) {
+  // With a logged-in user the role comes from the server session. Without one
+  // (the HMS-03 demo and its tests) the role switcher is shown instead.
   const [role, setRole] = React.useState(user?.role ?? 'student');
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [currentPath, navigate] = useCurrentPath();
@@ -269,86 +142,91 @@ function App({ user = null, onLogout = null }) {
     setMobileMenuOpen(false);
   };
 
+  const displayName = user?.name || user?.usn || formatRoleName(role);
+
   return (
     <div className="app-shell">
-      <header className="topbar">
-        <div className="topbar-left">
-          <button
-            type="button"
-            className="menu-toggle"
-            aria-label="Toggle navigation menu"
-            onClick={() => setMobileMenuOpen((open) => !open)}
-          >
-            ☰
-          </button>
-
-          <div className="brand">
-            <span className="brand-mark">HMS</span>
-            <div>
-              <strong>Hostel Management</strong>
-              <small>Role console</small>
-            </div>
+      <aside id="app-sidebar" className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
+        <div className="brand">
+          <span className="brand-mark">HMS</span>
+          <div>
+            <strong>Hostel Management</strong>
+            <small>{role === 'admin' ? 'Hostel office' : 'Student portal'}</small>
           </div>
         </div>
 
-        {user ? (
-          <div className="user-box">
-            <span>{user.name || user.usn || formatRoleName(user.role)}</span>
-            <button type="button" onClick={onLogout}>
-              Log out
+        <nav aria-label="Sidebar navigation">
+          {menuItems.map((item) => (
+            <button
+              key={item.path}
+              type="button"
+              className={currentPath === item.path ? 'nav-item active' : 'nav-item'}
+              aria-current={currentPath === item.path ? 'page' : undefined}
+              onClick={() => handleNavigation(item.path)}
+            >
+              <span className="icon" aria-hidden="true"><NavIcon name={item.icon} /></span>
+              <span>{item.label}</span>
             </button>
-          </div>
-        ) : (
-          <div className="role-switcher" aria-label="Role selector">
-            {['student', 'admin'].map((item) => (
-              <button
-                key={item}
-                type="button"
-                className={item === role ? 'active' : ''}
-                onClick={() => handleRoleChange(item)}
-              >
-                {formatRoleName(item)}
-              </button>
-            ))}
-          </div>
-        )}
-      </header>
+          ))}
+        </nav>
 
-      <div className="layout-shell">
-        <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
-          <nav aria-label="Sidebar navigation">
-            {menuItems.map((item) => (
-              <button
-                key={item.path}
-                type="button"
-                className={currentPath === item.path ? 'nav-item active' : 'nav-item'}
-                onClick={() => handleNavigation(item.path)}
-              >
-                <span className="icon" aria-hidden="true">{item.icon}</span>
-                <span>{item.label}</span>
+        {user ? (
+          <div className="sidebar-foot">
+            <div className="user-box">
+              <span className="avatar" aria-hidden="true">{getInitials(displayName)}</span>
+              <div className="user-meta">
+                <strong>{displayName}</strong>
+                <small>{formatRoleName(user.role)}</small>
+              </div>
+              <button type="button" onClick={onLogout}>
+                Log out
               </button>
-            ))}
-          </nav>
-        </aside>
+            </div>
+          </div>
+        ) : null}
+      </aside>
+
+      <div
+        className={mobileMenuOpen ? 'scrim visible' : 'scrim'}
+        aria-hidden="true"
+        onClick={() => setMobileMenuOpen(false)}
+      />
+
+      <div className="main-column">
+        <header className="topbar">
+          <div className="topbar-left">
+            <button
+              type="button"
+              className="menu-toggle"
+              aria-label="Toggle navigation menu"
+              aria-controls="app-sidebar"
+              aria-expanded={mobileMenuOpen}
+              onClick={() => setMobileMenuOpen((open) => !open)}
+            >
+              ☰
+            </button>
+            <h1>{activePage?.label ?? 'Overview'}</h1>
+          </div>
+
+          {user ? null : (
+            <div className="role-switcher" aria-label="Role selector">
+              {['student', 'admin'].map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={item === role ? 'active' : ''}
+                  onClick={() => handleRoleChange(item)}
+                >
+                  {formatRoleName(item)}
+                </button>
+              ))}
+            </div>
+          )}
+        </header>
 
         <main className="content-area">
-          <div className="page-header">
-            <div>
-              <p className="eyebrow">{formatRoleName(role)} access</p>
-              <h1>{activePage?.label ?? 'Overview'}</h1>
-            </div>
-
-            <div className="page-status">
-              <span className="status-dot" aria-hidden="true" />
-              Active
-            </div>
-          </div>
-
-          <ProtectedRoute
-            allowedRoles={activePage?.roles ?? ['student', 'admin']}
-            currentRole={role}
-          >
-            {renderPageContent(currentPath, role, user)}
+          <ProtectedRoute allowedRoles={activePage?.roles ?? ['student', 'admin']} currentRole={role}>
+            {renderPageContent(currentPath, role, user, handleNavigation)}
           </ProtectedRoute>
         </main>
       </div>
