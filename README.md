@@ -107,21 +107,20 @@ Use the GitHub Project board as the source of truth for backlog items, assignees
 
 ### Diagrams
 
-The UML use-case diagram and the data model (collection) diagram are in [`docs/diagrams/`](docs/diagrams/). Each has its PlantUML source (`.puml`) and is exported as SVG and PNG.
+The UML use-case diagram and the data model (collection) diagram are in [`docs/diagrams/`](docs/diagrams/). Each has its PlantUML source (`.puml`) and is exported as PNG. The four figures of the SAD are PNG images in the same folder.
 
 | Diagram | Shows | Files |
 | --- | --- | --- |
-| Use-case diagram (SRS 4.1) | Actors Student and Warden/Admin and their use cases | [PNG](docs/diagrams/use-case.png), [SVG](docs/diagrams/use-case.svg), [source](docs/diagrams/use-case.puml) |
-| Data model (SRS 4.2, SAD 3.b.5) | Eight MongoDB collections, references by `_id`, embedded arrays (`payments`, `history`) | [PNG](docs/diagrams/er-collections.png), [SVG](docs/diagrams/er-collections.svg), [source](docs/diagrams/er-collections.puml) |
+| Use-case diagram (SRS 4.1) | Actors Student and Warden/Admin and their use cases | [PNG](docs/diagrams/use-case.png), [source](docs/diagrams/use-case.puml) |
+| Data model (SRS 4.2, SAD 3.b.5) | Eight MongoDB collections, references by `_id`, embedded arrays (`payments`, `history`) | [PNG](docs/diagrams/er-collections.png), [source](docs/diagrams/er-collections.puml) |
 
 ![HMS use-case diagram](docs/diagrams/use-case.png)
 
 ![HMS data model](docs/diagrams/er-collections.png)
 
-To regenerate the exports after editing a source (needs Java and Graphviz; GitHub does not render `.puml` files itself):
+To regenerate the PNG after editing a source (needs Java and Graphviz; GitHub does not render `.puml` files itself):
 
 ```bash
-java -jar plantuml.jar -tsvg docs/diagrams/*.puml
 java -jar plantuml.jar -tpng docs/diagrams/*.puml
 ```
 
@@ -165,17 +164,18 @@ MongoDB does not enforce foreign keys or CHECK constraints, so the rules the SRS
 ├── backend/                  # Node.js + Express API (src/, test/)
 ├── frontend/                 # React + Vite application (src/)
 ├── docs/
-│   ├── baseline/             # Submitted v1.0 documents, never edited
-│   ├── SRS.md                # v1.1
-│   ├── SAD.md                # v1.1
-│   ├── TEST_PLAN.md          # v1.1
+│   ├── baseline/             # Submitted v1.0 documents (.docx), never edited
+│   ├── SRS_v1.1.docx         # Software Requirements Specification v1.1
+│   ├── SAD_v1.1.docx         # Software Architecture & Design Specification v1.1
+│   ├── TEST_PLAN.md          # Test Plan (v1.2)
 │   ├── COMMIT_PLAN.md        # Day-by-day schedule, owners, reviewers
 │   ├── DEVIATIONS.md         # Differences from the submitted documents
 │   ├── ADR-001.md            # Technology decision
 │   ├── API_CONTRACT.md       # Agreed endpoints
 │   ├── RTM.md                # Requirements traceability matrix
 │   ├── SETUP-HMS-01.md       # Windows setup walkthrough
-│   └── diagrams/             # UML use-case and ER diagrams
+│   ├── BACKUP.md             # Daily database backup procedure
+│   └── diagrams/             # UML use-case and ER diagrams, SAD figures (PNG)
 ├── tests/performance/        # k6 load test and measured results (HMS-20)
 ├── videos/                   # Sprint demo videos
 └── README.md
@@ -551,7 +551,7 @@ k6 run tests/performance/load-200.js
 
 Deviations are tracked in `docs/DEVIATIONS.md`, one entry per deviation: what changed, why, which document it affects, the impact and who approved it. They are explained during the final demo.
 
-Deviations identified so far (to be confirmed as the implementation progresses):
+Deviations at the v1.0 freeze (the full list, D-01 to D-25, with reasons and impact is in `docs/DEVIATIONS.md`):
 
 - **USN format:** real USNs are 13 characters, while SRS Appendix B lists length 10.
 - **Reallocate / vacate:** implemented as proposed FR-002.5 / FR-002.6 (present in the SRS overview, business rules and SAD, but without numbered FRs).
@@ -560,6 +560,11 @@ Deviations identified so far (to be confirmed as the implementation progresses):
 - **Roles:** only Student and Warden/Admin; the System Administrator class and a separate security role are out of scope.
 - **NFR test IDs:** NFR-001 / NFR-002 are verified through sub-checks (page load, 200 users, hashing, RBAC, session expiry).
 - **Database:** MongoDB (from the professor's MERN stack) is used instead of the relational database in SRS 2.4, 3.2 and 7 and SAD 3.a.3, 3.a.6 and 3.b.5. Entities become collections; the integrity rules in Section 4.1 replace foreign keys and constraints. Story HMS-02 is read as "MongoDB data model, indexes and setup".
+- **Fee status and overdue (D-16):** the fee endpoints return Pending, Partial, Paid and Overdue (a fee due today is not yet overdue); the screens show Due, Partially Paid, Paid and Overdue.
+- **Fee payments (D-17):** payments are recorded at `POST /api/fees/{id}/payments`; a fee is created by USN.
+- **Leave and complaints (D-21, D-18):** a one-day leave is allowed; a Resolved or Rejected complaint cannot be changed again.
+- **Reports (D-22):** CSV is the default format, file names include the date, and CSV cells that look like formulas are neutralised.
+- **Performance (D-24):** NFR-001.a and NFR-001.b are recorded as *Limited by environment* with the measured numbers (`tests/performance/results.md`), not as passed.
 - **Process:** any teammate may review and merge, as long as they are not the PR author.
 - **Branch workflow (D-12):** sprint PRs target `dev`, and `dev` is promoted to `main` by a merge-commit PR at each sprint freeze (Section 9).
 
@@ -606,17 +611,18 @@ Keep these in `docs/`:
 
 | Document | File | Notes |
 | --- | --- | --- |
-| Software Requirements Specification (SRS) | [`docs/SRS.md`](docs/SRS.md) | v1.1; v1.0 kept in `docs/baseline/` |
-| Software Architecture & Design Specification (SAD) | [`docs/SAD.md`](docs/SAD.md) | v1.1; v1.0 kept in `docs/baseline/` |
-| Test Plan | [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md) | v1.1 |
+| Software Requirements Specification (SRS) | [`docs/SRS_v1.1.docx`](docs/SRS_v1.1.docx) | v1.1; v1.0 kept in `docs/baseline/` |
+| Software Architecture & Design Specification (SAD) | [`docs/SAD_v1.1.docx`](docs/SAD_v1.1.docx) | v1.1; v1.0 kept in `docs/baseline/` |
+| Test Plan | [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md) | v1.2, with the Sprint 2 execution results |
 | Commit plan | [`docs/COMMIT_PLAN.md`](docs/COMMIT_PLAN.md) | Schedule, owners, reviewers |
 | Deviations | [`docs/DEVIATIONS.md`](docs/DEVIATIONS.md) | Every difference from the submitted documents |
 | ADR-001 | [`docs/ADR-001.md`](docs/ADR-001.md) | Technology decision |
-| API contract | [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md) | Agreed endpoints |
+| API contract | [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md) | v1.3, the 31 endpoints as built |
 | Diagrams | [`docs/diagrams`](docs/diagrams) | UML use-case and ER diagrams |
-| Requirements Traceability Matrix (RTM) | `docs/RTM.md` (pending HMS-23) | Requirement to test traceability |
-| Baseline (submitted v1.0) | [`docs/baseline`](docs/baseline) | SRS and SAD v1.0, never edited |
+| Requirements Traceability Matrix (RTM) | [`docs/RTM.md`](docs/RTM.md) | Requirement to test traceability, final status |
+| Baseline (submitted v1.0) | [`docs/baseline`](docs/baseline) | SRS, SAD and Test Plan v1.0 (.docx), never edited |
 | Setup guide | [`docs/SETUP-HMS-01.md`](docs/SETUP-HMS-01.md) | Windows walkthrough |
+| Backup procedure | [`docs/BACKUP.md`](docs/BACKUP.md) | Daily `mongodump` (HMS-22) |
 
 ---
 

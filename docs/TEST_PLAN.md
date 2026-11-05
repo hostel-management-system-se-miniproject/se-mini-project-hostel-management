@@ -5,7 +5,7 @@
 **Team:** Team 3, Class 5-J — Raiesh Giriyapanavar, Chiranthan Sathrasala, Neha K S, Harsh M
 **Prepared by:** Chiranthan Sathrasala (QA execution: Raiesh Giriyapanavar)
 **Date:** 14 October 2026
-**Reference documents:** SRS v1.1 (14 Oct 2026), SAD v1.0 (SAD v1.1 pending), Test Plan v1.0 (submitted baseline, retained unchanged)
+**Reference documents:** SRS v1.1 (14 Oct 2026), SAD v1.1 (14 Oct 2026), Test Plan v1.0 (submitted baseline, retained unchanged)
 
 **Instructions followed:**
 1. At least 8–10 test cases for every functional requirement group, covering Unit (UT), Integration (IT) and System (ST) testing, with both valid and invalid inputs.
@@ -19,7 +19,8 @@
 | --- | --- | --- | --- |
 | Chiranthan Sathrasala | 06-Sep-2026 | Initial Test Plan (46 test cases) | 1.0 |
 | Team 3 | 14-Oct-2026 | Aligned with SRS v1.1 and the MERN/MongoDB stack; added missing cases; corrected test data; real traceability matrix; corrected case count. v1.0 is retained as the submitted baseline and is unaffected by this execution update. | 1.1 |
-| Team 3 (QA: Raiesh Giriyapanavar) | 01-Nov-2026 | Post-merge freeze Sprint 2 test execution and regression re-run (HMS-35); recorded execution results in Sections 3–5; final summary: 72 Pass, 0 Fail, 1 Limited by environment, 0 Not run. | 1.2 |
+| Team 3 (QA: Raiesh Giriyapanavar) | 01-Nov-2026 | Post-merge freeze Sprint 2 test execution and regression re-run (HMS-35); recorded execution results in Sections 3–5; final summary: 71 Pass, 0 Fail, 2 Limited by environment (NFR-01, NFR-04), 0 Not run. | 1.2 |
+| Chiranthan Sathrasala | 02-Nov-2026 | HMS-37 final review: corrected the summary counts (the revision history and Section 10 disagreed with the results table), and added the checks for the final-review fixes (Section 10). No execution result was changed. | 1.2 |
 
 ## Summary of Changes in v1.1
 
@@ -271,10 +272,10 @@ Regression: after the Sprint 2 merge freeze, re-run all Sprint 1 cases that touc
 | Metric | Count |
 | --- | --- |
 | Total test cases | 73 |
-| **Pass** | **70** |
+| **Pass** | **71** |
 | **Fail** | **0** |
 | **Limited by environment** | **2** (NFR-01, NFR-04) |
-| **Not run** | **1** (IT-16 counted in regression) |
+| **Not run** | **0** |
 
 **Sprint 2 cases executed:** IT-03, IT-04, IT-14, IT-15, IT-16, UT-32, UT-12 to UT-16, UT-33, UT-34, IT-06, IT-07, IT-17, ST-03, UT-20, UT-21, UT-36, UT-37, IT-08, IT-20, ST-04, UT-22 to UT-25, UT-38, IT-22, ST-05, IT-09 to IT-11, IT-21, IT-18, IT-19, NFR-01, NFR-04
 
@@ -283,3 +284,17 @@ Regression: after the Sprint 2 merge freeze, re-run all Sprint 1 cases that touc
 **Bugs logged:** None — all functional cases passed. NFR-01 and NFR-04 are recorded as "Limited by environment" with measured evidence (see `tests/performance/results.md`).
 
 **Infrastructure fix:** Reports route (`backend/src/routes/reports.js`) was not mounted in `backend/src/app.js`; fix applied as part of this sprint execution. New test file `backend/test/reports-route.test.js` (10 tests) added to cover IT-10, IT-11 and IT-21 automatically.
+
+**Check of the counts (HMS-37):** the results table in Sections 3 to 5 has 73 cases: 71 Pass and 2 Limited by environment. IT-16 passed (it is also one of the regression cases), so Not run is 0.
+
+**Final-review fixes after this execution (HMS-37):** these changed behaviour after the run above and are covered by automated tests that passed locally on 2 Nov 2026 (`backend/test/review-fixes.test.js`, `backend/test/reports-route.test.js`, `frontend/src/reports-page.test.jsx`).
+
+| Change | Related test IDs | Automated check |
+| --- | --- | --- |
+| A fee can be created by USN (`INVALID_USN`, `NOT_FOUND`) | UT-32 | fee creation by USN; malformed and unknown USN |
+| A fee due today is not overdue; the overdue filter matches the status | UT-14, UT-15 | overdue boundary and filter tests |
+| A closed complaint cannot be updated again | UT-20, IT-20 | closed complaint test |
+| CSV cells that start with `=`, `+`, `-` or `@` are neutralised | IT-10 | CSV formula test |
+| The Reports page, with the Leave, Fees and Dashboard routes restored in `App.jsx` | IT-10, IT-11, ST-03, ST-05 | `reports-page.test.jsx` |
+
+The test cases and expected results above are unchanged. The Actual Result entries were recorded before these fixes; the checks in this table passed after them.
