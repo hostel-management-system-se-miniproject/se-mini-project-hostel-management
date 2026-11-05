@@ -21,3 +21,6 @@ npm-debug.log*
 Thumbs.db
 
 backups/
+
+# Test and coverage output (copy the final reports to docs/reports/)
+test-results/
