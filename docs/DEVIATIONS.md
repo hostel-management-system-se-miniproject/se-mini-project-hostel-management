@@ -3,10 +3,10 @@
 **Project:** Hostel Management System (HMS), Team 3, Class 5-J, PES University
 **Baseline:** SRS v1.0, SAD v1.0, Test Plan v1.0 (as submitted)
 **Current:** SRS v1.1, SAD v1.1, Test Plan v1.1
-**Owner:** Chiranthan Sathrasala (PM). **Last updated:** 2 Nov 2026 (Sprint 2)
-**Related:** Issue HMS-32
+**Owner:** Chiranthan Sathrasala (PM). **Last updated:** 3 Nov 2026 (final list for the v1.0 freeze)
+**Related:** Issues HMS-32, HMS-37
 
-Anything that differs from the submitted SRS, SAD or Test Plan is listed here with the reason, the documents it affects and its impact. Add new rows as they are found. The final version is due on Fri 23 Oct.
+Anything that differs from the submitted SRS, SAD or Test Plan is listed here with the reason, the documents it affects and its impact. Add new rows as they are found. This is the final list for the v1.0 freeze (HMS-37): D-01 to D-25.
 
 **Status values:** Done (already reflected in the v1.1 documents), Planned (decided, not yet built), Open (needs a decision).
 
@@ -31,6 +31,12 @@ Anything that differs from the submitted SRS, SAD or Test Plan is listed here wi
 | D-16 | Fee status names | SRS FR-003.2 and the dashboard use Due, Partially Paid and Paid | The fee endpoints return `Pending`, `Partial`, `Paid` and `Overdue`. The Fees pages show the SRS names (Pending as Due, Partial as Partially Paid) and keep Overdue. | The fee ledger (HMS-10) used its own words and was merged before the student pages. Translating in the pages keeps every screen consistent without changing the merged ledger. | SRS FR-003.2, API_CONTRACT (fees), Test Plan IT-06, ST-03 | Students and admins see the SRS names. API clients see the endpoint names. | Done |
 | D-17 | Fee endpoint paths | Contract: `GET /api/fees/{usn}` and `POST /api/fees/payments` | `GET /api/fees/{usn}` (own or admin) was added by HMS-11, and the review fixes made `POST /api/fees` accept a USN. The older fee id routes still work. A payment is recorded at `POST /api/fees/{id}/payments`, not `POST /api/fees/payments`. | The fee ledger merged before the student fee page needed the USN route. | API_CONTRACT endpoints 12, 13 and 15, SAD 3.b.3 | Reads and fee creation follow the contract. Recording a payment still uses the fee id. | Done |
 | D-18 | Complaint admin work split | HMS-14 backend and admin page delivered as one story | The admin list and update endpoints (`GET /api/complaints`, `PUT /api/complaints/{id}`) arrived with the complaint submission story (HMS-13). HMS-14 delivered the admin page and the student status history. | The endpoints shared one route file and one set of tests, so they were built together. | API_CONTRACT endpoint 20, SRS FR-004.2, Test Plan UT-20, UT-36, UT-37, IT-20 | Resolved and Rejected are final: the review fixes block any later change to a closed complaint (400). | Done |
+| D-20 | Overdue rule and fee list filter | Fee status is derived only from the amount paid; the fee list filter takes Due, Partially Paid or Paid and returns an empty list for any other value | A fee is `Overdue` when a balance remains and the due date is before the start of today (UTC), so a fee due today is still `Pending`. The admin dashboard counts overdue fees the same way. `GET /api/fees` accepts `paid`, `pending`, `partial` and `overdue` (any letter case) and returns 400 `VALIDATION_ERROR` for another value. `GET /api/fees/{id}` (read one fee by record id) exists beside `GET /api/fees/{usn}`. A zero or negative payment or fee amount returns 400 `VALIDATION_ERROR`; the error code `INVALID_AMOUNT` is not used. | An unpaid fee past its due date needs its own state. The final code review (HMS-37) found the list filter and the status disagreeing by a day, and fixed both with new tests. | SRS FR-003.2, API_CONTRACT sections 2, 4 and 5.4, Test Plan UT-14, UT-15, UT-33, IT-06 | Status is still derived and never stored. The mapping to the SRS names is in D-16. | Done |
+| D-21 | One-day leave | End date must be after the start date | End date may equal the start date. Only an end date before the start date is rejected, with "End date cannot be before start date". | A one-day leave is a normal request. | SRS FR-005.1, API_CONTRACT endpoint 21, Test Plan UT-23, UT-38 | Slightly more permissive validation; nothing else changes. | Done |
+| D-22 | Report details | `GET /api/reports/{type}?format=csv\|pdf`, file name `<type>-report.csv` | `format` defaults to `csv`. The same reports are also served by `GET /api/reports/export?type=...&format=...`, which the frontend uses. File names include the date, for example `fee-report-2026-11-02.csv`. The fee report prints Due, Partially Paid and Paid. A CSV cell that starts with `=`, `+`, `-` or `@` is prefixed with an apostrophe so a spreadsheet does not run it as a formula. | The frontend needed one export URL. The formula guard closes a CSV injection risk found in the final code review (HMS-37). | API_CONTRACT 5.9, SAD 3.b.3, SRS FR-005.5, Test Plan IT-10, IT-11, IT-21 | A value that really starts with one of those characters shows a leading apostrophe in the CSV. | Done |
+| D-23 | Unknown route response | Every error uses the standard error envelope | A request to a path that does not exist returns 404 `{ "error": "Route not found" }`, without `success` or `code`. | The scaffold's catch-all handler was never changed. No screen depends on it. | API_CONTRACT section 6 and 8, SAD 3.b.4 | Only paths outside the 31 endpoints are affected. | Done (documented, not changed) |
+| D-24 | Performance requirement NFR-001 | Pages load within 3 seconds and 200 concurrent users are supported | Measured on a 2-vCPU, 4 GB development host: p95 is 3560 ms for login, 4025 ms for the student dashboard and 4185 ms for the admin dashboard, with error rates below 1%. Recorded as "Limited by environment" (NFR-01, NFR-04), not as passed. | A production-like host was not available. | SRS NFR-001.a, NFR-001.b, Test Plan NFR-01, NFR-04, `tests/performance/results.md` | The requirement is not claimed as met. The numbers are reported as measured. | Done |
+| D-25 | Visitor exit re-recorded | Not specified | Recording an exit again on the same visitor overwrites the earlier exit time. There is no conflict error. | The contract defines no error for it, and the admin may need to correct a wrong exit time. | API_CONTRACT endpoint 28, Test Plan UT-27, UT-40 | The earlier exit time is not kept. | Done |
 
 ## 2. Process deviations
 
@@ -45,7 +51,7 @@ Anything that differs from the submitted SRS, SAD or Test Plan is listed here wi
 
 ## 3. How to add a deviation
 
-1. Add a row with the next ID (D-13, D-14, ...).
+1. Add a row with the next ID (D-26, D-27, ...).
 2. Fill in every column. "Affected documents" must name the section or test ID.
 3. If the SRS, SAD or Test Plan wording changes, update it too, and keep the traceability matrix consistent.
 4. Mention the D-number in the PR description.

@@ -1,10 +1,10 @@
 # HMS API Contract
 
 **Project:** Hostel Management System (HMS), Team 3, Class 5-J, PES University
-**Version:** 1.2
-**Status:** The freeze takes effect when this pull request is merged. This file was written on Sun 18 Oct 2026.
+**Version:** 1.3
+**Status:** Frozen. Version 1.3 (2 Nov 2026) records the behaviour of the final code for the v1.0 freeze (HMS-37). It was first written on Sun 18 Oct 2026.
 **Owner:** Harsh M (Technical Lead)
-**Related:** Issue HMS-30 (GitHub issue #37), docs/SAD.md (3.b.3 API Design, 3.b.4 Error Handling), docs/ADR-001.md, docs/DEVIATIONS.md (D-06, D-09)
+**Related:** Issue HMS-30 (GitHub issue #37), docs/SAD.md (3.b.3 API Design, 3.b.4 Error Handling), docs/ADR-001.md, docs/DEVIATIONS.md (D-06, D-09, D-16 to D-25)
 
 The frontend and backend teams build against this file. It lists every endpoint in SAD 3.b.3 with its method, path, role, request body, response shape and error codes.
 
@@ -87,7 +87,7 @@ The `code` is stable and is what the frontend checks. The `message` is shown to 
 | Value | Rule |
 |---|---|
 | balance | `amountDue - totalPaid` |
-| fee status | `Due` if `totalPaid = 0`; `Partially Paid` if `0 < totalPaid < amountDue`; `Paid` if `totalPaid >= amountDue` |
+| fee status | `Paid` if `balance = 0`; otherwise `Overdue` if the due date is before the start of today (UTC); otherwise `Partial` if `totalPaid > 0`; otherwise `Pending`. The student dashboard shows `Due`, `Partially Paid` and `Paid` (DEVIATIONS D-16) |
 | room vacancy | `capacity - occupancy` |
 
 **Details added by this contract.** SAD 3.b.3 gives the method, path, role and typical status codes, and shows a few request and response examples. Where the SAD does not give the shape of a request or response, this file fixes it, and the frontend and backend both follow this file. This covers the field lists of the list and dashboard responses, the `search` parameter, the leave `decision` body, the report file names and the notification response. The SAD status code lists are "typical" lists. This file adds 401 and 403 to every protected endpoint through the common rules above.
@@ -108,7 +108,7 @@ The `code` is stable and is what the frontend checks. The `message` is shown to 
 | 10 | PUT | /api/allocations/{id}/reallocate | Admin | 5.3 |
 | 11 | POST | /api/allocations/{id}/vacate | Admin | 5.3 |
 | 12 | POST | /api/fees | Admin | 5.4 |
-| 13 | POST | /api/fees/payments | Admin | 5.4 |
+| 13 | POST | /api/fees/{id}/payments | Admin | 5.4 |
 | 14 | GET | /api/fees | Admin | 5.4 |
 | 15 | GET | /api/fees/{usn} | Student (own) / Admin | 5.4 |
 | 16 | POST | /api/complaints | Student | 5.5 |
@@ -137,7 +137,8 @@ The `code` is stable and is what the frontend checks. The `message` is shown to 
 | Complaint status set by admin | In Progress, Resolved, Rejected |
 | Leave status | Pending, Approved, Rejected |
 | Leave decision | Approved, Rejected |
-| Fee status | Due, Partially Paid, Paid |
+| Fee status (fee endpoints) | Pending, Partial, Paid, Overdue |
+| Fee status (student dashboard, fee report) | Due, Partially Paid, Paid |
 | Allocation status | active, inactive |
 | Allocation end reason | reallocated, vacated |
 | Report type | student, fee, complaint |
@@ -360,6 +361,19 @@ Errors: 400 `CONFIRMATION_REQUIRED` (confirm is missing or not `true`; nothing c
 
 ### 5.4 Fees
 
+Every fee endpoint returns the same fee object (the "fee view"):
+
+```json
+{
+  "id": "<fee id>", "studentId": "<student id>", "studentName": "Asha Rao", "usn": "PES1UG24CS002",
+  "amountDue": 50000, "totalPaid": 20000, "balance": 30000, "dueDate": "2026-11-30T00:00:00.000Z",
+  "status": "Partial",
+  "payments": [ { "amount": 20000, "paidOn": "2026-10-20T00:00:00.000Z", "recordedBy": "<admin user id>", "recordedAt": "2026-10-20T09:30:00.000Z" } ]
+}
+```
+
+`status` is `Pending`, `Partial`, `Paid` or `Overdue` (Section 2, "fee status"). The fee `id` is what the payment endpoint takes.
+
 **12. POST /api/fees** (Admin)
 
 Creates the fee record for a student. Each student has one fee record.
@@ -368,74 +382,48 @@ Request body:
 
 | Field | Type | Rules |
 |---|---|---|
-| usn | string | Required. A registered student |
+| usn | string | Required. A registered student (13 alphanumeric characters, any letter case). `studentId` (the student record id) is also accepted instead |
 | amountDue | number | Required. Greater than 0 |
 | dueDate | string | Required. `YYYY-MM-DD` |
 
-Success: 201 Created
+Success: 201 Created, `data` is the fee view with `totalPaid` 0, `balance` equal to `amountDue`, `status` `Pending` and an empty `payments` array.
 
-```json
-{ "success": true, "data": { "usn": "PES1UG24CS002", "amountDue": 50000, "dueDate": "2026-11-30", "totalPaid": 0, "balance": 50000, "status": "Due" } }
-```
+Errors: 400 `VALIDATION_ERROR` (missing student, an amount that is not a positive number, or an invalid date), 400 `INVALID_USN`, 403, 404 `NOT_FOUND` (unknown student), 409 `FEE_EXISTS`.
 
-Errors: 400 `VALIDATION_ERROR`, 400 `INVALID_AMOUNT`, 400 `INVALID_USN`, 403, 404 `NOT_FOUND` (unknown student), 409 `FEE_EXISTS`.
+**13. POST /api/fees/{id}/payments** (Admin)
 
-**13. POST /api/fees/payments** (Admin)
-
-Records a payment against a student's fee record.
+Records a payment against one fee record. `{id}` is the fee `id`. The balance is checked and updated in one atomic step, so two payments at the same moment cannot exceed the amount due.
 
 Request body:
 
 | Field | Type | Rules |
 |---|---|---|
-| usn | string | Required |
 | amount | number | Required. Greater than 0 and not more than the balance |
-| paidOn | string | Required. `YYYY-MM-DD` |
+| paidOn | string | Optional. `YYYY-MM-DD`. Defaults to today |
 
-Success: 201 Created
+Success: 200 OK, `data` is the updated fee view.
 
-```json
-{ "success": true, "data": { "amountDue": 50000, "totalPaid": 20000, "balance": 30000, "status": "Partially Paid" } }
-```
-
-Errors: 400 `VALIDATION_ERROR`, 400 `INVALID_AMOUNT`, 400 `PAYMENT_EXCEEDS_BALANCE` (`details.balance` holds the balance), 403, 404 `NOT_FOUND` (unknown student, or the student has no fee record).
+Errors: 400 `VALIDATION_ERROR` (zero, negative or non-numeric amount, or an invalid date), 400 `PAYMENT_EXCEEDS_BALANCE`, 403, 404 `NOT_FOUND` (no such fee record).
 
 **14. GET /api/fees** (Admin)
 
-Lists fee records.
+Lists fee records, earliest due date first.
 
 Query parameters (optional):
 
 | Parameter | Meaning |
 |---|---|
-| status | `Due`, `Partially Paid` or `Paid` |
+| status | `paid`, `pending`, `partial` or `overdue` (any letter case). The filter agrees with the `status` in the fee view |
 
-Success: 200 OK, `data` is an array:
+Success: 200 OK, `data` is an array of fee views.
 
-```json
-[ { "usn": "PES1UG24CS002", "studentName": "Asha Rao", "amountDue": 50000, "dueDate": "2026-11-30", "totalPaid": 20000, "balance": 30000, "status": "Partially Paid" } ]
-```
-
-A `status` value that matches no record returns an empty array.
-
-Errors: 401, 403.
+Errors: 400 `VALIDATION_ERROR` (unknown status), 401, 403.
 
 **15. GET /api/fees/{usn}** (Student (own) / Admin)
 
-Returns one student's fee status, balance and payment history.
+Returns one student's fee view, with the payment history. The fee can also be read by record id with `GET /api/fees/{id}` (the owner or an admin).
 
-Success: 200 OK
-
-```json
-{
-  "success": true,
-  "data": {
-    "usn": "PES1UG24CS002", "studentName": "Asha Rao",
-    "amountDue": 50000, "dueDate": "2026-11-30", "totalPaid": 20000, "balance": 30000, "status": "Partially Paid",
-    "payments": [ { "amount": 20000, "paidOn": "2026-10-20" } ]
-  }
-}
-```
+Success: 200 OK, `data` is the fee view.
 
 Errors: 401, 403, 404 `NOT_FOUND` (unknown student, or the student has no fee record).
 
@@ -511,6 +499,8 @@ Success: 200 OK, `data` is the updated complaint in the same shape as endpoint 1
 
 Errors: 400 `VALIDATION_ERROR` ("Invalid status" or "Remarks are required"), 403, 404 `NOT_FOUND`.
 
+A complaint that is `Resolved` or `Rejected` is closed and cannot be updated again (400 `VALIDATION_ERROR`, DEVIATIONS D-18).
+
 ### 5.6 Leave requests
 
 **21. POST /api/leaves** (Student)
@@ -522,7 +512,7 @@ Request body:
 | Field | Type | Rules |
 |---|---|---|
 | startDate | string | Required. `YYYY-MM-DD` |
-| endDate | string | Required. `YYYY-MM-DD`, after startDate |
+| endDate | string | Required. `YYYY-MM-DD`, on or after startDate (a one-day leave is allowed) |
 | reason | string | Required. Not blank |
 
 Success: 201 Created
@@ -531,7 +521,7 @@ Success: 201 Created
 { "success": true, "data": { "id": "<leave id>", "startDate": "2026-11-01", "endDate": "2026-11-05", "reason": "Family function", "status": "Pending" } }
 ```
 
-Errors: 400 `VALIDATION_ERROR` ("End date must be after start date" or "Reason is required").
+Errors: 400 `VALIDATION_ERROR` ("Start date is required (YYYY-MM-DD)", "End date is required (YYYY-MM-DD)", "End date cannot be before start date" or "Reason is required").
 
 **22. GET /api/leaves/mine** (Student)
 
@@ -667,24 +657,24 @@ Errors: 401, 403.
 
 **30. GET /api/reports/{type}** (Admin)
 
-Exports a report as a file download. `{type}` is `student`, `fee` or `complaint`.
+Exports a report as a file download. `{type}` is `student`, `fee` or `complaint`. The same reports are also served by `GET /api/reports/export?type={type}&format={format}`, which the frontend uses.
 
 Query parameter:
 
 | Parameter | Rules |
 |---|---|
-| format | Required. `csv` or `pdf` |
+| format | Optional. `csv` (the default) or `pdf` |
 
 Success: 200 OK. The response body is the file, not JSON.
 
 | Format | Content-Type | Content-Disposition |
 |---|---|---|
-| csv | `text/csv; charset=utf-8` | `attachment; filename="<type>-report.csv"` |
-| pdf | `application/pdf` | `attachment; filename="<type>-report.pdf"` |
+| csv | `text/csv; charset=utf-8` | `attachment; filename="<type>-report-YYYY-MM-DD.csv"` |
+| pdf | `application/pdf` | `attachment; filename="<type>-report-YYYY-MM-DD.pdf"` |
 
-The CSV has a header row and one row per record. Password hashes and other internal fields are never included.
+The CSV has a header row and one row per record. Password hashes and other internal fields are never included. A cell that starts with `=`, `+`, `-` or `@` is prefixed with an apostrophe so a spreadsheet does not run it as a formula. The fee report prints the status as Due, Partially Paid or Paid.
 
-Errors (returned as JSON): 400 `VALIDATION_ERROR` (unknown type, or missing or unknown format), 401, 403.
+Errors (returned as JSON): 400 `VALIDATION_ERROR` (unknown type or unknown format), 401, 403.
 
 ### 5.10 Notifications
 
@@ -700,9 +690,8 @@ Errors: 403, 503 `NOTIFICATIONS_DISABLED` (no SMTP provider is configured; nothi
 
 | Code | Status | Message |
 |---|---|---|
-| VALIDATION_ERROR | 400 | Field-specific text, for example "Phone number is required", "Enter a valid email address", "Description is required", "Reason is required", "Invalid status", "Remarks are required", "End date must be after start date", "Exit time must be after entry time" |
+| VALIDATION_ERROR | 400 | Field-specific text, for example "Phone number is required", "Enter a valid email address", "Description is required", "Reason is required", "Invalid status", "Remarks are required", "End date cannot be before start date", "Exit time must be after entry time" |
 | INVALID_USN | 400 | Enter a valid USN (13 alphanumeric characters, for example PES1UG24CS924) |
-| INVALID_AMOUNT | 400 | Amount must be a positive value |
 | PAYMENT_EXCEEDS_BALANCE | 400 | Payment exceeds the outstanding balance (`<balance>`) |
 | CONFIRMATION_REQUIRED | 400 | Confirmation required |
 | INVALID_CREDENTIALS | 401 | Invalid credentials |
@@ -729,7 +718,10 @@ The full error handling rules are in SAD 3.b.4.
 | 1.0 | 18 Oct 2026 | Initial contract for all 31 endpoints in SAD 3.b.3. Frozen when the HMS-30 pull request is merged. | Group chat |
 | 1.1 | 20 Oct 2026 | Added the access control middleware description (HMS-06). No endpoint, field or error code changed. | Group chat |
 | 1.2 | 28 Oct 2026 | Endpoint 29 (admin dashboard) gained six additive fields: `totalRooms`, `fullRooms`, `unallocatedStudents`, `overdueFees`, `pendingLeaves`, `visitorsInside`. The original five fields are unchanged (HMS-18, DEVIATIONS D-15). | Group chat |
+| 1.3 | 2 Nov 2026 | Recorded the behaviour of the final code (HMS-37, DEVIATIONS D-16 to D-25): fee status names and the overdue state, fee payment at `POST /api/fees/{id}/payments`, fee creation by `usn`, the fee list filter values, one-day leave, closed complaints are final, report defaults and file names, the CSV formula guard, and the 404 response for unknown paths. | Group chat |
 
 ## 8. Outside this contract
 
 `GET /health` is a service check used by the scaffold. It is not one of the 31 endpoints and is not protected by a session. It returns `{ "status": "ok", "service": "hms-api", "database": "connected" }`, or 503 with `"status": "unavailable"` when the database is not connected.
+
+Any request to a path that is not one of the 31 endpoints returns 404 `{ "error": "Route not found" }`. This response does not use the standard error envelope (DEVIATIONS D-23).
