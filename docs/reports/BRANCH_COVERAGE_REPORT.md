@@ -1,7 +1,7 @@
 # Branch Coverage Report
 
 **Project:** Hostel Management System (HMS), Team 3, Class 5-J, PES University
-**Version:** 1.0 (draft: frontend complete, backend pending)
+**Version:** 1.0
 **Prepared by:** Chiranthan Sathrasala
 
 ## 1. Method
@@ -49,8 +49,51 @@ Most of the missed branches are error and handler paths in pages. They are exerc
 
 ## 3. Backend results
 
-Pending. This section is completed after the backend run (the figures come from `c8`, per file under `src/`).
+**Run:** 8 November 2026, 301 tests, all passed.
 
-## 4. Conclusion
+| Measure | Result |
+| --- | ---: |
+| Branches (all files) | 83.88% |
 
-Frontend branch coverage is 80.00%. The remaining gaps are known and listed above. They are mostly event handlers and error states that need a browser to run.
+### By folder
+
+| Folder | Branches |
+| --- | ---: |
+| `src` | 94.11% |
+| `src/config` | 100% |
+| `src/jobs` | 87.50% |
+| `src/middleware` | 100% |
+| `src/models` | 100% |
+| `src/routes` | 77.82% |
+| `src/services` | 89.55% |
+| `src/validation` | 92.85% |
+
+### Files at 100% branch coverage
+
+All models, `config/auth.js`, `config/database.js`, `config/indexes.js`, `config/notifications.js`, `middleware/auth.js`, `routes/health.js` and `routes/rooms.js`.
+
+### Files below 80% branch coverage
+
+| File | Branches | Uncovered lines |
+| --- | ---: | --- |
+| `services/mailer.js` | 60.00% | 7-12: the default transport and the sign-in option when no user name is set. Tests pass a fake transport, so no real mail is sent. |
+| `routes/reports.js` | 62.06% | 109, 217, 250-251: fallbacks for missing or empty data. |
+| `routes/complaints.js` | 73.49% | Several `next(error)` and fallback branches (lines 111-255). |
+| `routes/visitors.js` | 73.68% | 41-42, 51-52, 65-66: error forwarding. |
+| `routes/fees.js` | 76.47% | Error forwarding and fallbacks (lines 186-365). |
+| `routes/allocations.js` | 77.77% | 102-103, 126-130, 144-145: unexpected-error forwarding. |
+
+### Reading these numbers
+
+The missed branches are mostly the "something unexpected failed" side of a route, which sends the error to the safe 500 handler. That handler itself is tested (it returns a generic body with no message or stack), and one route of each family is tested through it. The decisions that carry business rules (access by role, one active allocation per student, full room, fee status, lock after five failures, one decision per leave request, closed complaints) have their branches covered.
+
+## 4. Summary
+
+| Part | Branches |
+| --- | ---: |
+| Frontend | 80.00% |
+| Backend | 83.88% |
+
+## 5. Conclusion
+
+Branch coverage is 80.00% for the frontend and 83.88% for the backend. The remaining gaps are known and listed above. In the frontend they are mostly event handlers and error states that need a browser to run. In the backend they are mostly the unexpected-error side of routes.

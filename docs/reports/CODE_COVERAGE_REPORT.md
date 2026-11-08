@@ -1,7 +1,7 @@
 # Code Coverage Report
 
 **Project:** Hostel Management System (HMS), Team 3, Class 5-J, PES University
-**Version:** 1.0 (draft: frontend complete, backend pending)
+**Version:** 1.0
 **Prepared by:** Chiranthan Sathrasala
 
 ## 1. Method
@@ -52,7 +52,49 @@ The frontend tests render each component to static markup and call the helpers a
 
 ## 3. Backend results
 
-Pending. This section is completed after the backend run (the figures come from `c8`, per file under `src/`).
+**Run:** 8 November 2026, 301 tests, all passed. Source measured: every file under `backend/src/`.
+
+| Measure | Result |
+| --- | ---: |
+| Statements | 94.62% |
+| Lines | 94.62% |
+| Functions | 96.35% |
+| Branches | 83.88% (see the Branch Coverage Report) |
+
+### By folder
+
+| Folder | Statements | Branches | Functions |
+| --- | ---: | ---: | ---: |
+| `src` | 98.30% | 94.11% | 66.66% |
+| `src/config` | 85.71% | 100% | 66.66% |
+| `src/jobs` | 100% | 87.50% | 100% |
+| `src/middleware` | 100% | 100% | 100% |
+| `src/models` | 100% | 100% | 100% |
+| `src/routes` | 93.16% | 77.82% | 98.48% |
+| `src/services` | 94.52% | 89.55% | 97.61% |
+| `src/validation` | 96.96% | 92.85% | 100% |
+
+### Files with the lowest statement coverage
+
+| File | Statements | Uncovered lines and reason |
+| --- | ---: | --- |
+| `config/database.js` | 33.33% | Lines 3-10: `connectDatabase`, the function the server uses to connect. The tests connect through their own test helper, which also checks that the database name ends in `_test`. |
+| `services/allocationService.js` | 82.08% | Error-handling paths (for example lines 165-209 and 259-292): the failures that are hard to trigger, such as a database error half-way through. The main flows and the compensation cases are tested. |
+| `config/auth.js` | 86.84% | Lines 32-36: the error thrown when `SESSION_SECRET` is missing. |
+| `routes/auth.js` | 87.09% | Lines 21-31 and 81-83: the fallbacks that find which field caused a duplicate error, and the Mongoose field-error mapper. |
+| `routes/authSession.js` | 88.73% | Four small groups of lines (27-33, 52-53, 64-65): session error paths. |
+| `routes/fees.js` | 88.44% | Error branches such as the safe 500 and the less common validation messages. |
+| `routes/complaints.js` | 90.03% | Same pattern: safe 500 and rarely used validation branches. |
+
+### Files at 100% statements
+
+All eight models and `models/index.js`, `config/indexes.js`, `config/notifications.js`, `jobs/feeNotificationJob.js`, `middleware/auth.js`, `routes/admin.js`, `routes/health.js`, `routes/rooms.js`, `services/accountStore.js`, `services/adminDashboardService.js`, `services/dashboardService.js`, `services/feeNotificationService.js`, `services/loginService.js`, `services/mailer.js`, `services/visitorService.js`.
+
+### Reading these numbers
+
+The backend tests run the real routes against a real database, so the business rules are covered well: allocation and its races, fee status, complaint rules, leave decisions and login lockout. The uncovered lines are almost all `next(error)` and `catch` paths that need a failure to be forced, and the start-up code in `database.js` that only runs when the server itself starts.
+
+**Note on what is measured:** `c8` reports the files that the tests load. `src/server.js` (the file that starts the server and the scheduler) is not loaded by any test, so it is not in the table. It contains only start-up wiring.
 
 ## 4. Changes made to improve coverage
 
@@ -61,6 +103,13 @@ Pending. This section is completed after the backend run (the figures come from 
 - Exported `renderPageContent` from `App.jsx` and added routing tests: `App.jsx` went from 0% to 35.02%.
 - Frontend statement coverage rose from 60.40% to 69.55% and branch coverage from 78.47% to 80.00%. Function coverage went from 74.85% to 71.13%: the code under test grew, and the extra functions are mostly inline event handlers that the static tests do not call.
 
-## 5. Conclusion
+## 5. Summary
 
-Coverage of the frontend logic (formatting, validation, API functions, routing) is high. Coverage of browser-only behaviour is low by design of the test approach, and it is covered by the manual system tests.
+| Part | Statements | Branches | Functions |
+| --- | ---: | ---: | ---: |
+| Frontend | 69.55% | 80.00% | 71.13% |
+| Backend | 94.62% | 83.88% | 96.35% |
+
+## 6. Conclusion
+
+Backend coverage is high (94.62% of statements). Coverage of the frontend logic (formatting, validation, API functions, routing) is high. Coverage of browser-only behaviour is low by design of the test approach, and it is covered by the manual system tests.
