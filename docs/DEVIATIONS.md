@@ -6,7 +6,7 @@
 **Owner:** Chiranthan Sathrasala (PM). **Last updated:** 3 Nov 2026 (final list for the v1.0 freeze)
 **Related:** Issues HMS-32, HMS-37
 
-Anything that differs from the submitted SRS, SAD or Test Plan is listed here with the reason, the documents it affects and its impact. Add new rows as they are found. This is the final list for the v1.0 freeze (HMS-37): D-01 to D-25.
+Anything that differs from the submitted SRS, SAD or Test Plan is listed here with the reason, the documents it affects and its impact. Add new rows as they are found. This is the final list for the v1.0 freeze (HMS-37): D-01 to D-27.
 
 **Status values:** Done (already reflected in the v1.1 documents), Planned (decided, not yet built), Open (needs a decision).
 
@@ -37,6 +37,8 @@ Anything that differs from the submitted SRS, SAD or Test Plan is listed here wi
 | D-23 | Unknown route response | Every error uses the standard error envelope | A request to a path that does not exist returns 404 `{ "error": "Route not found" }`, without `success` or `code`. | The scaffold's catch-all handler was never changed. No screen depends on it. | API_CONTRACT section 6 and 8, SAD 3.b.4 | Only paths outside the 31 endpoints are affected. | Done (documented, not changed) |
 | D-24 | Performance requirement NFR-001 | Pages load within 3 seconds and 200 concurrent users are supported | Measured on a 2-vCPU, 4 GB development host: p95 is 3560 ms for login, 4025 ms for the student dashboard and 4185 ms for the admin dashboard, with error rates below 1%. Recorded as "Limited by environment" (NFR-01, NFR-04), not as passed. | A production-like host was not available. | SRS NFR-001.a, NFR-001.b, Test Plan NFR-01, NFR-04, `tests/performance/results.md` | The requirement is not claimed as met. The numbers are reported as measured. | Done |
 | D-25 | Visitor exit re-recorded | Not specified | Recording an exit again on the same visitor overwrites the earlier exit time. There is no conflict error. | The contract defines no error for it, and the admin may need to correct a wrong exit time. | API_CONTRACT endpoint 28, Test Plan UT-27, UT-40 | The earlier exit time is not kept. | Done |
+| D-26 | Registration form | The Test Plan (UT-01) listed a confirm-password field on the registration form | The form has a single password field and no confirm-password field. | Found during the Part 3 system validation (ST-06). The SRS does not require a second field. | Test Plan UT-01 (corrected in v1.3) | A mistyped password is not caught by a second entry; the student can register again or ask the hostel office. | Done |
+| D-27 | Session expiry in the browser | NFR-002.c: the session expires after inactivity. Test Plan NFR-03 accepts "sent back to the login page, or the page shows a session-expired message". | The server ends the session (401 `SESSION_EXPIRED`) and the page that was clicked shows "Your session has expired. Please log in again." The application does not return to the login page by itself; the student stays on the page until it is reloaded. | Found in the Part 3 system validation (NFR-03). The login state is read once when the application opens, and each API module handles the 401 on its own. A central handler that clears the login state and shows the login page is a planned follow-up. | SRS NFR-002.c, Test Plan NFR-03, RTM NFR-002.c | The requirement is met (the session ends and the user is told). Moving on after expiry takes a page reload. | Known limitation |
 
 ## 2. Process deviations
 
@@ -51,7 +53,7 @@ Anything that differs from the submitted SRS, SAD or Test Plan is listed here wi
 
 ## 3. How to add a deviation
 
-1. Add a row with the next ID (D-26, D-27, ...).
+1. Add a row with the next ID (D-28, D-29, ...).
 2. Fill in every column. "Affected documents" must name the section or test ID.
 3. If the SRS, SAD or Test Plan wording changes, update it too, and keep the traceability matrix consistent.
 4. Mention the D-number in the PR description.
