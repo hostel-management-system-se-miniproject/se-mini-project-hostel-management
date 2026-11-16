@@ -167,7 +167,7 @@ MongoDB does not enforce foreign keys or CHECK constraints, so the rules the SRS
 │   ├── baseline/             # Submitted v1.0 documents (.docx), never edited
 │   ├── SRS_v1.1.docx         # Software Requirements Specification v1.1
 │   ├── SAD_v1.1.docx         # Software Architecture & Design Specification v1.1
-│   ├── TEST_PLAN.md          # Test Plan (v1.2)
+│   ├── TEST_PLAN_v1.3.docx   # Test Plan (v1.3)
 │   ├── COMMIT_PLAN.md        # Day-by-day schedule, owners, reviewers
 │   ├── DEVIATIONS.md         # Differences from the submitted documents
 │   ├── ADR-001.md            # Technology decision
@@ -526,7 +526,7 @@ A story is done only when all applicable items are true:
 
 ## 12. Testing
 
-- The Test Plan (`docs/TEST_PLAN.md`) defines Unit (UT), Integration (IT) and System (ST) test cases for FR-001 to FR-005 and the NFR checks.
+- The Test Plan (`docs/TEST_PLAN_v1.3.docx`) defines Unit (UT), Integration (IT) and System (ST) test cases for FR-001 to FR-005 and the NFR checks.
 - Record the **Actual Result** and **Test Result (Pass/Fail)** only **after** executing a test. Never mark an unexecuted test as passed.
 - Log every failure as a GitHub Issue (label `bug`) and link it to the test case ID.
 - Use test data only: the sample USNs in the seed data and dates relative to the day of execution.
@@ -613,7 +613,11 @@ Keep these in `docs/`:
 | --- | --- | --- |
 | Software Requirements Specification (SRS) | [`docs/SRS_v1.1.docx`](docs/SRS_v1.1.docx) | v1.1; v1.0 kept in `docs/baseline/` |
 | Software Architecture & Design Specification (SAD) | [`docs/SAD_v1.1.docx`](docs/SAD_v1.1.docx) | v1.1; v1.0 kept in `docs/baseline/` |
-| Test Plan | [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md) | v1.2, with the Sprint 2 execution results |
+| Test Plan | [`docs/TEST_PLAN_v1.3.docx`](docs/TEST_PLAN_v1.3.docx) | v1.3: 80 cases, execution results in Section 12 |
+| Unit Test Report | [`docs/reports/UNIT_TEST_REPORT.docx`](docs/reports/UNIT_TEST_REPORT.docx) | Frontend and backend automated tests |
+| System Validation Report | [`docs/reports/SYSTEM_VALIDATION_REPORT.docx`](docs/reports/SYSTEM_VALIDATION_REPORT.docx) | Manual end-to-end checks; screenshots in `docs/reports/validation-evidence/` |
+| Code Coverage Report | [`docs/reports/CODE_COVERAGE_REPORT.docx`](docs/reports/CODE_COVERAGE_REPORT.docx) | Statement and function coverage |
+| Branch Coverage Report | [`docs/reports/BRANCH_COVERAGE_REPORT.docx`](docs/reports/BRANCH_COVERAGE_REPORT.docx) | Branch coverage |
 | Commit plan | [`docs/COMMIT_PLAN.md`](docs/COMMIT_PLAN.md) | Schedule, owners, reviewers |
 | Deviations | [`docs/DEVIATIONS.md`](docs/DEVIATIONS.md) | Every difference from the submitted documents |
 | ADR-001 | [`docs/ADR-001.md`](docs/ADR-001.md) | Technology decision |

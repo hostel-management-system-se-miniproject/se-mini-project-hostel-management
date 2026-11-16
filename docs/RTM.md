@@ -1,8 +1,8 @@
 # Requirements Traceability Matrix
 
-This matrix records the final implementation status of each requirement in SRS v1.1 against the real test IDs in `docs/TEST_PLAN.md` (v1.2). It is the traceability record for the v1.0 freeze (HMS-37).
+This matrix records the final implementation status of each requirement in SRS v1.1 against the real test IDs in `docs/TEST_PLAN_v1.3.docx` (v1.3). It is the traceability record for the v1.0 freeze (HMS-37).
 
-*Updated: 2 November 2026, for the `dev` branch at the freeze, after the Sprint 2 test execution (HMS-35, 1 November 2026) and the final code review (HMS-37).*
+*Updated: 16 November 2026 for Test Plan v1.3 (Part 3: results of the System Validation Report added). Earlier update: 2 November 2026, for the `dev` branch at the freeze, after the Sprint 2 test execution (HMS-35, 1 November 2026) and the final code review (HMS-37).*
 
 Status legend:
 - Verified = implemented, and every test ID listed in the row was executed and passed.
@@ -23,18 +23,18 @@ A test ID is recorded as passed only when it was executed. "Automated" means a t
 | FR-002.4 | One active allocation per student | Verified | UT-11, IT-16 | Partial unique index and a same-student race test. |
 | FR-002.5 | Reallocate a student to another room | Verified | IT-03, IT-14, IT-16 | HMS-09, with compensating steps if a step fails (D-03). |
 | FR-002.6 | Vacate a room with confirmation | Verified | IT-04, IT-15, IT-16 | `confirm: true` plus a confirmation dialog (D-04). |
-| FR-003.1 | Set fee due and due date; record payments and balance | Verified | UT-32, UT-12, UT-13, ST-03 | Fee creation (by USN), payment history and balance. Endpoints in D-17. |
-| FR-003.2 | Paid / Partially Paid / Due status | Verified | UT-14, UT-15, IT-06 | Derived status, plus the Overdue state (D-16). |
+| FR-003.1 | Set fee due and due date; record payments and balance | Verified | UT-32, UT-41, UT-12, UT-13, ST-03 | Fee creation (by USN), payment history and balance. Endpoints in D-17. |
+| FR-003.2 | Paid / Partially Paid / Due status | Verified | UT-14, UT-15, UT-42, UT-43, IT-06 | Derived status, plus the Overdue state (D-16). |
 | FR-003.3 | Due-date notification within 7 days (if enabled) | Verified | IT-07, IT-17 | Optional. Runs only when SMTP settings exist; `POST /api/admin/notifications/run` and a daily job. Tested with a fake mailer. |
 | FR-003.4 | Reject zero, negative or excessive payments | Verified | UT-16, UT-33, UT-34 | Atomic conditional update, so two payments at the same moment cannot exceed the amount due. |
 | FR-004.1 | One open complaint per category | Verified | UT-17, UT-18, UT-19, UT-35, IT-20 | Partial unique index on open complaints per student and category. |
-| FR-004.2 | Admin status and remarks update | Verified | UT-20, UT-36, UT-37, UT-21, ST-04 | Admin Complaints page. A closed complaint cannot be changed again (D-18). |
+| FR-004.2 | Admin status and remarks update | Verified | UT-20, UT-36, UT-37, UT-21, IT-23, ST-04 | Admin Complaints page. A closed complaint cannot be changed again (D-18). |
 | FR-004.3 | Complaint history with timestamps | Verified | IT-08, ST-04 | Every status change is stored in the history with a timestamp. |
-| FR-005.1 | Leave request submission | Verified | UT-22, UT-23, UT-38, ST-05 | A one-day leave is allowed (D-21). |
+| FR-005.1 | Leave request submission | Verified | UT-22, UT-23, UT-38, UT-44, ST-05 | A one-day leave is allowed (D-21). |
 | FR-005.2 | Leave approval or rejection; student views status | Verified | UT-24, UT-25, IT-22, ST-05 | A request can be decided once (409 `ALREADY_DECIDED`), including two admins at the same moment. |
-| FR-005.3 | Visitor entry and exit log | Verified | UT-26, UT-27, UT-39, UT-40 | An exit earlier than the entry is refused. Re-recording an exit overwrites it (D-25). |
+| FR-005.3 | Visitor entry and exit log | Verified | UT-26, UT-27, UT-39, UT-40, UT-45 | An exit earlier than the entry is refused. Re-recording an exit overwrites it (D-25). |
 | FR-005.4 | Admin dashboard summary | Verified | IT-09 | HMS-18. Occupancy, vacancies, dues, open complaints and operational counts (D-15). |
-| FR-005.5 | Export as CSV and PDF | Verified | IT-10, IT-11, IT-21 | Student, fee and complaint reports. Details and the CSV formula guard in D-22. |
+| FR-005.5 | Export as CSV and PDF | Verified | IT-10, IT-11, IT-21, IT-24 | Student, fee and complaint reports. Details and the CSV formula guard in D-22. |
 | NFR-001.a | Standard page load within 3 seconds | Limited by environment | NFR-01 | Measured on a 2-vCPU, 4 GB development host: p95 3560 ms (login), 4025 ms (student dashboard), 4185 ms (admin dashboard). Not met there; see D-24 and `tests/performance/results.md`. |
 | NFR-001.b | At least 200 concurrent users | Limited by environment | NFR-04 | k6 test with 200 users; error rate below 1% (0.74% to 0.91%), but p95 is above 3 seconds on the same host. Not claimed as met (D-24). |
 | NFR-002.a | Password hashing | Verified | NFR-02 | bcrypt hashes only; no hash is ever returned. |
@@ -49,7 +49,7 @@ A test ID is recorded as passed only when it was executed. "Automated" means a t
 | Limited by environment | 2 (NFR-001.a, NFR-001.b) |
 | Failed or not tested | 0 |
 
-Test cases (Test Plan v1.2): 73 in total, 71 Pass, 0 Fail, 2 Limited by environment (NFR-01, NFR-04), 0 Not run.
+Test cases (Test Plan v1.3): 80 in total, 78 Pass, 0 Fail, 2 Limited by environment (NFR-01, NFR-04), 0 Not run. The seven cases added in v1.3 (UT-41 to UT-45, IT-23, IT-24) are listed in the rows above.
 
 ## Changes after the Sprint 2 test execution
 
