@@ -18,6 +18,25 @@ The script sets the test-mode values required by the Sprint 1 execution plan:
 
 It then invokes the existing room-allocation race check in `backend/scripts/race-last-bed.js`.
 
+## NFR-03 session expiry check
+
+The session expiry check is scripted in `tests/check-session-timeout.js`. Start the API with a 1-minute session timeout, then run the script from the `backend` folder:
+
+```bash
+# PowerShell: $env:SESSION_TIMEOUT_MINUTES=1; npm run dev      (in backend)
+node ../tests/check-session-timeout.js                            # in a second terminal, in backend
+```
+
+It logs in as `student012@pes.edu` (override with `HMS_LOGIN` and `HMS_PASSWORD`) and calls `/api/auth/me` three times. Expected output:
+
+```
+Right after login:     HTTP 200
+After 40 seconds:      HTTP 200
+After 90 more seconds: HTTP 401 SESSION_EXPIRED
+```
+
+The script prints only status codes, never a cookie or password. Stop the API and start it normally afterwards.
+
 ## HMS-20 performance validation
 
 The 200-user load scenario is stored under `tests/performance`.

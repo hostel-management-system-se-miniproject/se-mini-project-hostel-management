@@ -1,5 +1,6 @@
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Alert } from '../components/Alert';
 import { LoadingState } from '../components/LoadingState';
 import '../fees.css';
@@ -11,7 +12,7 @@ import {
   recordFeePayment
 } from '../api/fees';
 
-function money(value) {
+export function money(value) {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
@@ -19,7 +20,7 @@ function money(value) {
   }).format(Number(value) || 0);
 }
 
-function displayDate(value) {
+export function displayDate(value) {
   if (!value) return '—';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '—';
@@ -29,6 +30,131 @@ function displayDate(value) {
     year: 'numeric'
   }).format(date);
 }
+
+export function FeeTable({
+  fees,
+  expandedId = '',
+  paymentAmounts = {},
+  paymentDates = {},
+  submitting = false,
+  onToggle,
+  onAmountChange,
+  onDateChange,
+  onPayment
+}) {
+  return (
+    <div className="table-wrap">
+      <table className="fees-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Amount due</th>
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Due date</th>
+            <th>Status</th>
+            <th>Payment</th>
+          </tr>
+        </thead>
+        <tbody>
+          {fees.map((fee) => (
+            <React.Fragment key={fee.id}>
+              <tr>
+                <td>
+                  <strong>{fee.studentName || 'Unknown student'}</strong>
+                  <small>{fee.usn || ''}</small>
+                </td>
+                <td>{money(fee.amountDue)}</td>
+                <td>{money(fee.totalPaid)}</td>
+                <td>{money(fee.balance)}</td>
+                <td>{displayDate(fee.dueDate)}</td>
+                <td><span className={feeStatusClass(fee.status)}>{normalizeFeeStatus(fee.status)}</span></td>
+                <td>
+                  <button type="button" onClick={() => onToggle(fee.id)}>
+                    {expandedId === fee.id ? 'Hide history' : 'History'}
+                  </button>
+                </td>
+              </tr>
+              {expandedId === fee.id ? (
+                <tr>
+                  <td colSpan="7">
+                    <h4>Payment history</h4>
+                    {fee.payments && fee.payments.length ? (
+                      <ul>
+                        {fee.payments.map((payment, index) => (
+                          <li key={`${fee.id}-${index}`}>
+                            {money(payment.amount)} — {displayDate(payment.paidOn)}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="inline-note">No payments recorded yet.</p>
+                    )}
+
+                    {fee.balance > 0 ? (
+                      <form className="fee-payment-form" onSubmit={(event) => onPayment(event, fee)}>
+                        <label>
+                          Payment amount (₹)
+                          <input
+                            type="number"
+                            min="0.01"
+                            max={fee.balance}
+                            step="0.01"
+                            value={paymentAmounts[fee.id] || ''}
+                            onChange={(event) => onAmountChange(fee.id, event.target.value)}
+                            required
+                          />
+                        </label>
+                        <label>
+                          Payment date
+                          <input
+                            type="date"
+                            value={paymentDates[fee.id] || ''}
+                            onChange={(event) => onDateChange(fee.id, event.target.value)}
+                          />
+                        </label>
+                        <button className="primary-button" type="submit" disabled={submitting}>
+                          Record payment
+                        </button>
+                      </form>
+                    ) : (
+                      <p className="inline-note">This fee is fully paid.</p>
+                    )}
+                  </td>
+                </tr>
+              ) : null}
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+FeeTable.propTypes = {
+  fees: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    studentName: PropTypes.string,
+    usn: PropTypes.string,
+    amountDue: PropTypes.number,
+    totalPaid: PropTypes.number,
+    balance: PropTypes.number,
+    dueDate: PropTypes.string,
+    status: PropTypes.string,
+    payments: PropTypes.arrayOf(PropTypes.shape({
+      amount: PropTypes.number,
+      paidOn: PropTypes.string
+    }))
+  })).isRequired,
+  expandedId: PropTypes.string,
+  paymentAmounts: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
+  paymentDates: PropTypes.objectOf(PropTypes.string),
+  submitting: PropTypes.bool,
+  onToggle: PropTypes.func.isRequired,
+  onAmountChange: PropTypes.func.isRequired,
+  onDateChange: PropTypes.func.isRequired,
+  onPayment: PropTypes.func.isRequired
+};
 
 export function FeesPage() {
   const [fees, setFees] = React.useState([]);
@@ -197,100 +323,17 @@ export function FeesPage() {
         ) : fees.length === 0 ? (
           <p className="inline-note">No fee records found.</p>
         ) : (
-          <div className="table-wrap">
-            <table className="fees-table">
-              <thead>
-                <tr>
-                  <th>Student</th>
-                  <th>Amount due</th>
-                  <th>Paid</th>
-                  <th>Balance</th>
-                  <th>Due date</th>
-                  <th>Status</th>
-                  <th>Payment</th>
-                </tr>
-              </thead>
-              <tbody>
-                {fees.map((fee) => (
-                  <React.Fragment key={fee.id}>
-                    <tr>
-                      <td>
-                        <strong>{fee.studentName || 'Unknown student'}</strong>
-                        <small>{fee.usn || ''}</small>
-                      </td>
-                      <td>{money(fee.amountDue)}</td>
-                      <td>{money(fee.totalPaid)}</td>
-                      <td>{money(fee.balance)}</td>
-                      <td>{displayDate(fee.dueDate)}</td>
-                      <td><span className={feeStatusClass(fee.status)}>{normalizeFeeStatus(fee.status)}</span></td>
-                      <td>
-                        <button
-                          type="button"
-                          onClick={() => setExpandedId((current) => current === fee.id ? '' : fee.id)}
-                        >
-                          {expandedId === fee.id ? 'Hide history' : 'History'}
-                        </button>
-                      </td>
-                    </tr>
-                    {expandedId === fee.id ? (
-                      <tr>
-                        <td colSpan="7">
-                          <h4>Payment history</h4>
-                          {fee.payments.length ? (
-                            <ul>
-                              {fee.payments.map((payment, index) => (
-                                <li key={`${fee.id}-${index}`}>
-                                  {money(payment.amount)} — {displayDate(payment.paidOn)}
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p className="inline-note">No payments recorded yet.</p>
-                          )}
-
-                          {fee.balance > 0 ? (
-                            <form className="fee-payment-form" onSubmit={(event) => handlePayment(event, fee)}>
-                              <label>
-                                Payment amount (₹)
-                                <input
-                                  type="number"
-                                  min="0.01"
-                                  max={fee.balance}
-                                  step="0.01"
-                                  value={paymentAmounts[fee.id] || ''}
-                                  onChange={(event) => setPaymentAmounts((current) => ({
-                                    ...current,
-                                    [fee.id]: event.target.value
-                                  }))}
-                                  required
-                                />
-                              </label>
-                              <label>
-                                Payment date
-                                <input
-                                  type="date"
-                                  value={paymentDates[fee.id] || ''}
-                                  onChange={(event) => setPaymentDates((current) => ({
-                                    ...current,
-                                    [fee.id]: event.target.value
-                                  }))}
-                                />
-                              </label>
-                              <button className="primary-button" type="submit" disabled={submitting}>
-                                Record payment
-                              </button>
-                            </form>
-                          ) : (
-                            <p className="inline-note">This fee is fully paid.</p>
-                          )}
-                        </td>
-                      </tr>
-                    ) : null}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <FeeTable
+            fees={fees}
+            expandedId={expandedId}
+            paymentAmounts={paymentAmounts}
+            paymentDates={paymentDates}
+            submitting={submitting}
+            onToggle={(id) => setExpandedId((current) => (current === id ? '' : id))}
+            onAmountChange={(id, value) => setPaymentAmounts((current) => ({ ...current, [id]: value }))}
+            onDateChange={(id, value) => setPaymentDates((current) => ({ ...current, [id]: value }))}
+            onPayment={handlePayment}
+          />
         )}
       </section>
     </div>

@@ -551,7 +551,7 @@ k6 run tests/performance/load-200.js
 
 Deviations are tracked in `docs/DEVIATIONS.md`, one entry per deviation: what changed, why, which document it affects, the impact and who approved it. They are explained during the final demo.
 
-Deviations at the v1.0 freeze (the full list, D-01 to D-25, with reasons and impact is in `docs/DEVIATIONS.md`):
+Deviations at the v1.0 freeze (the full list, D-01 to D-27, with reasons and impact is in `docs/DEVIATIONS.md`):
 
 - **USN format:** real USNs are 13 characters, while SRS Appendix B lists length 10.
 - **Reallocate / vacate:** implemented as proposed FR-002.5 / FR-002.6 (present in the SRS overview, business rules and SAD, but without numbered FRs).

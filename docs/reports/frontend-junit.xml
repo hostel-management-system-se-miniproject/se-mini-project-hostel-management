@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="156" failures="0" errors="0" time="1.1381362">
+    <testsuite name="src/admin-dashboard.test.jsx" timestamp="2026-11-05T07:48:46.558Z" hostname="Chiranthan_S" tests="9" failures="0" errors="0" skipped="0" time="0.0767756">
+        <testcase classname="src/admin-dashboard.test.jsx" name="admin dashboard API &gt; calls the admin endpoint with credentials and returns the data" time="0.0052637">
+        </testcase>
+        <testcase classname="src/admin-dashboard.test.jsx" name="admin dashboard API &gt; maps response and network failures to safe messages" time="0.0012401">
+        </testcase>
+        <testcase classname="src/admin-dashboard.test.jsx" name="admin dashboard helpers &gt; computes the occupancy percentage and never divides by zero" time="0.0003835">
+        </testcase>
+        <testcase classname="src/admin-dashboard.test.jsx" name="admin dashboard helpers &gt; chooses a greeting from the hour" time="0.0002448">
+        </testcase>
+        <testcase classname="src/admin-dashboard.test.jsx" name="admin dashboard helpers &gt; lists only the things that need attention, with actions where a page exists" time="0.0005804">
+        </testcase>
+        <testcase classname="src/admin-dashboard.test.jsx" name="admin dashboard helpers &gt; warns when every room is full or fees are overdue" time="0.0002814">
+        </testcase>
+        <testcase classname="src/admin-dashboard.test.jsx" name="admin dashboard view &gt; shows the real figures, the quick actions and the attention list" time="0.0604767">
+        </testcase>
+        <testcase classname="src/admin-dashboard.test.jsx" name="admin dashboard view &gt; shows the all-clear message when nothing needs attention" time="0.0029797">
+        </testcase>
+        <testcase classname="src/admin-dashboard.test.jsx" name="admin dashboard view &gt; works with only the five fields from the API contract" time="0.003371">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/allocations.test.jsx" timestamp="2026-11-05T07:48:46.563Z" hostname="Chiranthan_S" tests="12" failures="0" errors="0" skipped="0" time="0.0747942">
+        <testcase classname="src/allocations.test.jsx" name="allocation API &gt; builds student URLs with and without an encoded search" time="0.0051569">
+        </testcase>
+        <testcase classname="src/allocations.test.jsx" name="allocation API &gt; posts an allocation with credentials and returns its data" time="0.0024233">
+        </testcase>
+        <testcase classname="src/allocations.test.jsx" name="allocation API &gt; filters unavailable rooms and maps forbidden access" time="0.0022112">
+        </testcase>
+        <testcase classname="src/allocations.test.jsx" name="allocation API &gt; maps server errors and network failures to plain messages" time="0.0018378">
+        </testcase>
+        <testcase classname="src/allocations.test.jsx" name="allocation API &gt; fetches active allocations and sends reallocate and vacate requests" time="0.00274">
+        </testcase>
+        <testcase classname="src/allocations.test.jsx" name="allocation API &gt; maps allocation action errors" time="0.0014739">
+        </testcase>
+        <testcase classname="src/allocations.test.jsx" name="allocation components &gt; renders selection, summary and disabled/enabled confirmation states" time="0.0105384">
+        </testcase>
+        <testcase classname="src/allocations.test.jsx" name="allocation components &gt; renders result variants and empty states" time="0.0015835">
+        </testcase>
+        <testcase classname="src/allocations.test.jsx" name="allocation components &gt; renders current allocation rows, actions and the empty state" time="0.0387171">
+        </testcase>
+        <testcase classname="src/allocations.test.jsx" name="allocation components &gt; lets the success title change so a vacate is not called an allocation" time="0.0006241">
+        </testcase>
+        <testcase classname="src/allocations.test.jsx" name="allocation components &gt; renders a reallocate panel without the current room" time="0.0028903">
+        </testcase>
+        <testcase classname="src/allocations.test.jsx" name="allocation components &gt; renders the controlled confirmation dialog" time="0.0022164">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app-routing.test.jsx" timestamp="2026-11-05T07:48:46.566Z" hostname="Chiranthan_S" tests="11" failures="0" errors="0" skipped="0" time="0.01708">
+        <testcase classname="src/app-routing.test.jsx" name="page routing (App) &gt; shows the admin dashboard to an admin and the student dashboard to a student" time="0.0027292">
+        </testcase>
+        <testcase classname="src/app-routing.test.jsx" name="page routing (App) &gt; passes the student USN to the student pages" time="0.0004006">
+        </testcase>
+        <testcase classname="src/app-routing.test.jsx" name="page routing (App) &gt; shows the fee management screen to an admin" time="0.0001926">
+        </testcase>
+        <testcase classname="src/app-routing.test.jsx" name="page routing (App) &gt; routes Leave, Reports, Complaints, Rooms, Allocations and Visitors to their pages" time="0.0005949">
+        </testcase>
+        <testcase classname="src/app-routing.test.jsx" name="page routing (App) &gt; gives the role to the pages that depend on it" time="0.0001966">
+        </testcase>
+        <testcase classname="src/app-routing.test.jsx" name="page routing (App) &gt; asks a user without a USN to log in as a student on the fee page" time="0.0055807">
+        </testcase>
+        <testcase classname="src/app-routing.test.jsx" name="page routing (App) &gt; shows a placeholder for an unknown path, named for the role" time="0.0010006">
+        </testcase>
+        <testcase classname="src/app-routing.test.jsx" name="page routing (App) &gt; has a real page behind every admin menu item" time="0.0027886">
+        </testcase>
+        <testcase classname="src/app-routing.test.jsx" name="page routing (App) &gt; has a real page behind every student menu item" time="0.0004945">
+        </testcase>
+        <testcase classname="src/app-routing.test.jsx" name="page routing (App) &gt; starts every role on its first menu item" time="0.0002334">
+        </testcase>
+        <testcase classname="src/app-routing.test.jsx" name="login gate (AuthGate) &gt; shows a &quot;checking&quot; message until the server has answered" time="0.000826">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/complaints-admin.test.jsx" timestamp="2026-11-05T07:48:46.569Z" hostname="Chiranthan_S" tests="10" failures="0" errors="0" skipped="0" time="0.0776812">
+        <testcase classname="src/complaints-admin.test.jsx" name="validateStatusUpdate (mirrors PUT /api/complaints/{id}) &gt; accepts an allowed status with remarks" time="0.0023722">
+        </testcase>
+        <testcase classname="src/complaints-admin.test.jsx" name="validateStatusUpdate (mirrors PUT /api/complaints/{id}) &gt; requires remarks for every status, including Rejected" time="0.0004056">
+        </testcase>
+        <testcase classname="src/complaints-admin.test.jsx" name="validateStatusUpdate (mirrors PUT /api/complaints/{id}) &gt; rejects Open and unknown statuses" time="0.0001839">
+        </testcase>
+        <testcase classname="src/complaints-admin.test.jsx" name="complaint admin API helpers &gt; sends status and remarks as a PUT with the session cookie" time="0.0019287">
+        </testcase>
+        <testcase classname="src/complaints-admin.test.jsx" name="complaint admin API helpers &gt; shows the server message for 400, a clear message for 403 and 404" time="0.0023243">
+        </testcase>
+        <testcase classname="src/complaints-admin.test.jsx" name="complaint admin API helpers &gt; sends the status and category filters when listing" time="0.0005687">
+        </testcase>
+        <testcase classname="src/complaints-admin.test.jsx" name="AdminComplaintList &gt; shows student, category, status, description and an update form for each complaint" time="0.0645775">
+        </testcase>
+        <testcase classname="src/complaints-admin.test.jsx" name="AdminComplaintList &gt; shows a clear empty message, different for filtered and unfiltered lists" time="0.0004277">
+        </testcase>
+        <testcase classname="src/complaints-admin.test.jsx" name="student complaint history (IT-08) &gt; lists each status change with remarks and a date and time" time="0.0022464">
+        </testcase>
+        <testcase classname="src/complaints-admin.test.jsx" name="student complaint history (IT-08) &gt; still renders a complaint that has no history" time="0.0006749">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/complaints.test.jsx" timestamp="2026-11-05T07:48:46.577Z" hostname="Chiranthan_S" tests="6" failures="0" errors="0" skipped="0" time="0.0183032">
+        <testcase classname="src/complaints.test.jsx" name="complaint API helpers &gt; loads the current student complaint list with the session cookie" time="0.0036311">
+        </testcase>
+        <testcase classname="src/complaints.test.jsx" name="complaint API helpers &gt; submits a complaint and returns the created record" time="0.0017711">
+        </testcase>
+        <testcase classname="src/complaints.test.jsx" name="complaint API helpers &gt; reports the duplicate complaint message clearly" time="0.00147">
+        </testcase>
+        <testcase classname="src/complaints.test.jsx" name="ComplaintsPage &gt; renders a load failure in the complaints card" time="0.0048755">
+        </testcase>
+        <testcase classname="src/complaints.test.jsx" name="ComplaintsPage &gt; renders submit failures with the submit error title" time="0.0003975">
+        </testcase>
+        <testcase classname="src/complaints.test.jsx" name="ComplaintsPage &gt; renders exactly the contract complaint categories" time="0.0045752">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/dashboard.test.jsx" timestamp="2026-11-05T07:48:46.580Z" hostname="Chiranthan_S" tests="8" failures="0" errors="0" skipped="0" time="0.1056986">
+        <testcase classname="src/dashboard.test.jsx" name="student dashboard API &gt; builds the encoded URL, sends credentials and returns data" time="0.005894">
+        </testcase>
+        <testcase classname="src/dashboard.test.jsx" name="student dashboard API &gt; maps response and network failures to safe messages" time="0.0023376">
+        </testcase>
+        <testcase classname="src/dashboard.test.jsx" name="student dashboard formatting &gt; formats due dates without timezone shifts and formats Indian currency" time="0.0696511">
+        </testcase>
+        <testcase classname="src/dashboard.test.jsx" name="student dashboard view &gt; renders profile, room, fee, complaint and leave details" time="0.0172621">
+        </testcase>
+        <testcase classname="src/dashboard.test.jsx" name="student dashboard view &gt; renders empty room and fee states" time="0.0013289">
+        </testcase>
+        <testcase classname="src/dashboard.test.jsx" name="student dashboard view &gt; renders Due status as text with its balance" time="0.0018289">
+        </testcase>
+        <testcase classname="src/dashboard.test.jsx" name="student dashboard view &gt; renders Partially Paid status as text with its balance" time="0.0021789">
+        </testcase>
+        <testcase classname="src/dashboard.test.jsx" name="student dashboard view &gt; renders Paid status as text with its balance" time="0.00143">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/fees-admin.test.jsx" timestamp="2026-11-05T07:48:46.583Z" hostname="Chiranthan_S" tests="10" failures="0" errors="0" skipped="0" time="0.1636463">
+        <testcase classname="src/fees-admin.test.jsx" name="fee table (admin) &gt; lists each fee with amounts, due date and a status pill" time="0.1341009">
+        </testcase>
+        <testcase classname="src/fees-admin.test.jsx" name="fee table (admin) &gt; shows the Overdue status with its own style (D-16, D-20)" time="0.0035834">
+        </testcase>
+        <testcase classname="src/fees-admin.test.jsx" name="fee table (admin) &gt; shows &quot;Unknown student&quot; when the record has no student name" time="0.0032339">
+        </testcase>
+        <testcase classname="src/fees-admin.test.jsx" name="fee table (admin) &gt; keeps history closed until a row is expanded" time="0.0026614">
+        </testcase>
+        <testcase classname="src/fees-admin.test.jsx" name="fee table (admin) &gt; expands one row to show its payments and the payment form for a balance" time="0.00344">
+        </testcase>
+        <testcase classname="src/fees-admin.test.jsx" name="fee table (admin) &gt; says a fully paid fee is fully paid and shows no payment form" time="0.0035024">
+        </testcase>
+        <testcase classname="src/fees-admin.test.jsx" name="fee table (admin) &gt; fills the payment form from the typed values and disables the button while saving" time="0.0034437">
+        </testcase>
+        <testcase classname="src/fees-admin.test.jsx" name="fee table (admin) &gt; treats a missing payments list like an empty one" time="0.002015">
+        </testcase>
+        <testcase classname="src/fees-admin.test.jsx" name="fee page &gt; shows the create form, the status filter and a loading state first" time="0.0034756">
+        </testcase>
+        <testcase classname="src/fees-admin.test.jsx" name="fee page formatting &gt; formats rupees and dates, and shows a dash for a missing or bad date" time="0.0009394">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/fees-student.test.jsx" timestamp="2026-11-05T07:48:46.585Z" hostname="Chiranthan_S" tests="11" failures="0" errors="0" skipped="0" time="0.0931797">
+        <testcase classname="src/fees-student.test.jsx" name="fetchStudentFee (GET /api/fees/{usn}) &gt; requests the USN with the session cookie and returns the fee" time="0.0034388">
+        </testcase>
+        <testcase classname="src/fees-student.test.jsx" name="fetchStudentFee (GET /api/fees/{usn}) &gt; returns null when the student has no fee record (404 NOT_FOUND)" time="0.0003682">
+        </testcase>
+        <testcase classname="src/fees-student.test.jsx" name="fetchStudentFee (GET /api/fees/{usn}) &gt; shows a clear message for 403, 401 and a network failure" time="0.0025321">
+        </testcase>
+        <testcase classname="src/fees-student.test.jsx" name="fee formatting &gt; uses one set of status names for both endpoints" time="0.0002518">
+        </testcase>
+        <testcase classname="src/fees-student.test.jsx" name="fee formatting &gt; formats rupees and sorts payments newest first" time="0.0639948">
+        </testcase>
+        <testcase classname="src/fees-student.test.jsx" name="student fee page content &gt; shows status, amount due, paid, balance, due date and the payment history" time="0.0136597">
+        </testcase>
+        <testcase classname="src/fees-student.test.jsx" name="student fee page content &gt; shows a clear message when the student has no fee record" time="0.0005177">
+        </testcase>
+        <testcase classname="src/fees-student.test.jsx" name="student fee page content &gt; says so when a fee has no payments yet" time="0.0002629">
+        </testcase>
+        <testcase classname="src/fees-student.test.jsx" name="student fee page content &gt; shows a Paid fee with zero balance" time="0.0011651">
+        </testcase>
+        <testcase classname="src/fees-student.test.jsx" name="dashboard payment list and navigation &gt; shows only the three latest payments on the dashboard" time="0.0037953">
+        </testcase>
+        <testcase classname="src/fees-student.test.jsx" name="dashboard payment list and navigation &gt; gives students a Fees menu item" time="0.0010409">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/leave-admin.test.jsx" timestamp="2026-11-05T07:48:46.598Z" hostname="Chiranthan_S" tests="10" failures="0" errors="0" skipped="0" time="0.0960721">
+        <testcase classname="src/leave-admin.test.jsx" name="fetchLeaves (GET /api/leaves) &gt; lists with the session cookie and sends the status filter" time="0.0043225">
+        </testcase>
+        <testcase classname="src/leave-admin.test.jsx" name="fetchLeaves (GET /api/leaves) &gt; sends no query string when there is no filter" time="0.0003805">
+        </testcase>
+        <testcase classname="src/leave-admin.test.jsx" name="fetchLeaves (GET /api/leaves) &gt; gives a clear message for 403" time="0.0018181">
+        </testcase>
+        <testcase classname="src/leave-admin.test.jsx" name="decideLeave (PUT /api/leaves/{id}/decision) &gt; sends the decision as a PUT and returns the new status" time="0.001376">
+        </testcase>
+        <testcase classname="src/leave-admin.test.jsx" name="decideLeave (PUT /api/leaves/{id}/decision) &gt; explains 409 ALREADY_DECIDED, 404 and 403 in plain words" time="0.0016221">
+        </testcase>
+        <testcase classname="src/leave-admin.test.jsx" name="decideLeave (PUT /api/leaves/{id}/decision) &gt; reports a network failure" time="0.0005663">
+        </testcase>
+        <testcase classname="src/leave-admin.test.jsx" name="AdminLeaveList &gt; shows the student, dates, reason, status and Approve and Reject for a Pending request" time="0.0791235">
+        </testcase>
+        <testcase classname="src/leave-admin.test.jsx" name="AdminLeaveList &gt; hides Approve and Reject once a request has been decided" time="0.0020591">
+        </testcase>
+        <testcase classname="src/leave-admin.test.jsx" name="AdminLeaveList &gt; shows a row-level error message next to the buttons" time="0.002174">
+        </testcase>
+        <testcase classname="src/leave-admin.test.jsx" name="AdminLeaveList &gt; shows a clear message when there is nothing to list" time="0.0006272">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/leave.test.jsx" timestamp="2026-11-05T07:48:46.624Z" hostname="Chiranthan_S" tests="12" failures="0" errors="0" skipped="0" time="0.1109857">
+        <testcase classname="src/leave.test.jsx" name="leave API helpers &gt; loads my leave requests with the session cookie" time="0.006801">
+        </testcase>
+        <testcase classname="src/leave.test.jsx" name="leave API helpers &gt; submits a leave request and returns the created record" time="0.002272">
+        </testcase>
+        <testcase classname="src/leave.test.jsx" name="leave API helpers &gt; shows the server validation message" time="0.0028841">
+        </testcase>
+        <testcase classname="src/leave.test.jsx" name="leave API helpers &gt; reports an expired session" time="0.0016671">
+        </testcase>
+        <testcase classname="src/leave.test.jsx" name="leave API helpers &gt; reports a network failure" time="0.0007687">
+        </testcase>
+        <testcase classname="src/leave.test.jsx" name="leave form rules &gt; accepts a valid range and a one-day leave" time="0.0004418">
+        </testcase>
+        <testcase classname="src/leave.test.jsx" name="leave form rules &gt; rejects missing fields and a reversed range" time="0.0002722">
+        </testcase>
+        <testcase classname="src/leave.test.jsx" name="leave form rules &gt; formats dates without a time zone shift" time="0.0702706">
+        </testcase>
+        <testcase classname="src/leave.test.jsx" name="LeaveList and LeavePage &gt; shows an empty message when there are no requests" time="0.0109138">
+        </testcase>
+        <testcase classname="src/leave.test.jsx" name="LeaveList and LeavePage &gt; renders each request with its dates, reason and status" time="0.0036869">
+        </testcase>
+        <testcase classname="src/leave.test.jsx" name="LeaveList and LeavePage &gt; renders the request form for a student" time="0.005584">
+        </testcase>
+        <testcase classname="src/leave.test.jsx" name="LeaveList and LeavePage &gt; does not render the student form for an admin" time="0.002053">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/login.test.jsx" timestamp="2026-11-05T07:48:46.684Z" hostname="Chiranthan_S" tests="13" failures="0" errors="0" skipped="0" time="0.0346329">
+        <testcase classname="src/login.test.jsx" name="login request &gt; posts the identifier and password with the session cookie and returns the user" time="0.0071011">
+        </testcase>
+        <testcase classname="src/login.test.jsx" name="login request &gt; a wrong password gives the server message and status 401" time="0.002859">
+        </testcase>
+        <testcase classname="src/login.test.jsx" name="login request &gt; a locked account keeps the lockout message and the remaining minutes" time="0.0006597">
+        </testcase>
+        <testcase classname="src/login.test.jsx" name="login request &gt; a network failure gives a readable message" time="0.0021826">
+        </testcase>
+        <testcase classname="src/login.test.jsx" name="login request &gt; a reply that is not JSON still gives a readable message" time="0.0006762">
+        </testcase>
+        <testcase classname="src/login.test.jsx" name="session check and logout &gt; fetchCurrentUser returns the user, or null when there is no session" time="0.0007546">
+        </testcase>
+        <testcase classname="src/login.test.jsx" name="session check and logout &gt; fetchCurrentUser throws on a server error or a network failure" time="0.0008806">
+        </testcase>
+        <testcase classname="src/login.test.jsx" name="session check and logout &gt; logout posts with the cookie and accepts a session that already ended" time="0.0016843">
+        </testcase>
+        <testcase classname="src/login.test.jsx" name="login messages &gt; each kind of failure has its own title and style" time="0.0006137">
+        </testcase>
+        <testcase classname="src/login.test.jsx" name="LoginForm &gt; shows both fields, a masked password and no message at first" time="0.0106376">
+        </testcase>
+        <testcase classname="src/login.test.jsx" name="LoginForm &gt; shows the invalid credentials message" time="0.0018031">
+        </testcase>
+        <testcase classname="src/login.test.jsx" name="LoginForm &gt; shows the lockout message with the minutes left" time="0.0009994">
+        </testcase>
+        <testcase classname="src/login.test.jsx" name="LoginForm &gt; disables the form and changes the button text while signing in" time="0.0006993">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/placeholder.test.jsx" timestamp="2026-11-05T07:48:46.690Z" hostname="Chiranthan_S" tests="5" failures="0" errors="0" skipped="0" time="0.0124341">
+        <testcase classname="src/placeholder.test.jsx" name="role-based menu configuration &gt; returns the student menu items only for the student role" time="0.0025012">
+        </testcase>
+        <testcase classname="src/placeholder.test.jsx" name="role-based menu configuration &gt; returns all admin menu items for the admin role" time="0.0002765">
+        </testcase>
+        <testcase classname="src/placeholder.test.jsx" name="role-based menu configuration &gt; routes the default page to the first available item for that role" time="0.0003394">
+        </testcase>
+        <testcase classname="src/placeholder.test.jsx" name="route guard behaviour &gt; blocks unauthorized access" time="0.0068128">
+        </testcase>
+        <testcase classname="src/placeholder.test.jsx" name="route guard behaviour &gt; allows authorized access" time="0.0003907">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/register.test.jsx" timestamp="2026-11-05T07:48:46.692Z" hostname="Chiranthan_S" tests="10" failures="0" errors="0" skipped="0" time="0.0307246">
+        <testcase classname="src/register.test.jsx" name="registration validation (mirrors the server rules) &gt; accepts a valid form" time="0.0038983">
+        </testcase>
+        <testcase classname="src/register.test.jsx" name="registration validation (mirrors the server rules) &gt; reports every missing field" time="0.0005323">
+        </testcase>
+        <testcase classname="src/register.test.jsx" name="registration validation (mirrors the server rules) &gt; rejects a USN that is not 13 letters or digits" time="0.0006428">
+        </testcase>
+        <testcase classname="src/register.test.jsx" name="registration validation (mirrors the server rules) &gt; rejects a bad email, a bad phone and a blank password" time="0.0004864">
+        </testcase>
+        <testcase classname="src/register.test.jsx" name="registration validation (mirrors the server rules) &gt; limits the name to 60 characters" time="0.000421">
+        </testcase>
+        <testcase classname="src/register.test.jsx" name="registerStudent &gt; posts trimmed values as JSON and returns the created student" time="0.0031169">
+        </testcase>
+        <testcase classname="src/register.test.jsx" name="registerStudent &gt; maps 409 USN_EXISTS and EMAIL_EXISTS to the right field" time="0.0034867">
+        </testcase>
+        <testcase classname="src/register.test.jsx" name="registerStudent &gt; maps server validation details to fields" time="0.0008333">
+        </testcase>
+        <testcase classname="src/register.test.jsx" name="registerStudent &gt; reports a network failure and a server error in plain words" time="0.0026357">
+        </testcase>
+        <testcase classname="src/register.test.jsx" name="RegisterPage &gt; renders every field, the register button and a login link, with no errors at first" time="0.0116887">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/reports-page.test.jsx" timestamp="2026-11-05T07:48:46.697Z" hostname="Chiranthan_S" tests="3" failures="0" errors="0" skipped="0" time="0.0129192">
+        <testcase classname="src/reports-page.test.jsx" name="reports page &gt; offers a CSV and a PDF export for students, fees and complaints" time="0.0095651">
+        </testcase>
+        <testcase classname="src/reports-page.test.jsx" name="reports page &gt; tells a student that only admins can export" time="0.0006006">
+        </testcase>
+        <testcase classname="src/reports-page.test.jsx" name="reports page &gt; is in the admin menu only" time="0.001171">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/rooms.test.jsx" timestamp="2026-11-05T07:48:46.700Z" hostname="Chiranthan_S" tests="9" failures="0" errors="0" skipped="0" time="0.0204032">
+        <testcase classname="src/rooms.test.jsx" name="room filter query &gt; has no query string when no filter is set" time="0.0018776">
+        </testcase>
+        <testcase classname="src/rooms.test.jsx" name="room filter query &gt; includes only the filters that are filled in" time="0.0004008">
+        </testcase>
+        <testcase classname="src/rooms.test.jsx" name="room filter query &gt; treats floor 0 as a real filter" time="0.000188">
+        </testcase>
+        <testcase classname="src/rooms.test.jsx" name="fetchRooms &gt; sends the session cookie and returns the room list" time="0.0032657">
+        </testcase>
+        <testcase classname="src/rooms.test.jsx" name="fetchRooms &gt; gives a clear message for 403 and 401" time="0.0022541">
+        </testcase>
+        <testcase classname="src/rooms.test.jsx" name="fetchRooms &gt; reports a network failure in plain words" time="0.0004918">
+        </testcase>
+        <testcase classname="src/rooms.test.jsx" name="RoomsResults &gt; shows a table with capacity, occupancy and vacancy" time="0.0088363">
+        </testcase>
+        <testcase classname="src/rooms.test.jsx" name="RoomsResults &gt; shows a clear message when a filter matches nothing" time="0.0007393">
+        </testcase>
+        <testcase classname="src/rooms.test.jsx" name="RoomsResults &gt; shows a different message when there are no rooms at all" time="0.0003552">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/visitors.test.jsx" timestamp="2026-11-05T07:48:46.704Z" hostname="Chiranthan_S" tests="9" failures="0" errors="0" skipped="0" time="0.1761589">
+        <testcase classname="src/visitors.test.jsx" name="visitor API &gt; fetches visitors and sends credentials" time="0.0056224">
+        </testcase>
+        <testcase classname="src/visitors.test.jsx" name="visitor API &gt; creates a visitor with a JSON body" time="0.0006416">
+        </testcase>
+        <testcase classname="src/visitors.test.jsx" name="visitor API &gt; records an exit with an encoded id and JSON body" time="0.000463">
+        </testcase>
+        <testcase classname="src/visitors.test.jsx" name="visitor API &gt; maps status, field and network errors" time="0.0017362">
+        </testcase>
+        <testcase classname="src/visitors.test.jsx" name="visitor API &gt; passes AbortError through unchanged" time="0.0008135">
+        </testcase>
+        <testcase classname="src/visitors.test.jsx" name="visitor helpers &gt; formats local inputs and null dates" time="0.0022165">
+        </testcase>
+        <testcase classname="src/visitors.test.jsx" name="visitor helpers &gt; merges an exit result without dropping student details or mutating rows" time="0.0016121">
+        </testcase>
+        <testcase classname="src/visitors.test.jsx" name="visitor components &gt; renders the controlled form fields, errors and submitting state" time="0.0152243">
+        </testcase>
+        <testcase classname="src/visitors.test.jsx" name="visitor components &gt; renders visitor states and student identity" time="0.1451434">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/fees.test.js" timestamp="2026-11-05T07:48:46.708Z" hostname="Chiranthan_S" tests="8" failures="0" errors="0" skipped="0" time="0.0166467">
+        <testcase classname="src/api/fees.test.js" name="fees API &gt; fetches fee records with a status filter and credentials" time="0.0075577">
+        </testcase>
+        <testcase classname="src/api/fees.test.js" name="fees API &gt; creates a fee with numeric amount" time="0.0007055">
+        </testcase>
+        <testcase classname="src/api/fees.test.js" name="fees API &gt; records a payment with a numeric amount and date" time="0.0006868">
+        </testcase>
+        <testcase classname="src/api/fees.test.js" name="fees API &gt; sends an encoded fee ID when recording a payment" time="0.0011612">
+        </testcase>
+        <testcase classname="src/api/fees.test.js" name="fees API &gt; shows a useful message when a duplicate fee is rejected" time="0.002673">
+        </testcase>
+        <testcase classname="src/api/fees.test.js" name="fees API &gt; shows the overpayment error returned by the API" time="0.000508">
+        </testcase>
+        <testcase classname="src/api/fees.test.js" name="fees API &gt; loads students using the authenticated session" time="0.0009715">
+        </testcase>
+        <testcase classname="src/api/fees.test.js" name="fees API &gt; reports network failures clearly" time="0.0004922">
+        </testcase>
+    </testsuite>
+</testsuites>

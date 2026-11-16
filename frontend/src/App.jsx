@@ -53,7 +53,7 @@ function getInitials(name) {
   return letters.toUpperCase();
 }
 
-function renderPageContent(path, role, user, onNavigate) {
+export function renderPageContent(path, role, user, onNavigate) {
   if (path === '/dashboard') {
     if (role === 'student' && user?.usn) {
       return <StudentDashboardPage usn={user.usn} />;
