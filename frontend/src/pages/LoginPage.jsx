@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert } from '../components/Alert';
+import { AuthLayout } from '../components/AuthLayout';
 import { AuthRequestError, describeLoginError, login } from '../api/auth';
-import '../login.css';
 
 // The form only. It holds no state, so it can be shown in any condition.
 export function LoginForm({ identifier, password, error, submitting, onChange, onSubmit }) {
@@ -102,7 +102,7 @@ export function LoginPage({ onLoggedIn, loginImpl = login, notice = '' }) {
   };
 
   return (
-    <main className="login-page">
+    <AuthLayout>
       <LoginForm
         identifier={form.identifier}
         password={form.password}
@@ -111,7 +111,7 @@ export function LoginPage({ onLoggedIn, loginImpl = login, notice = '' }) {
         onChange={handleChange}
         onSubmit={handleSubmit}
       />
-    </main>
+    </AuthLayout>
   );
 }
 

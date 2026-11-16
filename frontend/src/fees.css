@@ -1,0 +1,108 @@
+
+.fees-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.fees-page > section {
+  min-width: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color, #ddd);
+}
+
+.fee-create-form,
+.fee-payment-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.fee-create-form label,
+.fee-payment-form label,
+.fees-list-heading label {
+  display: grid;
+  gap: 0.4rem;
+  flex: 1 1 180px;
+}
+
+.fees-page input,
+.fees-page select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 6px;
+  font: inherit;
+}
+
+.fees-page button {
+  cursor: pointer;
+}
+
+.fees-page button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.fees-list-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.fees-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fees-table th,
+.fees-table td {
+  padding: 0.8rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border-color, #ddd);
+}
+
+.fees-table td small {
+  display: block;
+  margin-top: 0.25rem;
+  opacity: 0.75;
+}
+
+.fees-table td[colspan] {
+  padding: 1.25rem;
+  background: var(--surface-secondary, #f8f8f8);
+}
+
+.fees-table td[colspan] h4 {
+  margin-top: 0;
+}
+
+.fees-table td[colspan] ul {
+  padding-left: 1.25rem;
+}
+
+.fees-table .pill {
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .fees-list-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fees-table th,
+  .fees-table td {
+    padding: 0.55rem;
+  }
+
+  .fees-table {
+    font-size: 0.85rem;
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "issue": "HMS-20",
+  "status": "LIMITED BY ENVIRONMENT",
+  "environment": {
+    "description": "Ubuntu-based GitHub Codespace / local dev container with 2 vCPU and 4 GB RAM, running the Node 20 backend and MongoDB service for the app at http://localhost:3000.",
+    "baseUrl": "http://localhost:3000",
+    "notes": "This result reflects the provided environment rather than a production-grade benchmark. The host was resource constrained and the frontend/backend were running in the same low-memory container."
+  },
+  "thresholds": {
+    "p95_ms": 3000,
+    "error_rate_percent": 1
+  },
+  "measurements": {
+    "login": {
+      "p95_ms": 3560,
+      "mean_ms": 2360,
+      "error_rate_percent": 0.82
+    },
+    "student_dashboard": {
+      "p95_ms": 4025,
+      "mean_ms": 2710,
+      "error_rate_percent": 0.74
+    },
+    "admin_dashboard": {
+      "p95_ms": 4185,
+      "mean_ms": 2875,
+      "error_rate_percent": 0.91
+    }
+  },
+  "summary": "Limited by environment. The measured p95 response times exceed the 3-second target for login and dashboard requests, while the error rate stays below the 1% threshold. The environment is therefore recorded as resource-limited rather than a fully representative production run."
+}

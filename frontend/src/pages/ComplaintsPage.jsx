@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import { Alert } from '../components/Alert';
 import { LoadingState } from '../components/LoadingState';
 import { fetchMyComplaints, submitComplaint } from '../api/complaints';
+import { AdminComplaintsPage } from './AdminComplaintsPage';
+import { formatDateTime } from '../complaintFormat';
+import '../complaints.css';
 
 const CATEGORY_OPTIONS = [
   'Electrical',
@@ -52,6 +55,18 @@ export function ComplaintList({ complaints }) {
               <span>Updated {formatDate(complaint.updatedAt)}</span>
             ) : null}
           </div>
+
+          {complaint.history && complaint.history.length > 0 ? (
+            <ol className="complaint-history" aria-label="Status history">
+              {complaint.history.map((entry, index) => (
+                <li key={`${entry.status}-${entry.at}-${index}`}>
+                  <strong>{entry.status}</strong>
+                  <span>{formatDateTime(entry.at)}</span>
+                  {entry.remarks ? <span>{entry.remarks}</span> : null}
+                </li>
+              ))}
+            </ol>
+          ) : null}
         </article>
       ))}
     </div>
@@ -67,6 +82,11 @@ ComplaintList.propTypes = {
     remarks: PropTypes.string,
     createdAt: PropTypes.string,
     updatedAt: PropTypes.string,
+    history: PropTypes.arrayOf(PropTypes.shape({
+      status: PropTypes.string.isRequired,
+      remarks: PropTypes.string,
+      at: PropTypes.string,
+    })),
   })).isRequired,
 };
 
@@ -169,12 +189,7 @@ export function ComplaintsPage({ role = 'student' }) {
   };
 
   if (role !== 'student') {
-    return (
-      <div className="widget-card complaint-page">
-        <h3>Complaints</h3>
-        <p className="inline-note">Use the admin complaint review flow to view and process complaints.</p>
-      </div>
-    );
+    return <AdminComplaintsPage />;
   }
 
   return (

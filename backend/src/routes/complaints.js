@@ -219,6 +219,15 @@ function createComplaintsRouter(options = {}) {
         return res.status(404).json(errorBody('NOT_FOUND', 'Complaint not found', {}));
       }
 
+      // Resolved and Rejected are final: a closed complaint cannot be reopened or re-closed.
+      if (complaint.status === 'Resolved' || complaint.status === 'Rejected') {
+        return res.status(400).json(errorBody(
+          'VALIDATION_ERROR',
+          'This complaint is already closed and can no longer be changed',
+          { status: 'Complaint is already closed' }
+        ));
+      }
+
       const nextHistoryEntry = {
         status,
         remarks,

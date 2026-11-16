@@ -1,0 +1,29 @@
+/* Reports page. Colours and control styles come from style.css; this file only sets layout. */
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.1rem;
+}
+
+.report-button {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-control);
+  background: var(--surface);
+  color: var(--pine-900);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.report-button:hover:not(:disabled) {
+  border-color: var(--pine-600);
+  background: var(--pine-50);
+}
+
+.report-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
